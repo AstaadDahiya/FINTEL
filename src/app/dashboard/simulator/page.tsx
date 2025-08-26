@@ -1,26 +1,21 @@
-
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, ArrowUp, ArrowDown } from "lucide-react";
+import { Search, ArrowUp, ArrowDown, Loader2 } from "lucide-react";
 import StockChart from "@/components/simulator/StockChart";
 import { Label } from "@/components/ui/label";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { fetchStockData, StockData } from "@/lib/alpha-vantage";
 
-const mockStockData = {
-    "AAPL": { name: "Apple Inc.", price: 195.71, change: 2.14, changePercent: 1.10, data: [{ date: 'Jan 23', price: 150 }, { date: 'Feb 23', price: 155 }, { date: 'Mar 23', price: 160 }, { date: 'Apr 23', price: 162 }, { date: 'May 23', price: 170 }, { date: 'Jun 23', price: 180 }, { date: 'Jul 23', price: 190 }, { date: 'Aug 23', price: 185 }, { date: 'Sep 23', price: 175 }, { date: 'Oct 23', price: 168 }, { date: 'Nov 23', price: 188 }, { date: 'Dec 23', price: 195 }] },
-    "GOOGL": { name: "Alphabet Inc.", price: 178.22, change: -1.50, changePercent: -0.83, data: [{ date: 'Jan 23', price: 90 }, { date: 'Feb 23', price: 95 }, { date: 'Mar 23', price: 105 }, { date: 'Apr 23', price: 108 }, { date: 'May 23', price: 120 }, { date: 'Jun 23', price: 125 }, { date: 'Jul 23', price: 130 }, { date: 'Aug 23', price: 128 }, { date: 'Sep 23', price: 135 }, { date: 'Oct 23', price: 130 }, { date: 'Nov 23', price: 140 }, { date: 'Dec 23', price: 142 }] },
-    "TSLA": { name: "Tesla, Inc.", price: 184.86, change: 3.21, changePercent: 1.77, data: [{ date: 'Jan 23', price: 150 }, { date: 'Feb 23', price: 200 }, { date: 'Mar 23', price: 190 }, { date: 'Apr 23', price: 160 }, { date: 'May 23', price: 180 }, { date: 'Jun 23', price: 250 }, { date: 'Jul 23', price: 280 }, { date: 'Aug 23', price: 240 }, { date: 'Sep 23', price: 260 }, { date: 'Oct 23', price: 220 }, { date: 'Nov 23', price: 240 }, { date: 'Dec 23', price: 250 }] },
-    "AMZN": { name: "Amazon.com, Inc.", price: 183.64, change: -0.18, changePercent: -0.10, data: [{ date: 'Jan 23', price: 100 }, { date: 'Feb 23', price: 95 }, { date: 'Mar 23', price: 102 }, { date: 'Apr 23', price: 105 }, { date: 'May 23', price: 120 }, { date: 'Jun 23', price: 130 }, { date: 'Jul 23', price: 135 }, { date: 'Aug 23', price: 138 }, { date: 'Sep 23', price: 128 }, { date: 'Oct 23', price: 120 }, { date: 'Nov 23', price: 145 }, { date: 'Dec 23', price: 150 }] },
-};
+const initialTickers = ["AAPL", "GOOGL", "TSLA", "AMZN"];
 
-type StockSymbol = keyof typeof mockStockData;
+type StockSymbol = string;
 
 type Portfolio = {
     cash: number;
@@ -43,28 +38,74 @@ export default function SimulatorPage() {
     const [tradeHistory, setTradeHistory] = useLocalStorage<Trade[]>('tradeHistory', []);
     const { toast } = useToast();
 
-    const [selectedStock, setSelectedStock] = useState<StockSymbol>("AAPL");
+    const [selectedStock, setSelectedStock] = useState<StockData | null>(null);
     const [quantity, setQuantity] = useState(1);
     const [searchInput, setSearchInput] = useState("AAPL");
+    const [loading, setLoading] = useState(true);
+    const [stockCache, setStockCache] = useState<{[key: string]: StockData}>({});
 
-    const stockInfo = mockStockData[selectedStock];
+    const updatePortfolioStockPrices = async () => {
+        const tickersToUpdate = Object.keys(portfolio.stocks);
+        if (tickersToUpdate.length === 0) return;
 
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault();
-        const upperCaseInput = searchInput.toUpperCase() as StockSymbol;
-        if (upperCaseInput in mockStockData) {
-            setSelectedStock(upperCaseInput);
-        } else {
+        const updatedCache = { ...stockCache };
+        for (const ticker of tickersToUpdate) {
+            if (!updatedCache[ticker]) {
+                const data = await fetchStockData(ticker);
+                if (data) {
+                    updatedCache[ticker] = data;
+                }
+            }
+        }
+        setStockCache(updatedCache);
+    };
+
+    useEffect(() => {
+        handleSearch(undefined, "AAPL");
+        updatePortfolioStockPrices();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const handleSearch = async (e?: React.FormEvent, defaultTicker?: string) => {
+        if (e) e.preventDefault();
+        const tickerToSearch = (defaultTicker || searchInput).toUpperCase();
+        if (!tickerToSearch) return;
+
+        setLoading(true);
+
+        try {
+            if (stockCache[tickerToSearch]) {
+                setSelectedStock(stockCache[tickerToSearch]);
+            } else {
+                const data = await fetchStockData(tickerToSearch);
+                if (data) {
+                    setSelectedStock(data);
+                    setStockCache(prev => ({...prev, [tickerToSearch]: data}));
+                } else {
+                    toast({
+                        variant: "destructive",
+                        title: "Invalid Ticker",
+                        description: `Stock with ticker "${tickerToSearch}" not found.`,
+                    });
+                    setSelectedStock(null);
+                }
+            }
+        } catch (error) {
+            console.error("Failed to fetch stock data", error);
             toast({
                 variant: "destructive",
-                title: "Invalid Ticker",
-                description: `Stock with ticker "${searchInput}" not found.`,
+                title: "API Error",
+                description: "Could not fetch stock data. The API limit might have been reached.",
             });
+            setSelectedStock(null);
+        } finally {
+            setLoading(false);
         }
     };
 
     const handleTrade = (type: 'Buy' | 'Sell') => {
-        const tradeAmount = quantity * stockInfo.price;
+        if (!selectedStock) return;
+        const tradeAmount = quantity * selectedStock.price;
         
         if (type === 'Buy') {
             if (portfolio.cash < tradeAmount) {
@@ -75,40 +116,40 @@ export default function SimulatorPage() {
                 cash: prev.cash - tradeAmount,
                 stocks: {
                     ...prev.stocks,
-                    [selectedStock]: (prev.stocks[selectedStock] || 0) + quantity
+                    [selectedStock.symbol]: (prev.stocks[selectedStock.symbol] || 0) + quantity
                 }
             }));
         } else { // Sell
-            if ((portfolio.stocks[selectedStock] || 0) < quantity) {
-                toast({ variant: "destructive", title: "Insufficient Shares", description: `You do not own enough shares of ${selectedStock}.` });
+            if ((portfolio.stocks[selectedStock.symbol] || 0) < quantity) {
+                toast({ variant: "destructive", title: "Insufficient Shares", description: `You do not own enough shares of ${selectedStock.symbol}.` });
                 return;
             }
              setPortfolio(prev => ({
                 cash: prev.cash + tradeAmount,
                 stocks: {
                     ...prev.stocks,
-                    [selectedStock]: (prev.stocks[selectedStock] || 0) - quantity
+                    [selectedStock.symbol]: (prev.stocks[selectedStock.symbol] || 0) - quantity
                 }
             }));
         }
 
         const newTrade: Trade = {
             type,
-            ticker: selectedStock,
+            ticker: selectedStock.symbol,
             quantity,
-            price: stockInfo.price,
+            price: selectedStock.price,
             date: new Date().toLocaleString()
         };
         setTradeHistory(prev => [newTrade, ...prev]);
 
         toast({
             title: "Trade Executed",
-            description: `Successfully ${type === 'Buy' ? 'bought' : 'sold'} ${quantity} share(s) of ${selectedStock}.`,
+            description: `Successfully ${type === 'Buy' ? 'bought' : 'sold'} ${quantity} share(s) of ${selectedStock.symbol}.`,
         });
     };
     
     const portfolioValue = Object.entries(portfolio.stocks).reduce((acc, [ticker, qty]) => {
-        const stockPrice = mockStockData[ticker as StockSymbol]?.price || 0;
+        const stockPrice = stockCache[ticker]?.price || 0;
         return acc + (stockPrice * (qty || 0));
     }, 0);
     const totalValue = portfolio.cash + portfolioValue;
@@ -123,41 +164,59 @@ export default function SimulatorPage() {
                 <div className="lg:col-span-2">
                     <Card>
                         <CardHeader>
-                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                                <div>
-                                    <CardTitle className="text-2xl">{stockInfo.name} ({selectedStock})</CardTitle>
-                                    <p className={`text-3xl font-bold mt-1 flex items-center gap-2 ${stockInfo.change >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                                      ${stockInfo.price.toFixed(2)} 
-                                      <span className="text-sm font-medium flex items-center">
-                                        {stockInfo.change >= 0 ? <ArrowUp className="h-4 w-4"/> : <ArrowDown className="h-4 w-4"/>}
-                                        {stockInfo.change.toFixed(2)} ({stockInfo.changePercent.toFixed(2)}%)
-                                      </span>
-                                    </p>
+                            {loading && !selectedStock ? (
+                               <div className="flex items-center justify-center h-24">
+                                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                               </div>
+                            ) : selectedStock ? (
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                    <div>
+                                        <CardTitle className="text-2xl">{selectedStock.name} ({selectedStock.symbol})</CardTitle>
+                                        <p className={`text-3xl font-bold mt-1 flex items-center gap-2 ${selectedStock.change >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                                          ${selectedStock.price.toFixed(2)} 
+                                          <span className="text-sm font-medium flex items-center">
+                                            {selectedStock.change >= 0 ? <ArrowUp className="h-4 w-4"/> : <ArrowDown className="h-4 w-4"/>}
+                                            {selectedStock.change.toFixed(2)} ({selectedStock.changePercent.toFixed(2)}%)
+                                          </span>
+                                        </p>
+                                    </div>
+                                    <form onSubmit={handleSearch} className="flex items-center gap-2 w-full sm:w-64">
+                                      <div className="relative flex-grow">
+                                          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                          <Input 
+                                            type="search" 
+                                            placeholder="Search stocks..." 
+                                            className="pl-8" 
+                                            value={searchInput}
+                                            onChange={e => setSearchInput(e.target.value)}
+                                          />
+                                      </div>
+                                      <Button type="submit" size="icon" variant="outline" disabled={loading}><Search className="h-4 w-4"/></Button>
+                                    </form>
                                 </div>
-                                <form onSubmit={handleSearch} className="flex items-center gap-2 w-full sm:w-64">
-                                  <div className="relative flex-grow">
-                                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                      <Input 
-                                        type="search" 
-                                        placeholder="Search stocks..." 
-                                        className="pl-8" 
-                                        value={searchInput}
-                                        onChange={e => setSearchInput(e.target.value)}
-                                      />
-                                  </div>
-                                  <Button type="submit" size="icon" variant="outline"><Search className="h-4 w-4"/></Button>
-                                </form>
-                            </div>
+                            ) : (
+                                <div className="text-center p-4 text-muted-foreground">Please search for a stock to begin.</div>
+                            )}
                         </CardHeader>
                         <CardContent>
-                            <StockChart data={stockInfo.data} />
+                             {loading ? (
+                                <div className="h-[350px] w-full flex items-center justify-center">
+                                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                                </div>
+                            ) : selectedStock ? (
+                               <StockChart data={selectedStock.data} />
+                            ) : (
+                                <div className="h-[350px] w-full flex items-center justify-center bg-muted rounded-md">
+                                    <p className="text-muted-foreground">No data to display.</p>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 </div>
                 <div className="lg:col-span-1 flex flex-col gap-8">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Trade {selectedStock}</CardTitle>
+                            <CardTitle>Trade {selectedStock?.symbol || '...'}</CardTitle>
                         </CardHeader>
                         <CardContent className="grid gap-4">
                             <div className="grid gap-2">
@@ -169,15 +228,16 @@ export default function SimulatorPage() {
                                   min="1"
                                   value={quantity} 
                                   onChange={e => setQuantity(parseInt(e.target.value, 10) || 1)}
+                                  disabled={!selectedStock || loading}
                                 />
                             </div>
                             <div className="flex justify-between items-center text-sm text-muted-foreground">
                                 <span>Total Cost:</span>
-                                <span className="font-semibold text-foreground">${(quantity * stockInfo.price).toFixed(2)}</span>
+                                <span className="font-semibold text-foreground">${selectedStock ? (quantity * selectedStock.price).toFixed(2) : '0.00'}</span>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
-                                <Button variant="outline" className="text-red-600 border-red-600/50 hover:bg-red-600/10 hover:text-red-700" onClick={() => handleTrade('Sell')}>Sell</Button>
-                                <Button className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={() => handleTrade('Buy')}>Buy</Button>
+                                <Button variant="outline" className="text-red-600 border-red-600/50 hover:bg-red-600/10 hover:text-red-700" onClick={() => handleTrade('Sell')} disabled={!selectedStock || loading}>Sell</Button>
+                                <Button className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={() => handleTrade('Buy')} disabled={!selectedStock || loading}>Buy</Button>
                             </div>
                         </CardContent>
                     </Card>
@@ -221,8 +281,8 @@ export default function SimulatorPage() {
                                             </TableRow>
                                             {Object.entries(portfolio.stocks).map(([ticker, qty]) => {
                                                 if (!qty || qty === 0) return null;
-                                                const stock = mockStockData[ticker as StockSymbol];
-                                                const value = (stock.price * qty).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2});
+                                                const stock = stockCache[ticker as StockSymbol];
+                                                const value = stock ? (stock.price * qty).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2}) : 'Loading...';
                                                 return (
                                                     <TableRow key={ticker}>
                                                         <TableCell className="font-medium">{ticker}</TableCell>
