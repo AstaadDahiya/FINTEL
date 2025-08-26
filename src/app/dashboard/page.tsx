@@ -15,8 +15,12 @@ type CompletedModules = string[];
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const [completedModules, setCompletedModules] = useLocalStorage<CompletedModules>('completedModules', []);
-  const [quizScores, setQuizScores] = useLocalStorage<QuizScores>('quizScores', {});
+  
+  const completedModulesKey = user ? `completedModules_${user.uid}` : 'completedModules';
+  const quizScoresKey = user ? `quizScores_${user.uid}` : 'quizScores';
+  
+  const [completedModules, setCompletedModules] = useLocalStorage<CompletedModules>(completedModulesKey, []);
+  const [quizScores, setQuizScores] = useLocalStorage<QuizScores>(quizScoresKey, {});
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {

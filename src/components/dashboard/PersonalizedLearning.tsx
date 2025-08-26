@@ -6,6 +6,7 @@ import Link from "next/link";
 import { getPersonalizedLearningPath, PersonalizedLearningPathOutput } from "@/ai/flows/personalized-learning-path";
 import { learningModules } from "@/lib/data";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { useAuth } from "@/hooks/use-auth";
 
 type QuizScores = { [moduleSlug: string]: number };
 type CompletedModules = string[];
@@ -15,13 +16,19 @@ interface PersonalizedLearningContentProps {
 }
 
 export default function PersonalizedLearningContent({ setOpen }: PersonalizedLearningContentProps) {
+  const { user } = useAuth();
   const [recommendation, setRecommendation] = useState<PersonalizedLearningPathOutput | null>(null);
   const [loading, setLoading] = useState(true);
-  const [quizScores] = useLocalStorage<QuizScores>('quizScores', {});
-  const [completedModules] = useLocalStorage<CompletedModules>('completedModules', []);
+
+  const completedModulesKey = user ? `completedModules_${user.uid}` : 'completedModules';
+  const quizScoresKey = user ? `quizScores_${user.uid}` : 'quizScores';
+
+  const [quizScores] = useLocalStorage<QuizScores>(quizScoresKey, {});
+  const [completedModules] = useLocalStorage<CompletedModules>(completedModulesKey, []);
 
   useEffect(() => {
     async function fetchRecommendation() {
+      if (!user) return;
       try {
         setLoading(true);
         const result = await getPersonalizedLearningPath({
@@ -38,7 +45,7 @@ export default function PersonalizedLearningContent({ setOpen }: PersonalizedLea
     }
     fetchRecommendation();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user]);
   
   const recommendedModuleDetails = learningModules.find(m => m.slug === recommendation?.recommendedModule);
 

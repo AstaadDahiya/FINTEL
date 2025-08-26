@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import type { LearningModule } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -9,6 +9,7 @@ import { CheckCircle, XCircle, ArrowRight, RefreshCw } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import Link from 'next/link';
 import { useLocalStorage } from '@/hooks/use-local-storage';
+import { useAuth } from '@/hooks/use-auth';
 
 interface Props {
   module: LearningModule;
@@ -18,13 +19,18 @@ type QuizScores = { [moduleSlug: string]: number };
 type CompletedModules = string[];
 
 export default function QuizClient({ module }: Props) {
+  const { user } = useAuth();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isAnswerChecked, setIsAnswerChecked] = useState(false);
   const [score, setScore] = useState(0);
   const [isQuizFinished, setIsQuizFinished] = useState(false);
-  const [quizScores, setQuizScores] = useLocalStorage<QuizScores>('quizScores', {});
-  const [completedModules, setCompletedModules] = useLocalStorage<CompletedModules>('completedModules', []);
+
+  const completedModulesKey = useMemo(() => user ? `completedModules_${user.uid}` : 'completedModules', [user]);
+  const quizScoresKey = useMemo(() => user ? `quizScores_${user.uid}` : 'quizScores', [user]);
+
+  const [quizScores, setQuizScores] = useLocalStorage<QuizScores>(quizScoresKey, {});
+  const [completedModules, setCompletedModules] = useLocalStorage<CompletedModules>(completedModulesKey, []);
 
   const currentQuestion = module.quiz[currentQuestionIndex];
 
@@ -67,7 +73,7 @@ export default function QuizClient({ module }: Props) {
       });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isQuizFinished]);
+  }, [isQuizFinished, module.slug, score, setCompletedModules, setQuizScores]);
 
   if (isQuizFinished) {
     return (

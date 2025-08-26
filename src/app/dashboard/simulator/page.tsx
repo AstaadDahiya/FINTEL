@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchStockData, StockData } from "@/lib/alpha-vantage";
+import { useAuth } from "@/hooks/use-auth";
 
 type StockSymbol = string;
 
@@ -29,11 +30,16 @@ type Trade = {
 }
 
 export default function SimulatorPage() {
-    const [portfolio, setPortfolio] = useLocalStorage<Portfolio>('portfolio', {
+    const { user } = useAuth();
+
+    const portfolioKey = useMemo(() => user ? `portfolio_${user.uid}` : 'portfolio', [user]);
+    const tradeHistoryKey = useMemo(() => user ? `tradeHistory_${user.uid}` : 'tradeHistory', [user]);
+
+    const [portfolio, setPortfolio] = useLocalStorage<Portfolio>(portfolioKey, {
         cash: 10000,
         stocks: { "AAPL": 5 }
     });
-    const [tradeHistory, setTradeHistory] = useLocalStorage<Trade[]>('tradeHistory', []);
+    const [tradeHistory, setTradeHistory] = useLocalStorage<Trade[]>(tradeHistoryKey, []);
     const { toast } = useToast();
 
     const [selectedStock, setSelectedStock] = useState<StockData | null>(null);
@@ -110,7 +116,8 @@ export default function SimulatorPage() {
             setLoading(false);
         }
         initialize();
-    }, [handleSearch, portfolio.stocks, updatePortfolioStockPrices]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleTrade = (type: 'Buy' | 'Sell') => {
         if (!selectedStock) return;
@@ -339,5 +346,4 @@ export default function SimulatorPage() {
             </div>
         </div>
     );
-
-    
+}

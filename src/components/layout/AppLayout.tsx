@@ -43,9 +43,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isActive = (path: string) => pathname === path || (path !== '/dashboard' && pathname.startsWith(path));
-  const [showPersonalizedLearning] = useLocalStorage('showPersonalizedLearning', true);
-  const [modalOpen, setModalOpen] = useState(false);
   const { user, logout } = useAuth();
+  const personalizedLearningKey = user ? `showPersonalizedLearning_${user.uid}` : 'showPersonalizedLearning';
+  const [showPersonalizedLearning] = useLocalStorage(personalizedLearningKey, true);
+  const [modalOpen, setModalOpen] = useState(false);
 
 
   return (

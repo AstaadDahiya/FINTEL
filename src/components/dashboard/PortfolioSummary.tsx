@@ -5,8 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowUp, TrendingUp, TrendingDown } from "lucide-react";
 import { useLocalStorage } from "@/hooks/use-local-storage";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { fetchStockData, StockData } from "@/lib/alpha-vantage";
+import { useAuth } from "@/hooks/use-auth";
 
 
 type StockSymbol = string;
@@ -17,7 +18,9 @@ type Portfolio = {
 }
 
 export default function PortfolioSummary() {
-  const [portfolio] = useLocalStorage<Portfolio>('portfolio', {
+  const { user } = useAuth();
+  const portfolioKey = useMemo(() => user ? `portfolio_${user.uid}` : 'portfolio', [user]);
+  const [portfolio] = useLocalStorage<Portfolio>(portfolioKey, {
     cash: 10000,
     stocks: { "AAPL": 5 }
   });

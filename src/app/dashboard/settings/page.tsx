@@ -7,9 +7,12 @@ import { Switch } from "@/components/ui/switch";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function SettingsPage() {
-    const [showPersonalizedLearning, setShowPersonalizedLearning] = useLocalStorage('showPersonalizedLearning', true);
+    const { user } = useAuth();
+    const personalizedLearningKey = user ? `showPersonalizedLearning_${user.uid}` : 'showPersonalizedLearning';
+    const [showPersonalizedLearning, setShowPersonalizedLearning] = useLocalStorage(personalizedLearningKey, true);
     const { setTheme } = useTheme();
     
     return (
