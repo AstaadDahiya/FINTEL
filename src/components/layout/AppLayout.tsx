@@ -3,6 +3,7 @@
 import Link from "next/link";
 import {
   BookOpen,
+  HelpCircle,
   Home,
   Lightbulb,
   LineChart,
@@ -202,6 +203,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <SidebarFooter className="group-data-[collapsible=icon]:hidden">
            <SidebarMenu>
               <SidebarMenuItem>
+                <Link href="/dashboard/support" passHref>
+                  <SidebarMenuButton tooltip="Support" isActive={isActive('/dashboard/support')}>
+                    <HelpCircle />
+                    <span>Support</span>
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
                 <Link href="/dashboard/settings" passHref>
                   <SidebarMenuButton tooltip="Settings" isActive={isActive('/dashboard/settings')}>
                     <Settings />
@@ -233,7 +242,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <DropdownMenuLabel>{user?.displayName}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild><Link href="/dashboard/settings">Settings</Link></DropdownMenuItem>
-              <DropdownMenuItem>Support</DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/dashboard/support">Support</Link></DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
             </DropdownMenuContent>
