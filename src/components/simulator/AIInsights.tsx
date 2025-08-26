@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Loader2, Sparkles } from "lucide-react";
 import { getAiPoweredInsights, AIPoweredInsightsOutput } from "@/ai/flows/ai-powered-insights";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { CircularProgress } from "../ui/circular-progress";
 
 interface AIInsightsProps {
     ticker: string;
@@ -29,6 +30,12 @@ export default function AIInsights({ ticker }: AIInsightsProps) {
         } finally {
             setLoading(false);
         }
+    }
+
+    const getSentimentColor = (score: number) => {
+        if (score > 66) return "text-emerald-500";
+        if (score > 33) return "text-yellow-500";
+        return "text-red-500";
     }
 
     return (
@@ -59,9 +66,12 @@ export default function AIInsights({ ticker }: AIInsightsProps) {
                 {error && <Alert variant="destructive"><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>}
                 {insights && (
                     <div className="space-y-4 text-sm">
-                        <div>
-                            <h4 className="font-semibold text-accent">Sentiment Analysis</h4>
-                            <p className="text-muted-foreground">{insights.sentimentAnalysis}</p>
+                         <div className="flex items-center gap-4 p-4 rounded-lg bg-background/50">
+                            <CircularProgress value={insights.sentimentScore} className={getSentimentColor(insights.sentimentScore)} />
+                            <div className="flex-1">
+                                <h4 className="font-semibold text-accent">Sentiment Analysis</h4>
+                                <p className="text-muted-foreground">{insights.sentimentAnalysis}</p>
+                            </div>
                         </div>
                         <div>
                             <h4 className="font-semibold text-accent">Quantitative Analysis</h4>

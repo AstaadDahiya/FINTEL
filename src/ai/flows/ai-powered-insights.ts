@@ -18,6 +18,7 @@ export type AIPoweredInsightsInput = z.infer<typeof AIPoweredInsightsInputSchema
 
 const AIPoweredInsightsOutputSchema = z.object({
   sentimentAnalysis: z.string().describe('Sentiment analysis of the stock.'),
+  sentimentScore: z.number().describe('A sentiment score for the stock, from 0 (very bearish) to 100 (very bullish).'),
   quantitativeAnalysis: z.string().describe('Quantitative analysis of the stock.'),
   forecastReasoning: z.string().describe('Explanation of the forecast reasoning.'),
 });
@@ -34,7 +35,8 @@ const prompt = ai.definePrompt({
   prompt: `You are an AI assistant providing insights for stock trading.
 
   Provide a sentiment analysis and quantitative analysis for the stock ticker: {{{ticker}}}.
-  Also, explain the forecast reasoning based on these analyses, focusing on transparency so the user understands the rationale behind the forecast.
+  Also provide a sentiment score from 0 (very bearish) to 100 (very bullish).
+  Explain the forecast reasoning based on these analyses, focusing on transparency so the user understands the rationale behind the forecast.
   Please provide a detailed explanation of forecast reasoning. 
   `,
 });
