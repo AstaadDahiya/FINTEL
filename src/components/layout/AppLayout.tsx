@@ -3,6 +3,7 @@ import Link from "next/link";
 import {
   BookOpen,
   Home,
+  Lightbulb,
   LineChart,
   Settings,
   Sparkles,
@@ -31,17 +32,21 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { usePathname } from "next/navigation";
-import PersonalizedLearning from "../dashboard/PersonalizedLearning";
+import PersonalizedLearningModal from "../dashboard/PersonalizedLearningModal";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { useState } from "react";
+import { Dialog, DialogTrigger } from "../ui/dialog";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isActive = (path: string) => pathname === path || (path !== '/dashboard' && pathname.startsWith(path));
   const [showPersonalizedLearning] = useLocalStorage('showPersonalizedLearning', true);
+  const [modalOpen, setModalOpen] = useState(false);
 
 
   return (
     <SidebarProvider>
+      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
       <Sidebar side="left" collapsible="icon">
         <SidebarHeader>
           <div className="flex items-center gap-2 p-2 group-data-[collapsible=icon]:justify-center">
@@ -83,15 +88,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </SidebarMenuButton>
               </Link>
             </SidebarMenuItem>
-          </SidebarMenu>
-          {showPersonalizedLearning && (
+            {showPersonalizedLearning && (
             <>
               <SidebarSeparator />
-              <div className="p-2 group-data-[collapsible=icon]:hidden">
-                <PersonalizedLearning />
-              </div>
+              <SidebarMenuItem>
+                <DialogTrigger asChild>
+                  <SidebarMenuButton tooltip="Your Next Step" variant="outline" className="border-primary/20 bg-primary/5 text-primary hover:bg-primary/10 hover:text-primary">
+                    <Lightbulb />
+                    <span>Your Next Step</span>
+                  </SidebarMenuButton>
+                </DialogTrigger>
+              </SidebarMenuItem>
             </>
           )}
+          </SidebarMenu>
         </SidebarContent>
         <SidebarFooter className="group-data-[collapsible=icon]:hidden">
            <SidebarMenu>
@@ -134,6 +144,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           {children}
         </main>
       </SidebarInset>
+      <PersonalizedLearningModal setOpen={setModalOpen} />
+      </Dialog>
     </SidebarProvider>
   );
 }
