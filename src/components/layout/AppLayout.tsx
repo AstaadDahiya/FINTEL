@@ -55,7 +55,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <Sidebar side="left" collapsible="icon">
         <SidebarHeader>
           <div className="flex items-center gap-2 p-2 group-data-[collapsible=icon]:justify-center">
-          <svg viewBox="0 0 220 55" xmlns="http://www.w3.org/2000/svg" className="h-12 w-auto group-data-[collapsible=icon]:hidden">
+          <svg viewBox="0 0 220 55" xmlns="http://www.w3.org/2000/svg" className="h-12 w-auto group-data-[collapsible=icon]:hidden text-foreground">
               <defs>
                 <linearGradient id="bullishBlue" x1="0%" y1="100%" x2="100%" y2="0%">
                   <stop offset="0%" style={{stopColor:"#1e3a8a",stopOpacity:1}} />
@@ -102,7 +102,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </g>
               </g>
               <g transform="translate(48, 0)">
-                <text x="0" y="30" fontFamily="system-ui, -apple-system, 'Inter', sans-serif" fontSize="26" fontWeight="800" letterSpacing="-0.8px" fill="#1e293b" filter="url(#textGlow)">
+                <text x="0" y="30" fontFamily="system-ui, -apple-system, 'Inter', sans-serif" fontSize="26" fontWeight="800" letterSpacing="-0.8px" fill="currentColor" filter="url(#textGlow)">
                   FIN
                 </text>
                 <text x="58" y="30" fontFamily="system-ui, -apple-system, 'Inter', sans-serif" fontSize="26" fontWeight="300" letterSpacing="-0.8px" fill="url(#bullishBlue)" filter="url(#textGlow)">

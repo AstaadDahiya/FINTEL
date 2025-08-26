@@ -76,7 +76,7 @@ export default function LoginPage() {
       <div className="flex items-center justify-center py-12">
         <div className="mx-auto grid w-[350px] gap-6">
           <div className="grid gap-2 text-center">
-            <div className="flex justify-center">
+            <div className="flex justify-center text-foreground">
               <svg viewBox="0 0 220 55" xmlns="http://www.w3.org/2000/svg" className="h-16">
                 <defs>
                   <linearGradient id="bullishBlue" x1="0%" y1="100%" x2="100%" y2="0%">
@@ -124,7 +124,7 @@ export default function LoginPage() {
                   </g>
                 </g>
                 <g transform="translate(48, 0)">
-                  <text x="0" y="30" fontFamily="system-ui, -apple-system, 'Inter', sans-serif" fontSize="26" fontWeight="800" letterSpacing="-0.8px" fill="#1e293b" filter="url(#textGlow)">
+                  <text x="0" y="30" fontFamily="system-ui, -apple-system, 'Inter', sans-serif" fontSize="26" fontWeight="800" letterSpacing="-0.8px" fill="currentColor" filter="url(#textGlow)">
                     FIN
                   </text>
                   <text x="58" y="30" fontFamily="system-ui, -apple-system, 'Inter', sans-serif" fontSize="26" fontWeight="300" letterSpacing="-0.8px" fill="url(#bullishBlue)" filter="url(#textGlow)">
