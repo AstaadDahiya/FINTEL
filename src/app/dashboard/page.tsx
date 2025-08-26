@@ -1,3 +1,5 @@
+"use client";
+
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { BookOpen, Target, Lightbulb } from "lucide-react";
