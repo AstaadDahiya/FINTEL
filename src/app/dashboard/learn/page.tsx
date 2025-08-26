@@ -10,7 +10,7 @@ export default function LearnPage() {
     <div>
       <div className="mb-8">
         <h1 className="text-3xl font-bold font-headline">Learning Modules</h1>
-        <p className="text-muted-foreground">Build your financial knowledge from the ground up.</p>
+        <p className="text-muted-foreground">Build your financial knowledge from the ground up, with a focus on the Indian market.</p>
       </div>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {learningModules.map((module) => (

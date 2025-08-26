@@ -7,13 +7,13 @@ import { getPersonalizedLearningPath, PersonalizedLearningPathOutput } from "@/a
 import { learningModules } from "@/lib/data";
 
 const userProgress = {
-  completedModules: ["introduction-to-stocks", "what-is-an-etf"],
-  currentModule: "reading-stock-charts"
+  completedModules: ["introduction-to-indian-stocks", "what-is-an-etf-india"],
+  currentModule: "sebi-and-investor-protection"
 };
 
 const quizScores = {
-  "introduction-to-stocks": 90,
-  "what-is-an-etf": 75,
+  "introduction-to-indian-stocks": 90,
+  "what-is-an-etf-india": 75,
 };
 
 interface PersonalizedLearningContentProps {

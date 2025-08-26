@@ -18,21 +18,21 @@ export interface LearningModule {
 
 export const learningModules: LearningModule[] = [
   {
-    slug: 'introduction-to-stocks',
-    title: 'Introduction to Stocks',
-    description: 'Understand what stocks are and why companies issue them.',
+    slug: 'introduction-to-indian-stocks',
+    title: 'Introduction to Indian Stocks',
+    description: 'Understand stocks in the context of the Indian market, regulated by SEBI.',
     content: [
       {
         title: 'What is a Stock?',
-        text: 'A stock (also known as equity) is a security that represents the ownership of a fraction of a corporation. This entitles the owner of the stock to a proportion of the corporation\'s assets and profits equal to how much stock they own. Units of stock are called "shares."',
+        text: 'A stock (also known as equity) is a security that represents ownership in a company. When you buy a stock of a company listed on an Indian exchange like the NSE or BSE, you own a small piece of that company. This entitles you to a portion of its assets and profits.',
       },
       {
         title: 'Why Do Companies Issue Stock?',
-        text: 'Companies issue stock to raise capital to grow their business. By selling ownership stakes, they can fund new projects, expand operations, or pay off debt without having to take out loans. For investors, buying stock is a way to potentially grow their wealth.',
+        text: 'Companies in India issue stock to raise capital for growth, such as for new projects or to expand operations. By selling ownership stakes on exchanges like the National Stock Exchange (NSE) or Bombay Stock Exchange (BSE), they can raise funds from a wide pool of investors.',
       },
       {
-        title: 'Types of Stocks',
-        text: 'The two main types of stock are common stock and preferred stock. Common stockholders have voting rights, while preferred stockholders generally do not. However, preferred stockholders have a higher claim on assets and earnings, receiving dividends before common stockholders.',
+        title: 'The Role of SEBI',
+        text: 'The Securities and Exchange Board of India (SEBI) is the regulator for the securities and commodity market in India. Its primary role is to protect the interests of investors in securities and to promote the development of, and to regulate the securities market.',
       },
     ],
     quiz: [
@@ -43,105 +43,130 @@ export const learningModules: LearningModule[] = [
         explanation: 'A stock represents a share of ownership in a corporation, entitling you to a portion of its assets and profits.',
       },
       {
-        question: 'Why do companies issue stock?',
-        options: ['To give away money', 'To reduce their number of owners', 'To raise capital for growth', 'To comply with government regulations'],
-        correctAnswer: 'To raise capital for growth',
-        explanation: 'Companies sell stock to raise funds for various business activities like expansion, research, and development.',
+        question: 'Which body regulates the Indian stock market?',
+        options: ['Reserve Bank of India (RBI)', 'Ministry of Finance', 'Securities and Exchange Board of India (SEBI)', 'National Stock Exchange (NSE)'],
+        correctAnswer: 'Securities and Exchange Board of India (SEBI)',
+        explanation: 'SEBI is the primary regulatory body for the stock market in India, responsible for protecting investors and regulating market activities.',
       },
     ],
   },
   {
-    slug: 'what-is-an-etf',
-    title: 'What is an ETF?',
-    description: 'Learn about Exchange-Traded Funds and their benefits.',
+    slug: 'what-is-an-etf-india',
+    title: 'ETFs in India',
+    description: 'Learn about Exchange-Traded Funds available on Indian exchanges.',
     content: [
       {
-        title: 'Defining ETFs',
-        text: 'An Exchange-Traded Fund (ETF) is a type of investment fund and exchange-traded product. ETFs are traded on stock exchanges, much like stocks. An ETF holds assets such as stocks, commodities, or bonds and generally operates with an arbitrage mechanism designed to keep it trading close to its net asset value.',
+        title: 'Defining ETFs in India',
+        text: 'An Exchange-Traded Fund (ETF) is a basket of securities that trades on an exchange, just like a stock. In India, ETFs can track indices like the NIFTY 50 or SENSEX, or they can be based on sectors, commodities like gold, or other assets.',
       },
       {
         title: 'Diversification with ETFs',
-        text: 'One of the main advantages of ETFs is diversification. Because an ETF can hold many different assets, it allows you to invest in a wide range of companies or sectors with a single purchase, reducing your risk compared to buying individual stocks.',
+        text: 'ETFs are a popular tool for diversification. By buying a single NIFTY 50 ETF unit, you get exposure to the 50 largest companies on the NSE. This is generally less risky than buying shares of just one or two companies. All ETFs must be approved by SEBI.',
       },
     ],
     quiz: [
       {
-        question: 'What is a key benefit of an ETF?',
-        options: ['Guaranteed high returns', 'Diversification', 'Voting rights in all held companies', 'Fixed dividend payments'],
-        correctAnswer: 'Diversification',
-        explanation: 'ETFs provide instant diversification by holding a basket of different assets, which helps spread out and reduce investment risk.',
+        question: 'An ETF tracking the NIFTY 50 gives you exposure to what?',
+        options: ['50 different commodities', 'The 50 largest companies on the NSE', '50 government bonds', '50 international companies'],
+        correctAnswer: 'The 50 largest companies on the NSE',
+        explanation: 'A NIFTY 50 ETF is designed to mirror the performance of the NIFTY 50 index, which consists of the 50 largest and most liquid stocks on the National Stock Exchange.',
       },
     ],
   },
   {
-    slug: 'reading-stock-charts',
-    title: 'Reading Stock Charts',
-    description: 'A beginner\'s guide to understanding stock charts and key indicators.',
-    content: [
-      {
-        title: 'Candlestick Charts',
-        text: 'Candlestick charts are a popular way to visualize price movements. Each "candle" shows the open, high, low, and close prices for a specific time period. The color of the candle indicates whether the price went up or down.',
-      },
-      {
-        title: 'Moving Averages',
-        text: 'A moving average (MA) is a widely used indicator in technical analysis that helps smooth out price action by filtering out the "noise" from random short-term price fluctuations. It is a trend-following, or lagging, indicator because it is based on past prices.',
-      },
-    ],
-    quiz: [
-      {
-        question: 'What does a green candlestick typically indicate?',
-        options: ['The price closed lower than it opened', 'The price did not change', 'The price closed higher than it opened', 'The stock is about to be delisted'],
-        correctAnswer: 'The price closed higher than it opened',
-        explanation: 'A green (or white/hollow) candlestick usually means the closing price was higher than the opening price for that period, indicating upward price movement.',
-      },
-    ],
-  },
-    {
-    slug: "risk-management",
-    title: "Risk Management",
-    description: "Learn strategies to manage risk in your investment portfolio.",
+    slug: 'sebi-and-investor-protection',
+    title: 'SEBI and Investor Protection',
+    description: 'Understand the role of SEBI in protecting investors.',
     content: [
         {
-            title: "Understanding Risk",
-            text: "Investment risk is the probability of incurring losses relative to the expected return on any particular investment. In simple terms, it's the chance that an investment's actual return will be different than expected."
+            title: "What is SEBI?",
+            text: "The Securities and Exchange Board of India (SEBI) was established in 1992 as a statutory body to regulate the Indian securities market. Its main objectives are to protect investor interests, promote the development of the securities market, and regulate it."
         },
         {
-            title: "Stop-Loss Orders",
-            text: "A stop-loss order is an order placed with a broker to buy or sell a specific stock once the stock reaches a certain price. A stop-loss is designed to limit an investor's loss on a security position."
+            title: "How SEBI Protects Investors",
+            text: "SEBI protects investors through various measures, including ensuring market transparency, preventing insider trading, and regulating intermediaries like brokers and mutual funds. It also runs investor awareness programs to educate investors about their rights and the risks involved in the market."
+        },
+        {
+            title: "Demat Accounts",
+            text: "In India, SEBI mandates that shares must be held in a dematerialized or 'Demat' account. This electronic format reduces the risk of theft, forgery, and damage associated with physical share certificates and makes trading more efficient."
         }
     ],
     quiz: [
         {
-            question: "What is the primary purpose of a stop-loss order?",
-            options: ["To guarantee a profit", "To limit potential losses", "To buy more shares automatically", "To get market news"],
-            correctAnswer: "To limit potential losses",
-            explanation: "A stop-loss order is a risk management tool used to automatically sell a stock if it falls to a predetermined price, thereby limiting the investor's loss."
+            question: "What is the primary role of SEBI?",
+            options: ["To set interest rates", "To print currency", "To protect investors and regulate the market", "To directly manage companies"],
+            correctAnswer: "To protect investors and regulate the market",
+            explanation: "SEBI's main purpose is to safeguard the interests of investors and ensure the healthy development and regulation of the Indian securities market."
+        },
+        {
+            question: "What is a Demat account used for?",
+            options: ["Storing physical cash", "Holding shares in an electronic format", "A type of savings account", "Paying taxes"],
+            correctAnswer: "Holding shares in an electronic format",
+            explanation: "A Demat account holds stocks, bonds, and other securities in a digital, dematerialized form, which is a SEBI requirement for trading."
         }
     ]
   },
   {
-    slug: "building-a-portfolio",
-    title: "Building a Portfolio",
-    description: "Steps to build a diversified investment portfolio.",
+    slug: "risk-management-india",
+    title: "Risk Management in India",
+    description: "Learn SEBI-mandated strategies to manage risk in your portfolio.",
     content: [
         {
-            title: "Asset Allocation",
-            text: "Asset allocation is an investment strategy that aims to balance risk and reward by apportioning a portfolio's assets according to an individual's goals, risk tolerance, and investment horizon."
+            title: "Understanding Risk",
+            text: "Investment risk is the probability of incurring losses. SEBI has introduced several frameworks, like the Risk-o-meter for mutual funds, to help investors understand the level of risk in different investment products."
         },
         {
-            title: "Rebalancing",
-            text: "Rebalancing is the process of realigning the weightings of a portfolio of assets. Rebalancing involves periodically buying or selling assets in a portfolio to maintain an original or desired level of asset allocation or risk."
+            title: "Stop-Loss Orders",
+            text: "A stop-loss order is an order placed with a broker to sell a security when it reaches a certain price. It's a key tool for risk management. In India, exchanges like NSE and BSE support various order types, including stop-loss orders, to help investors limit potential losses."
         }
     ],
     quiz: [
         {
-            question: "What is asset allocation?",
-            options: ["Picking only one stock", "Balancing risk and reward by dividing investments", "Selling all assets at once", "Predicting the market's future"],
-            correctAnswer: "Balancing risk and reward by dividing investments",
-            explanation: "Asset allocation involves spreading your investments across various asset classes (like stocks, bonds, and cash) to balance risk and reward based on your personal financial situation."
+            question: "What is the 'Risk-o-meter' used for in India?",
+            options: ["To measure market volatility", "To indicate the level of risk in a mutual fund scheme", "To calculate potential returns", "To track your portfolio's performance"],
+            correctAnswer: "To indicate the level of risk in a mutual fund scheme",
+            explanation: "SEBI mandates the Risk-o-meter for mutual funds to provide investors with a simple, visual indication of the risk associated with a particular scheme."
+        }
+    ]
+  },
+  {
+    slug: "building-a-portfolio-india",
+    title: "Building a Portfolio in India",
+    description: "Steps to build a diversified investment portfolio in the Indian market.",
+    content: [
+        {
+            title: "Asset Allocation",
+            text: "Asset allocation means diversifying your investments across different asset classes like equities (stocks), debt (bonds), gold, and real estate to balance risk and reward according to your financial goals and risk tolerance."
+        },
+        {
+            title: "Rebalancing Your Portfolio",
+            text: "Rebalancing is the process of realigning the weights of the asset classes in your portfolio. For example, if stocks have performed well and now represent a larger portion of your portfolio than intended, you might sell some stocks and buy other assets to return to your target allocation."
+        }
+    ],
+    quiz: [
+        {
+            question: "What is the main goal of asset allocation?",
+            options: ["To invest in only one asset class", "To balance risk and reward by diversifying", "To guarantee high profits", "To avoid all risk"],
+            correctAnswer: "Balancing risk and reward by diversifying",
+            explanation: "Asset allocation is a strategy to spread your investments across various categories to manage risk while aiming for returns that align with your goals."
         }
     ]
   }
 ];
 
-export const getModuleBySlug = (slug: string) => learningModules.find(module => module.slug === slug);
+export const getModuleBySlug = (slug: string) => {
+    // First, try to find by the new slugs
+    let module = learningModules.find(module => module.slug === slug);
+    if (module) return module;
+
+    // Fallback for old slugs if they exist in user's progress
+    const slugMapping: { [key: string]: string } = {
+        'introduction-to-stocks': 'introduction-to-indian-stocks',
+        'what-is-an-etf': 'what-is-an-etf-india',
+        'reading-stock-charts': 'sebi-and-investor-protection', // An example of re-purposing an old slug
+        'risk-management': 'risk-management-india',
+        'building-a-portfolio': 'building-a-portfolio-india'
+    };
+    const newSlug = slugMapping[slug];
+    return newSlug ? learningModules.find(m => m.slug === newSlug) : undefined;
+};
