@@ -1,6 +1,6 @@
 
 "use client"
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import type { LearningModule } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -10,18 +10,59 @@ import { CheckCircle, XCircle, ArrowRight, RefreshCw } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { useLocalStorage } from '@/hooks/use-local-storage';
+import { useAuth } from '@/hooks/use-auth';
+
+type QuizScores = { [moduleSlug: string]: number };
+type CompletedModules = string[];
 
 interface Props {
   module: LearningModule;
-  onQuizComplete: (finalScore: number) => void;
 }
 
-export default function QuizClient({ module, onQuizComplete }: Props) {
+export default function QuizClient({ module }: Props) {
+  const { user } = useAuth();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isAnswerChecked, setIsAnswerChecked] = useState(false);
   const [score, setScore] = useState(0);
   const [isQuizFinished, setIsQuizFinished] = useState(false);
+
+  const completedModulesKey = useMemo(() => user ? `completedModules_${user.uid}` : 'completedModules', [user]);
+  const quizScoresKey = useMemo(() => user ? `quizScores_${user.uid}` : 'quizScores', [user]);
+
+  const [, setQuizScores] = useLocalStorage<QuizScores>(quizScoresKey, {});
+  const [, setCompletedModules] = useLocalStorage<CompletedModules>(completedModulesKey, []);
+  
+  const finalScore = useMemo(() => Math.round((score / module.quiz.length) * 100), [score, module.quiz.length]);
+
+  useEffect(() => {
+    if (isQuizFinished) {
+        setQuizScores(prevScores => ({ ...prevScores, [module.slug]: finalScore }));
+        setCompletedModules(prevCompleted => {
+          if (!prevCompleted.includes(module.slug)) {
+            return [...prevCompleted, module.slug];
+          }
+          return prevCompleted;
+        });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isQuizFinished, finalScore, module.slug]);
+
+
+  if (!module.quiz || module.quiz.length === 0) {
+      return (
+        <Card className="text-center p-6">
+            <CardHeader>
+                <CardTitle>No Quiz Available</CardTitle>
+                <CardDescription>This module does not have a quiz yet.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Button asChild><Link href="/dashboard/learn">Explore other modules</Link></Button>
+            </CardContent>
+        </Card>
+      )
+  }
 
   const currentQuestion = module.quiz[currentQuestionIndex];
 
@@ -39,8 +80,6 @@ export default function QuizClient({ module, onQuizComplete }: Props) {
     if (currentQuestionIndex < module.quiz.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
-      const finalScoreValue = Math.round(((score) / module.quiz.length) * 100);
-      onQuizComplete(finalScoreValue);
       setIsQuizFinished(true);
     }
   };
@@ -52,8 +91,6 @@ export default function QuizClient({ module, onQuizComplete }: Props) {
     setScore(0);
     setIsQuizFinished(false);
   };
-  
-  const finalScore = useMemo(() => Math.round((score / module.quiz.length) * 100), [score, module.quiz.length]);
 
 
   if (isQuizFinished) {

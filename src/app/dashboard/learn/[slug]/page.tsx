@@ -23,7 +23,7 @@ export default function ModulePage({ params }: { params: { slug: string } }) {
         
         <div className="grid md:grid-cols-3 gap-8">
             <div className="md:col-span-2">
-                <Accordion type="single" collapsible defaultValue={module.content[0].title} className="w-full">
+                <Accordion type="single" collapsible defaultValue={module.content.length > 0 ? module.content[0].title : undefined} className="w-full">
                     {module.content.map((item, index) => (
                         <AccordionItem value={item.title} key={index}>
                             <AccordionTrigger className="text-lg font-semibold hover:no-underline">{item.title}</AccordionTrigger>
