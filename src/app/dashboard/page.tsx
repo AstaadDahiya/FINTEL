@@ -4,8 +4,25 @@ import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen, Target } from "lucide-react";
 import PortfolioSummary from "@/components/dashboard/PortfolioSummary";
+import { useLocalStorage } from "@/hooks/use-local-storage";
+import { learningModules } from "@/lib/data";
+
+type QuizScores = { [moduleSlug: string]: number };
+type CompletedModules = string[];
 
 export default function Dashboard() {
+  const [completedModules] = useLocalStorage<CompletedModules>('completedModules', []);
+  const [quizScores] = useLocalStorage<QuizScores>('quizScores', {});
+
+  const totalModules = learningModules.length;
+  const completedCount = completedModules.length;
+  const learningProgress = totalModules > 0 ? (completedCount / totalModules) * 100 : 0;
+
+  const scoreValues = Object.values(quizScores);
+  const averageQuizScore = scoreValues.length > 0 
+    ? scoreValues.reduce((acc, score) => acc + score, 0) / scoreValues.length
+    : 0;
+
   return (
     <div className="container mx-auto p-0 md:p-4">
       <div className="mb-8">
@@ -20,9 +37,9 @@ export default function Dashboard() {
             <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">3 of 5 Modules</div>
-            <p className="text-xs text-muted-foreground">60% completed</p>
-            <Progress value={60} className="mt-4 h-2" />
+            <div className="text-2xl font-bold">{completedCount} of {totalModules} Modules</div>
+            <p className="text-xs text-muted-foreground">{learningProgress.toFixed(0)}% completed</p>
+            <Progress value={learningProgress} className="mt-4 h-2" />
           </CardContent>
         </Card>
 
@@ -32,8 +49,8 @@ export default function Dashboard() {
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">88%</div>
-            <p className="text-xs text-muted-foreground">+5% from last week</p>
+            <div className="text-2xl font-bold">{averageQuizScore.toFixed(0)}%</div>
+            <p className="text-xs text-muted-foreground">Across all completed quizzes</p>
           </CardContent>
         </Card>
         

@@ -5,16 +5,10 @@ import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { getPersonalizedLearningPath, PersonalizedLearningPathOutput } from "@/ai/flows/personalized-learning-path";
 import { learningModules } from "@/lib/data";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 
-const userProgress = {
-  completedModules: ["introduction-to-indian-stocks", "what-is-an-etf-india"],
-  currentModule: "sebi-and-investor-protection"
-};
-
-const quizScores = {
-  "introduction-to-indian-stocks": 90,
-  "what-is-an-etf-india": 75,
-};
+type QuizScores = { [moduleSlug: string]: number };
+type CompletedModules = string[];
 
 interface PersonalizedLearningContentProps {
   setOpen: (open: boolean) => void;
@@ -23,13 +17,15 @@ interface PersonalizedLearningContentProps {
 export default function PersonalizedLearningContent({ setOpen }: PersonalizedLearningContentProps) {
   const [recommendation, setRecommendation] = useState<PersonalizedLearningPathOutput | null>(null);
   const [loading, setLoading] = useState(true);
+  const [quizScores] = useLocalStorage<QuizScores>('quizScores', {});
+  const [completedModules] = useLocalStorage<CompletedModules>('completedModules', []);
 
   useEffect(() => {
     async function fetchRecommendation() {
       try {
         setLoading(true);
         const result = await getPersonalizedLearningPath({
-          userProgress: JSON.stringify(userProgress),
+          userProgress: JSON.stringify({ completedModules }),
           quizScores: JSON.stringify(quizScores),
           availableModules: JSON.stringify(learningModules.map(m => m.slug))
         });
@@ -41,6 +37,7 @@ export default function PersonalizedLearningContent({ setOpen }: PersonalizedLea
       }
     }
     fetchRecommendation();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
   const recommendedModuleDetails = learningModules.find(m => m.slug === recommendation?.recommendedModule);
@@ -61,7 +58,7 @@ export default function PersonalizedLearningContent({ setOpen }: PersonalizedLea
           </Button>
         </div>
       ) : (
-        <p className="text-sm text-muted-foreground">Could not generate a recommendation.</p>
+        <p className="text-sm text-muted-foreground">Could not generate a recommendation. Complete some modules to get started!</p>
       )}
     </>
   );

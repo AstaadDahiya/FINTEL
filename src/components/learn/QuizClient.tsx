@@ -1,5 +1,5 @@
 "use client"
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { LearningModule } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -8,10 +8,14 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle, XCircle, ArrowRight, RefreshCw } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import Link from 'next/link';
+import { useLocalStorage } from '@/hooks/use-local-storage';
 
 interface Props {
   module: LearningModule;
 }
+
+type QuizScores = { [moduleSlug: string]: number };
+type CompletedModules = string[];
 
 export default function QuizClient({ module }: Props) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -19,6 +23,8 @@ export default function QuizClient({ module }: Props) {
   const [isAnswerChecked, setIsAnswerChecked] = useState(false);
   const [score, setScore] = useState(0);
   const [isQuizFinished, setIsQuizFinished] = useState(false);
+  const [quizScores, setQuizScores] = useLocalStorage<QuizScores>('quizScores', {});
+  const [completedModules, setCompletedModules] = useLocalStorage<CompletedModules>('completedModules', []);
 
   const currentQuestion = module.quiz[currentQuestionIndex];
 
@@ -47,6 +53,17 @@ export default function QuizClient({ module }: Props) {
     setScore(0);
     setIsQuizFinished(false);
   };
+
+  useEffect(() => {
+    if (isQuizFinished) {
+      const finalScore = Math.round((score / module.quiz.length) * 100);
+      setQuizScores({ ...quizScores, [module.slug]: finalScore });
+      if (!completedModules.includes(module.slug)) {
+        setCompletedModules([...completedModules, module.slug]);
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isQuizFinished]);
 
   if (isQuizFinished) {
     return (
