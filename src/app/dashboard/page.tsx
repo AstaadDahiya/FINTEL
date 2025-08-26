@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Progress } from "@/components/ui/progress";
@@ -7,11 +8,13 @@ import PortfolioSummary from "@/components/dashboard/PortfolioSummary";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { learningModules } from "@/lib/data";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
 
 type QuizScores = { [moduleSlug: string]: number };
 type CompletedModules = string[];
 
 export default function Dashboard() {
+  const { user } = useAuth();
   const [completedModules, setCompletedModules] = useLocalStorage<CompletedModules>('completedModules', []);
   const [quizScores, setQuizScores] = useLocalStorage<QuizScores>('quizScores', {});
   const [isClient, setIsClient] = useState(false);
@@ -36,7 +39,7 @@ export default function Dashboard() {
   return (
     <div className="container mx-auto p-0 md:p-4">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold font-headline">Welcome back, Alex!</h1>
+        <h1 className="text-3xl font-bold font-headline">Welcome back, {user?.displayName?.split(' ')[0] || 'Alex'}!</h1>
         <p className="text-muted-foreground">Here's your progress and portfolio at a glance.</p>
       </div>
 

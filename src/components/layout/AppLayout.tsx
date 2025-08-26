@@ -1,3 +1,4 @@
+
 "use client";
 import Link from "next/link";
 import {
@@ -36,12 +37,15 @@ import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import PersonalizedLearningContent from "../dashboard/PersonalizedLearning";
+import { useAuth } from "@/hooks/use-auth";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isActive = (path: string) => pathname === path || (path !== '/dashboard' && pathname.startsWith(path));
   const [showPersonalizedLearning] = useLocalStorage('showPersonalizedLearning', true);
   const [modalOpen, setModalOpen] = useState(false);
+  const { user, logout } = useAuth();
 
 
   return (
@@ -124,16 +128,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 size="icon"
                 className="overflow-hidden rounded-full"
               >
-                <User />
+                <Avatar>
+                  <AvatarImage src={user?.photoURL ?? ''} alt={user?.displayName ?? 'User'} />
+                  <AvatarFallback>{user?.displayName?.[0] ?? <User />}</AvatarFallback>
+                </Avatar>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuLabel>{user?.displayName}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild><Link href="/dashboard/settings">Settings</Link></DropdownMenuItem>
               <DropdownMenuItem>Support</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem asChild><Link href="/">Logout</Link></DropdownMenuItem>
+              <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
