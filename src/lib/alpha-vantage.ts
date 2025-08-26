@@ -1,4 +1,3 @@
-
 'use server';
 
 export interface StockData {
@@ -13,7 +12,18 @@ export interface StockData {
 const API_KEY = process.env.ALPHA_VANTAGE_API_KEY;
 const BASE_URL = 'https://www.alphavantage.co/query';
 
+// Simple in-memory cache with expiration
+const cache = new Map<string, { data: StockData, timestamp: number }>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 export async function fetchStockData(ticker: string): Promise<StockData | null> {
+    const now = Date.now();
+    const cachedItem = cache.get(ticker);
+
+    if (cachedItem && (now - cachedItem.timestamp) < CACHE_DURATION) {
+        return cachedItem.data;
+    }
+
     try {
         const quotePromise = fetch(`${BASE_URL}?function=GLOBAL_QUOTE&symbol=${ticker}&apikey=${API_KEY}`);
         const timeSeriesPromise = fetch(`${BASE_URL}?function=TIME_SERIES_DAILY&symbol=${ticker}&outputsize=compact&apikey=${API_KEY}`);
@@ -32,6 +42,13 @@ export async function fetchStockData(ticker: string): Promise<StockData | null> 
         const dailySeries = timeSeriesData['Time Series (Daily)'];
 
         if (!globalQuote || Object.keys(globalQuote).length === 0 || !dailySeries) {
+            // If the API returns a note about usage, it means the limit is reached.
+            if (quoteData.Note || timeSeriesData.Note) {
+                console.warn(`Alpha Vantage API limit likely reached for ticker: ${ticker}`);
+                // Return old cached data if available, even if expired.
+                if (cachedItem) return cachedItem.data;
+                return null;
+            }
             console.warn(`No data found for ticker: ${ticker}`, { quoteData, timeSeriesData });
             return null;
         }
@@ -66,6 +83,7 @@ export async function fetchStockData(ticker: string): Promise<StockData | null> 
             console.error("Could not fetch company name", nameError);
         }
         
+        cache.set(ticker, { data: stockInfo, timestamp: now });
         return stockInfo;
 
     } catch (error) {
