@@ -1,3 +1,4 @@
+
 import { getModuleBySlug } from '@/lib/data';
 import { notFound } from 'next/navigation';
 import QuizClient from '@/components/learn/QuizClient';

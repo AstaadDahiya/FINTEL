@@ -28,6 +28,7 @@ export default function QuizClient({ module, slug }: Props) {
   const [isAnswerChecked, setIsAnswerChecked] = useState(false);
   const [score, setScore] = useState(0);
   const [isQuizFinished, setIsQuizFinished] = useState(false);
+  const [hasCompleted, setHasCompleted] = useState(false);
 
   const completedModulesKey = useMemo(() => user ? `completedModules_${user.uid}` : 'completedModules', [user]);
   const quizScoresKey = useMemo(() => user ? `quizScores_${user.uid}` : 'quizScores', [user]);
@@ -35,8 +36,10 @@ export default function QuizClient({ module, slug }: Props) {
   const [, setQuizScores] = useLocalStorage<QuizScores>(quizScoresKey, {});
   const [, setCompletedModules] = useLocalStorage<CompletedModules>(completedModulesKey, []);
   
-  const onQuizComplete = useCallback((finalScore: number) => {
-      if (!user) return;
+  const finalScore = useMemo(() => module.quiz.length > 0 ? Math.round((score / module.quiz.length) * 100) : 0, [score, module.quiz.length]);
+
+  useEffect(() => {
+    if (isQuizFinished && !hasCompleted) {
       setQuizScores(prevScores => ({ ...prevScores, [slug]: finalScore }));
       setCompletedModules(prevCompleted => {
         if (!prevCompleted.includes(slug)) {
@@ -44,15 +47,9 @@ export default function QuizClient({ module, slug }: Props) {
         }
         return prevCompleted;
       });
-  }, [user, slug, setQuizScores, setCompletedModules]);
-
-  const finalScore = useMemo(() => module.quiz.length > 0 ? Math.round((score / module.quiz.length) * 100) : 0, [score, module.quiz.length]);
-
-  useEffect(() => {
-    if (isQuizFinished) {
-      onQuizComplete(finalScore);
+      setHasCompleted(true); // Prevent this effect from running again
     }
-  }, [isQuizFinished, finalScore, onQuizComplete]);
+  }, [isQuizFinished, slug, finalScore, hasCompleted, setQuizScores, setCompletedModules]);
 
 
   if (!module.quiz || module.quiz.length === 0) {
@@ -95,6 +92,7 @@ export default function QuizClient({ module, slug }: Props) {
     setIsAnswerChecked(false);
     setScore(0);
     setIsQuizFinished(false);
+    setHasCompleted(false);
   };
 
 
