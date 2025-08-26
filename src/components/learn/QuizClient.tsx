@@ -36,10 +36,9 @@ export default function QuizClient({ module, slug }: Props) {
   const [, setQuizScores] = useLocalStorage<QuizScores>(quizScoresKey, {});
   const [, setCompletedModules] = useLocalStorage<CompletedModules>(completedModulesKey, []);
   
-  const finalScore = useMemo(() => module.quiz.length > 0 ? Math.round((score / module.quiz.length) * 100) : 0, [score, module.quiz.length]);
-
   useEffect(() => {
     if (isQuizFinished && !hasCompleted) {
+      const finalScore = module.quiz.length > 0 ? Math.round((score / module.quiz.length) * 100) : 0;
       setQuizScores(prevScores => ({ ...prevScores, [slug]: finalScore }));
       setCompletedModules(prevCompleted => {
         if (!prevCompleted.includes(slug)) {
@@ -49,7 +48,7 @@ export default function QuizClient({ module, slug }: Props) {
       });
       setHasCompleted(true); // Prevent this effect from running again
     }
-  }, [isQuizFinished, slug, finalScore, hasCompleted, setQuizScores, setCompletedModules]);
+  }, [isQuizFinished, hasCompleted, module.quiz.length, score, slug, setQuizScores, setCompletedModules]);
 
 
   if (!module.quiz || module.quiz.length === 0) {
@@ -97,6 +96,7 @@ export default function QuizClient({ module, slug }: Props) {
 
 
   if (isQuizFinished) {
+    const finalScore = module.quiz.length > 0 ? Math.round((score / module.quiz.length) * 100) : 0;
     return (
       <Card className="text-center p-6">
         <CardHeader>
