@@ -13,8 +13,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchStockData, StockData } from "@/lib/alpha-vantage";
 
-const initialTickers = ["AAPL", "GOOGL", "TSLA", "AMZN"];
-
 type StockSymbol = string;
 
 type Portfolio = {
@@ -42,36 +40,34 @@ export default function SimulatorPage() {
     const [quantity, setQuantity] = useState(1);
     const [searchInput, setSearchInput] = useState("AAPL");
     const [loading, setLoading] = useState(true);
+    const [isSearching, setIsSearching] = useState(false);
     const [stockCache, setStockCache] = useState<{[key: string]: StockData}>({});
 
-    const updatePortfolioStockPrices = async () => {
-        const tickersToUpdate = Object.keys(portfolio.stocks);
+    const updatePortfolioStockPrices = async (tickersToUpdate: string[]) => {
         if (tickersToUpdate.length === 0) return;
 
         const updatedCache = { ...stockCache };
+        let cacheWasUpdated = false;
         for (const ticker of tickersToUpdate) {
             if (!updatedCache[ticker]) {
                 const data = await fetchStockData(ticker);
                 if (data) {
                     updatedCache[ticker] = data;
+                    cacheWasUpdated = true;
                 }
             }
         }
-        setStockCache(updatedCache);
+        if (cacheWasUpdated) {
+            setStockCache(updatedCache);
+        }
     };
-
-    useEffect(() => {
-        handleSearch(undefined, "AAPL");
-        updatePortfolioStockPrices();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
+    
     const handleSearch = async (e?: React.FormEvent, defaultTicker?: string) => {
         if (e) e.preventDefault();
         const tickerToSearch = (defaultTicker || searchInput).toUpperCase();
         if (!tickerToSearch) return;
 
-        setLoading(true);
+        setIsSearching(true);
 
         try {
             if (stockCache[tickerToSearch]) {
@@ -85,9 +81,11 @@ export default function SimulatorPage() {
                     toast({
                         variant: "destructive",
                         title: "Invalid Ticker",
-                        description: `Stock with ticker "${tickerToSearch}" not found.`,
+                        description: `Stock with ticker "${tickerToSearch}" not found or API limit reached.`,
                     });
-                    setSelectedStock(null);
+                    if (!defaultTicker) { // Don't clear selected stock if default search fails
+                      setSelectedStock(null);
+                    }
                 }
             }
         } catch (error) {
@@ -95,13 +93,25 @@ export default function SimulatorPage() {
             toast({
                 variant: "destructive",
                 title: "API Error",
-                description: "Could not fetch stock data. The API limit might have been reached.",
+                description: "Could not fetch stock data. Please try again later.",
             });
             setSelectedStock(null);
         } finally {
-            setLoading(false);
+            setIsSearching(false);
         }
     };
+
+    useEffect(() => {
+        const initialize = async () => {
+            setLoading(true);
+            await handleSearch(undefined, "AAPL");
+            const portfolioTickers = Object.keys(portfolio.stocks).filter(t => portfolio.stocks[t]! > 0);
+            await updatePortfolioStockPrices(portfolioTickers);
+            setLoading(false);
+        }
+        initialize();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleTrade = (type: 'Buy' | 'Sell') => {
         if (!selectedStock) return;
@@ -164,7 +174,7 @@ export default function SimulatorPage() {
                 <div className="lg:col-span-2">
                     <Card>
                         <CardHeader>
-                            {loading && !selectedStock ? (
+                            {loading ? (
                                <div className="flex items-center justify-center h-24">
                                   <Loader2 className="h-8 w-8 animate-spin text-primary" />
                                </div>
@@ -191,7 +201,9 @@ export default function SimulatorPage() {
                                             onChange={e => setSearchInput(e.target.value)}
                                           />
                                       </div>
-                                      <Button type="submit" size="icon" variant="outline" disabled={loading}><Search className="h-4 w-4"/></Button>
+                                      <Button type="submit" size="icon" variant="outline" disabled={isSearching}>
+                                        {isSearching ? <Loader2 className="h-4 w-4 animate-spin"/> : <Search className="h-4 w-4"/>}
+                                      </Button>
                                     </form>
                                 </div>
                             ) : (
@@ -199,7 +211,7 @@ export default function SimulatorPage() {
                             )}
                         </CardHeader>
                         <CardContent>
-                             {loading ? (
+                             {loading || isSearching ? (
                                 <div className="h-[350px] w-full flex items-center justify-center">
                                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
                                 </div>
@@ -207,7 +219,7 @@ export default function SimulatorPage() {
                                <StockChart data={selectedStock.data} />
                             ) : (
                                 <div className="h-[350px] w-full flex items-center justify-center bg-muted rounded-md">
-                                    <p className="text-muted-foreground">No data to display.</p>
+                                    <p className="text-muted-foreground">No data to display. Please search for a valid stock ticker.</p>
                                 </div>
                             )}
                         </CardContent>
@@ -328,4 +340,5 @@ export default function SimulatorPage() {
             </div>
         </div>
     );
-}
+
+    
