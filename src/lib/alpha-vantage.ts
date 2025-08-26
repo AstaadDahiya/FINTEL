@@ -9,7 +9,19 @@ export interface StockData {
     data: { date: string, price: number }[];
 }
 
-const API_KEY = process.env.ALPHA_VANTAGE_API_KEY;
+const API_KEYS = (process.env.ALPHA_VANTAGE_API_KEYS || '').split(',').filter(Boolean);
+let currentKeyIndex = 0;
+
+const getApiKey = () => {
+    if (API_KEYS.length === 0) {
+        console.error("No Alpha Vantage API keys found in .env file (ALPHA_VANTAGE_API_KEYS)");
+        return null;
+    }
+    const key = API_KEYS[currentKeyIndex];
+    currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
+    return key;
+}
+
 const BASE_URL = 'https://www.alphavantage.co/query';
 
 // Simple in-memory cache with expiration
@@ -25,8 +37,11 @@ export async function fetchStockData(ticker: string): Promise<StockData | null> 
     }
 
     try {
-        const quotePromise = fetch(`${BASE_URL}?function=GLOBAL_QUOTE&symbol=${ticker}&apikey=${API_KEY}`);
-        const timeSeriesPromise = fetch(`${BASE_URL}?function=TIME_SERIES_DAILY&symbol=${ticker}&outputsize=compact&apikey=${API_KEY}`);
+        const apiKey = getApiKey();
+        if (!apiKey) return null;
+
+        const quotePromise = fetch(`${BASE_URL}?function=GLOBAL_QUOTE&symbol=${ticker}&apikey=${apiKey}`);
+        const timeSeriesPromise = fetch(`${BASE_URL}?function=TIME_SERIES_DAILY&symbol=${ticker}&outputsize=compact&apikey=${apiKey}`);
 
         const [quoteRes, timeSeriesRes] = await Promise.all([quotePromise, timeSeriesPromise]);
 
@@ -42,10 +57,8 @@ export async function fetchStockData(ticker: string): Promise<StockData | null> 
         const dailySeries = timeSeriesData['Time Series (Daily)'];
 
         if (!globalQuote || Object.keys(globalQuote).length === 0 || !dailySeries) {
-            // If the API returns a note about usage, it means the limit is reached.
             if (quoteData.Note || timeSeriesData.Note) {
                 console.warn(`Alpha Vantage API limit likely reached for ticker: ${ticker}`);
-                // Return old cached data if available, even if expired.
                 if (cachedItem) return cachedItem.data;
                 return null;
             }
@@ -59,20 +72,19 @@ export async function fetchStockData(ticker: string): Promise<StockData | null> 
                 price: parseFloat(values['4. close']),
             }))
             .reverse()
-            .slice(-30); // Get last 30 days for the chart
+            .slice(-30);
 
         const stockInfo: StockData = {
             symbol: globalQuote['01. symbol'],
-            name: "Unknown", // AlphaVantage doesn't provide the name in these endpoints
+            name: "Unknown", 
             price: parseFloat(globalQuote['05. price']),
             change: parseFloat(globalQuote['09. change']),
             changePercent: parseFloat(globalQuote['10. change percent'].replace('%', '')),
             data: formattedData,
         };
 
-        // Fetch company name separately
         try {
-            const overviewRes = await fetch(`${BASE_URL}?function=OVERVIEW&symbol=${ticker}&apikey=${API_KEY}`);
+            const overviewRes = await fetch(`${BASE_URL}?function=OVERVIEW&symbol=${ticker}&apikey=${apiKey}`);
             if (overviewRes.ok) {
                 const overviewData = await overviewRes.json();
                 if (overviewData.Name) {
