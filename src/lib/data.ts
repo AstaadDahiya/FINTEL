@@ -147,10 +147,101 @@ export const learningModules: LearningModule[] = [
         {
             question: "What is the main goal of asset allocation?",
             options: ["To invest in only one asset class", "To balance risk and reward by diversifying", "To guarantee high profits", "To avoid all risk"],
-            correctAnswer: "Balancing risk and reward by diversifying",
+            correctAnswer: "To balance risk and reward by diversifying",
             explanation: "Asset allocation is a strategy to spread your investments across various categories to manage risk while aiming for returns that align with your goals."
         }
     ]
+  },
+  {
+    slug: 'fundamental-analysis-india',
+    title: 'Fundamental Analysis in India',
+    description: 'Learn to evaluate stocks based on their financial health and market position.',
+    content: [
+      {
+        title: 'What is Fundamental Analysis?',
+        text: 'Fundamental analysis is a method of evaluating a security in an attempt to measure its intrinsic value, by examining related economic, financial, and other qualitative and quantitative factors. Key metrics include the Price-to-Earnings (P/E) ratio and Price-to-Book (P/B) ratio.',
+      },
+      {
+        title: 'Reading Financial Statements',
+        text: 'Analysts use financial statements like the Profit & Loss (P&L) statement and the Balance Sheet to gauge a company\'s health. The P&L shows profitability over a period, while the Balance Sheet provides a snapshot of its assets and liabilities at a single point in time.',
+      },
+    ],
+    quiz: [
+      {
+        question: 'What does a high P/E ratio typically suggest?',
+        options: ['The stock is undervalued', 'The company is not profitable', 'Investors expect higher future earnings growth', 'The company has a lot of debt'],
+        correctAnswer: 'Investors expect higher future earnings growth',
+        explanation: 'A high P/E ratio often indicates that investors are willing to pay a higher price for each unit of current earnings, usually in anticipation of future growth.',
+      },
+      {
+        question: 'Which financial statement shows a company\'s financial position at a specific point in time?',
+        options: ['Profit & Loss Statement', 'Cash Flow Statement', 'Balance Sheet', 'Annual Report'],
+        correctAnswer: 'Balance Sheet',
+        explanation: 'The Balance Sheet provides a snapshot of a company\'s assets, liabilities, and shareholders\' equity at a particular date.',
+      },
+    ],
+  },
+  {
+    slug: 'technical-analysis-india',
+    title: 'Technical Analysis for Beginners',
+    description: 'An introduction to using charts and patterns to forecast price movements.',
+    content: [
+      {
+        title: 'Understanding Candlestick Charts',
+        text: 'Candlestick charts are a popular tool in technical analysis, showing the high, low, open, and closing prices for a security for a specific period. Patterns like "Doji" or "Engulfing" can signal potential price reversals or continuations.',
+      },
+      {
+        title: 'Key Technical Indicators',
+        text: 'Indicators help traders analyze price movements. Moving Averages smooth out price data to identify trend direction. The Relative Strength Index (RSI) is a momentum oscillator that measures the speed and change of price movements, often used to identify overbought or oversold conditions.',
+      },
+    ],
+    quiz: [
+      {
+        question: 'What is the primary focus of technical analysis?',
+        options: ['A company\'s financial health', 'Economic trends', 'Chart patterns and market statistics', 'Management effectiveness'],
+        correctAnswer: 'Chart patterns and market statistics',
+        explanation: 'Technical analysis is a trading discipline employed to evaluate investments and identify trading opportunities by analyzing statistical trends gathered from trading activity, such as price movement and volume.',
+      },
+      {
+        question: 'An RSI reading above 70 typically suggests what?',
+        options: ['The stock is undervalued', 'The stock may be overbought', 'A strong downtrend', 'Low trading volume'],
+        correctAnswer: 'The stock may be overbought',
+        explanation: 'The Relative Strength Index (RSI) is a momentum indicator. A reading of 70 or above is often considered to indicate an overbought or overvalued condition.',
+      },
+    ],
+  },
+  {
+    slug: 'mutual-funds-india',
+    title: 'Investing in Mutual Funds',
+    description: 'Discover the world of mutual funds and Systematic Investment Plans (SIPs).',
+    content: [
+      {
+        title: 'What is a Mutual Fund?',
+        text: 'A mutual fund is a professionally managed investment fund that pools money from many investors to purchase a diversified portfolio of stocks, bonds, or other securities. In India, all mutual funds are regulated by SEBI.',
+      },
+      {
+        title: 'Systematic Investment Plans (SIPs)',
+        text: 'A Systematic Investment Plan (SIP) is a facility offered by mutual funds to investors, allowing them to invest a fixed amount of money at regular intervals. SIPs help in rupee cost averaging and instill a disciplined approach to investing.',
+      },
+      {
+        title: 'AMFI\'s Role',
+        text: 'The Association of Mutual Funds in India (AMFI) is dedicated to developing the Indian Mutual Fund Industry on professional, healthy, and ethical lines and to enhance and maintain standards in all areas with a view to protecting and promoting the interests of mutual funds and their unitholders.',
+      },
+    ],
+    quiz: [
+      {
+        question: 'What is the main advantage of a Systematic Investment Plan (SIP)?',
+        options: ['It guarantees high returns', 'It allows for a single, large investment', 'It promotes disciplined investing and averages out purchase cost', 'It is completely risk-free'],
+        correctAnswer: 'It promotes disciplined investing and averages out purchase cost',
+        explanation: 'SIPs encourage a regular investing habit and can lower the average cost of your investment over time through rupee cost averaging.',
+      },
+      {
+        question: 'Who regulates Mutual Funds in India?',
+        options: ['Association of Mutual Funds in India (AMFI)', 'Reserve Bank of India (RBI)', 'Securities and Exchange Board of India (SEBI)', 'The individual fund houses'],
+        correctAnswer: 'Securities and Exchange Board of India (SEBI)',
+        explanation: 'While AMFI is an industry association, SEBI is the statutory body that regulates the entire securities market, including mutual funds, to protect investors.',
+      },
+    ],
   }
 ];
 
