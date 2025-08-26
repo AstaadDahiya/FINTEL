@@ -3,7 +3,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import StockChart from "@/components/simulator/StockChart";
-import AIInsights from "@/components/simulator/AIInsights";
 import { Label } from "@/components/ui/label";
 
 export default function SimulatorPage() {
@@ -64,7 +63,6 @@ export default function SimulatorPage() {
                         </div>
                     </CardContent>
                 </Card>
-                <AIInsights ticker="AAPL" />
             </div>
         </div>
     </div>
