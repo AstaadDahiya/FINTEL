@@ -57,10 +57,14 @@ export default function QuizClient({ module }: Props) {
   useEffect(() => {
     if (isQuizFinished) {
       const finalScore = Math.round((score / module.quiz.length) * 100);
-      setQuizScores({ ...quizScores, [module.slug]: finalScore });
-      if (!completedModules.includes(module.slug)) {
-        setCompletedModules([...completedModules, module.slug]);
-      }
+      setQuizScores(prevScores => ({ ...prevScores, [module.slug]: finalScore }));
+      
+      setCompletedModules(prevCompleted => {
+        if (!prevCompleted.includes(module.slug)) {
+          return [...prevCompleted, module.slug];
+        }
+        return prevCompleted;
+      });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isQuizFinished]);

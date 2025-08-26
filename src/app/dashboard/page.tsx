@@ -6,22 +6,32 @@ import { BookOpen, Target } from "lucide-react";
 import PortfolioSummary from "@/components/dashboard/PortfolioSummary";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { learningModules } from "@/lib/data";
+import { useEffect, useState } from "react";
 
 type QuizScores = { [moduleSlug: string]: number };
 type CompletedModules = string[];
 
 export default function Dashboard() {
-  const [completedModules] = useLocalStorage<CompletedModules>('completedModules', []);
-  const [quizScores] = useLocalStorage<QuizScores>('quizScores', {});
+  const [completedModules, setCompletedModules] = useLocalStorage<CompletedModules>('completedModules', []);
+  const [quizScores, setQuizScores] = useLocalStorage<QuizScores>('quizScores', {});
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const totalModules = learningModules.length;
-  const completedCount = completedModules.length;
+  const completedCount = isClient ? completedModules.length : 0;
   const learningProgress = totalModules > 0 ? (completedCount / totalModules) * 100 : 0;
 
-  const scoreValues = Object.values(quizScores);
+  const scoreValues = isClient ? Object.values(quizScores) : [];
   const averageQuizScore = scoreValues.length > 0 
     ? scoreValues.reduce((acc, score) => acc + score, 0) / scoreValues.length
     : 0;
+
+  if (!isClient) {
+    return null; // Or a loading skeleton
+  }
 
   return (
     <div className="container mx-auto p-0 md:p-4">
