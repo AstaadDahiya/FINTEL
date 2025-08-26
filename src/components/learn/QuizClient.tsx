@@ -11,6 +11,7 @@ import { Progress } from '@/components/ui/progress';
 import Link from 'next/link';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useAuth } from '@/hooks/use-auth';
+import { cn } from '@/lib/utils';
 
 interface Props {
   module: LearningModule;
@@ -74,7 +75,7 @@ export default function QuizClient({ module }: Props) {
       });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isQuizFinished, module.slug, score, setCompletedModules, setQuizScores]);
+  }, [isQuizFinished, module.slug, score]);
 
   if (isQuizFinished) {
     return (
@@ -111,7 +112,7 @@ export default function QuizClient({ module }: Props) {
           disabled={isAnswerChecked}
           className="space-y-3"
         >
-          {currentQuestion.options.map((option, index) => {
+          {currentQuestion.options.map((option) => {
             const isCorrect = option === currentQuestion.correctAnswer;
             const isSelected = option === selectedAnswer;
             
@@ -121,17 +122,14 @@ export default function QuizClient({ module }: Props) {
             } else if (isAnswerChecked && isSelected && !isCorrect) {
                stateClass = 'border-red-500 bg-red-500/10 text-red-900 dark:text-red-300';
             }
-            const id = `q${currentQuestionIndex}-o${index}`;
 
             return (
-              <div key={id} className={`flex items-center space-x-3 p-4 rounded-md border-2 transition-all ${stateClass} ${!isAnswerChecked ? 'cursor-pointer hover:bg-muted/50' : 'cursor-default'}`}>
-                <RadioGroupItem value={option} id={id} />
-                <Label htmlFor={id} className="flex-1 cursor-pointer">
-                  {option}
-                </Label>
+              <Label key={option} className={cn(`flex items-center space-x-3 p-4 rounded-md border-2 transition-all`, stateClass, !isAnswerChecked ? 'cursor-pointer hover:bg-muted/50' : 'cursor-default')}>
+                <RadioGroupItem value={option} id={option} />
+                <span className="flex-1">{option}</span>
                 {isAnswerChecked && isCorrect && <CheckCircle className="h-5 w-5 text-green-500" />}
                 {isAnswerChecked && isSelected && !isCorrect && <XCircle className="h-5 w-5 text-red-500" />}
-              </div>
+              </Label>
             );
           })}
         </RadioGroup>
