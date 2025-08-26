@@ -1,10 +1,9 @@
 "use client";
 
 import { Progress } from "@/components/ui/progress";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { BookOpen, Target, Lightbulb } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { BookOpen, Target } from "lucide-react";
 import PortfolioSummary from "@/components/dashboard/PortfolioSummary";
-import PersonalizedLearningContent from "@/components/dashboard/PersonalizedLearning";
 
 export default function Dashboard() {
   return (
@@ -40,26 +39,6 @@ export default function Dashboard() {
         
         <PortfolioSummary />
       </div>
-
-      <div className="mt-8">
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary/10 rounded-full">
-                <Lightbulb className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <CardTitle className="font-headline text-xl text-primary">Your Personalized Next Step</CardTitle>
-                <CardDescription>Our AI has analyzed your progress to suggest what you should learn next.</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <PersonalizedLearningContent setOpen={() => {}} />
-          </CardContent>
-        </Card>
-      </div>
-
     </div>
   );
 }
