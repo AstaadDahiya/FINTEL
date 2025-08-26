@@ -5,6 +5,7 @@ import {
   Home,
   LineChart,
   Settings,
+  Sparkles,
   User,
 } from "lucide-react";
 import {
@@ -66,6 +67,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <SidebarMenuButton tooltip="Simulator" isActive={isActive('/dashboard/simulator')}>
                   <LineChart />
                   <span>Simulator</span>
+                </SidebarMenuButton>
+              </Link>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <Link href="/dashboard/insights" passHref>
+                <SidebarMenuButton tooltip="AI Insights" isActive={isActive('/dashboard/insights')}>
+                  <Sparkles />
+                  <span>AI Insights</span>
                 </SidebarMenuButton>
               </Link>
             </SidebarMenuItem>
