@@ -48,20 +48,20 @@ export default function PersonalizedLearningContent({ setOpen }: PersonalizedLea
   return (
     <>
       {loading ? (
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <Loader2 className="h-5 w-5 animate-spin" />
-          <span>Analyzing your progress...</span>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          <span>Analyzing...</span>
         </div>
       ) : recommendation && recommendedModuleDetails ? (
-        <div>
-          <h3 className="text-lg font-semibold">{recommendedModuleDetails.title}</h3>
-          <p className="mt-2 text-muted-foreground">{recommendation.reasoning}</p>
-          <Button asChild className="mt-4" onClick={() => setOpen(false)}>
+        <div className="text-sm">
+          <h3 className="font-semibold text-foreground">{recommendedModuleDetails.title}</h3>
+          <p className="mt-1 text-muted-foreground text-xs leading-snug">{recommendation.reasoning}</p>
+          <Button asChild size="sm" className="mt-3 w-full" onClick={() => setOpen(false)}>
             <Link href={`/dashboard/learn/${recommendation.recommendedModule}`}>Start Learning</Link>
           </Button>
         </div>
       ) : (
-        <p className="text-muted-foreground">Could not generate a recommendation. Please complete more modules.</p>
+        <p className="text-sm text-muted-foreground">Could not generate a recommendation.</p>
       )}
     </>
   );

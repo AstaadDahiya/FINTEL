@@ -32,10 +32,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { usePathname } from "next/navigation";
-import PersonalizedLearningModal from "../dashboard/PersonalizedLearningModal";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useState } from "react";
 import { Dialog, DialogTrigger } from "../ui/dialog";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import PersonalizedLearningContent from "../dashboard/PersonalizedLearning";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -88,20 +89,23 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </SidebarMenuButton>
               </Link>
             </SidebarMenuItem>
-            {showPersonalizedLearning && (
-            <>
-              <SidebarSeparator />
-              <SidebarMenuItem>
-                <DialogTrigger asChild>
-                  <SidebarMenuButton tooltip="Your Next Step" variant="outline" className="border-primary/20 bg-primary/5 text-primary hover:bg-primary/10 hover:text-primary">
-                    <Lightbulb />
-                    <span>Your Next Step</span>
-                  </SidebarMenuButton>
-                </DialogTrigger>
-              </SidebarMenuItem>
-            </>
-          )}
           </SidebarMenu>
+           {showPersonalizedLearning && (
+            <div className="p-2 group-data-[collapsible=icon]:hidden">
+              <SidebarSeparator className="my-2"/>
+              <Card className="bg-primary/5 border-primary/20">
+                <CardHeader className="p-3">
+                  <CardTitle className="flex items-center gap-2 text-base text-primary">
+                    <Lightbulb className="h-5 w-5"/>
+                    Your Next Step
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-3 pt-0">
+                  <PersonalizedLearningContent setOpen={() => {}} />
+                </CardContent>
+              </Card>
+            </div>
+           )}
         </SidebarContent>
         <SidebarFooter className="group-data-[collapsible=icon]:hidden">
            <SidebarMenu>
@@ -144,7 +148,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           {children}
         </main>
       </SidebarInset>
-      <PersonalizedLearningModal setOpen={setModalOpen} />
       </Dialog>
     </SidebarProvider>
   );
