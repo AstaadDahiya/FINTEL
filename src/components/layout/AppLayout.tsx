@@ -34,8 +34,7 @@ import {
 import { usePathname } from "next/navigation";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useState } from "react";
-import { Dialog, DialogTrigger } from "../ui/dialog";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import PersonalizedLearningContent from "../dashboard/PersonalizedLearning";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -89,23 +88,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </SidebarMenuButton>
               </Link>
             </SidebarMenuItem>
+            {showPersonalizedLearning && (
+              <SidebarMenuItem>
+                <DialogTrigger asChild>
+                  <SidebarMenuButton tooltip="Your Next Step">
+                    <Lightbulb />
+                    <span>Your Next Step</span>
+                  </SidebarMenuButton>
+                </DialogTrigger>
+              </SidebarMenuItem>
+            )}
           </SidebarMenu>
-           {showPersonalizedLearning && (
-            <div className="p-2 group-data-[collapsible=icon]:hidden">
-              <SidebarSeparator className="my-2"/>
-              <Card className="bg-primary/5 border-primary/20">
-                <CardHeader className="p-3">
-                  <CardTitle className="flex items-center gap-2 text-base text-primary">
-                    <Lightbulb className="h-5 w-5"/>
-                    Your Next Step
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-3 pt-0">
-                  <PersonalizedLearningContent setOpen={() => {}} />
-                </CardContent>
-              </Card>
-            </div>
-           )}
         </SidebarContent>
         <SidebarFooter className="group-data-[collapsible=icon]:hidden">
            <SidebarMenu>
@@ -148,6 +141,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           {children}
         </main>
       </SidebarInset>
+       <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-primary">
+            <Lightbulb className="h-5 w-5" /> Your Personalized Next Step
+          </DialogTitle>
+        </DialogHeader>
+        <PersonalizedLearningContent setOpen={setModalOpen} />
+       </DialogContent>
       </Dialog>
     </SidebarProvider>
   );
