@@ -1,3 +1,4 @@
+
 "use client"
 import { useState, useEffect, useMemo } from 'react';
 import type { LearningModule } from '@/lib/data';
@@ -120,14 +121,17 @@ export default function QuizClient({ module }: Props) {
             } else if (isAnswerChecked && isSelected && !isCorrect) {
                stateClass = 'border-red-500 bg-red-500/10 text-red-900 dark:text-red-300';
             }
+            const id = `q${currentQuestionIndex}-o${index}`;
 
             return (
-              <Label key={index} className={`flex items-center space-x-3 p-4 rounded-md border-2 transition-all ${stateClass} ${!isAnswerChecked ? 'cursor-pointer hover:bg-muted/50' : 'cursor-default'}`}>
-                <RadioGroupItem value={option} id={`q${currentQuestionIndex}-o${index}`} />
-                <span className="flex-1">{option}</span>
+              <div key={id} className={`flex items-center space-x-3 p-4 rounded-md border-2 transition-all ${stateClass} ${!isAnswerChecked ? 'cursor-pointer hover:bg-muted/50' : 'cursor-default'}`}>
+                <RadioGroupItem value={option} id={id} />
+                <Label htmlFor={id} className="flex-1 cursor-pointer">
+                  {option}
+                </Label>
                 {isAnswerChecked && isCorrect && <CheckCircle className="h-5 w-5 text-green-500" />}
                 {isAnswerChecked && isSelected && !isCorrect && <XCircle className="h-5 w-5 text-red-500" />}
-              </Label>
+              </div>
             );
           })}
         </RadioGroup>
