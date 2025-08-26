@@ -1,6 +1,6 @@
 
 "use client"
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import type { LearningModule } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -31,8 +31,8 @@ export default function QuizClient({ module }: Props) {
   const completedModulesKey = useMemo(() => user ? `completedModules_${user.uid}` : 'completedModules', [user]);
   const quizScoresKey = useMemo(() => user ? `quizScores_${user.uid}` : 'quizScores', [user]);
 
-  const [quizScores, setQuizScores] = useLocalStorage<QuizScores>(quizScoresKey, {});
-  const [completedModules, setCompletedModules] = useLocalStorage<CompletedModules>(completedModulesKey, []);
+  const [, setQuizScores] = useLocalStorage<QuizScores>(quizScoresKey, {});
+  const [, setCompletedModules] = useLocalStorage<CompletedModules>(completedModulesKey, []);
 
   const currentQuestion = module.quiz[currentQuestionIndex];
 
@@ -62,11 +62,11 @@ export default function QuizClient({ module }: Props) {
     setIsQuizFinished(false);
   };
 
+  const finalScore = useMemo(() => Math.round((score / module.quiz.length) * 100), [score, module.quiz.length]);
+
   useEffect(() => {
     if (isQuizFinished) {
-      const finalScore = Math.round((score / module.quiz.length) * 100);
       setQuizScores(prevScores => ({ ...prevScores, [module.slug]: finalScore }));
-      
       setCompletedModules(prevCompleted => {
         if (!prevCompleted.includes(module.slug)) {
           return [...prevCompleted, module.slug];
@@ -74,8 +74,8 @@ export default function QuizClient({ module }: Props) {
         return prevCompleted;
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isQuizFinished, module.slug, score]);
+  }, [isQuizFinished, module.slug, finalScore, setQuizScores, setCompletedModules]);
+
 
   if (isQuizFinished) {
     return (
@@ -85,7 +85,7 @@ export default function QuizClient({ module }: Props) {
           <CardDescription>You scored:</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-6xl font-bold text-primary">{Math.round((score / module.quiz.length) * 100)}%</div>
+          <div className="text-6xl font-bold text-primary">{finalScore}%</div>
           <p className="text-muted-foreground mt-2">{score} out of {module.quiz.length} correct</p>
           <div className="flex gap-4 justify-center mt-8">
             <Button onClick={handleRestart} variant="outline"><RefreshCw className="mr-2 h-4 w-4"/> Restart Quiz</Button>
@@ -124,7 +124,7 @@ export default function QuizClient({ module }: Props) {
             }
 
             return (
-              <Label key={option} className={cn(`flex items-center space-x-3 p-4 rounded-md border-2 transition-all`, stateClass, !isAnswerChecked ? 'cursor-pointer hover:bg-muted/50' : 'cursor-default')}>
+              <Label key={option} htmlFor={option} className={cn(`flex items-center space-x-3 p-4 rounded-md border-2 transition-all`, stateClass, !isAnswerChecked ? 'cursor-pointer hover:bg-muted/50' : 'cursor-default')}>
                 <RadioGroupItem value={option} id={option} />
                 <span className="flex-1">{option}</span>
                 {isAnswerChecked && isCorrect && <CheckCircle className="h-5 w-5 text-green-500" />}
