@@ -48,7 +48,7 @@ export default function SupportPage() {
     <div className="flex h-[calc(100vh-8rem)] flex-col">
        <div className="mb-8">
         <h1 className="text-3xl font-bold font-headline">Help & Support</h1>
-        <p className="text-muted-foreground">Have a question about FinStart? Ask our AI assistant.</p>
+        <p className="text-muted-foreground">Have a question about FINTEL? Ask our AI assistant.</p>
       </div>
       <Card className="flex flex-1 flex-col">
         <CardContent className="flex flex-1 flex-col p-0">
@@ -57,7 +57,7 @@ export default function SupportPage() {
               {messages.length === 0 && (
                 <div className="text-center text-muted-foreground p-8">
                   <Bot className="mx-auto h-12 w-12 mb-4" />
-                  <p>Ask me anything about using the FinStart app!</p>
+                  <p>Ask me anything about using the FINTEL app!</p>
                   <p className="text-sm">e.g., "How does the simulator work?"</p>
                 </div>
               )}

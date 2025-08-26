@@ -1,7 +1,7 @@
 'use server';
 
 /**
- * @fileOverview A help and support AI agent for the FinStart application.
+ * @fileOverview A help and support AI agent for the FINTEL application.
  *
  * - getSupportResponse - A function that provides a conversational response to user queries.
  * - SupportAgentInput - The input type for the getSupportResponse function.
@@ -29,11 +29,11 @@ const prompt = ai.definePrompt({
   name: 'supportAgentPrompt',
   input: {schema: SupportAgentInputSchema},
   output: {schema: SupportAgentOutputSchema},
-  prompt: `You are a friendly and helpful AI support agent for "FinStart", an application designed to help users learn about stock trading.
+  prompt: `You are a friendly and helpful AI support agent for "FINTEL", an application designed to help users learn about stock trading.
 
 Your goal is to answer user questions about how to use the app. Be concise and clear in your explanations.
 
-Here are the core features of the FinStart app you should be knowledgeable about:
+Here are the core features of the FINTEL app you should be knowledgeable about:
 - **Learning Modules**: Interactive modules covering stock market fundamentals. Users can take quizzes to check their knowledge.
 - **Trading Simulator**: A risk-free environment where users can practice trading with virtual money using delayed real-world market data.
 - **AI-Powered Insights**: A tool that provides sentiment analysis, quantitative analysis, and a forecast for stocks.
