@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Sparkles } from "lucide-react";
@@ -16,6 +16,11 @@ export default function AIInsights({ ticker }: AIInsightsProps) {
     const [insights, setInsights] = useState<AIPoweredInsightsOutput | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    
+    useEffect(() => {
+        setInsights(null);
+        setError(null);
+    }, [ticker]);
 
     const handleFetchInsights = async () => {
         setLoading(true);
@@ -56,7 +61,7 @@ export default function AIInsights({ ticker }: AIInsightsProps) {
             </CardHeader>
             <CardContent>
                 {!insights && !loading && !error && (
-                    <div className="text-center text-muted-foreground p-4">Click "Analyze" to get AI-powered insights.</div>
+                    <div className="text-center text-muted-foreground p-4">Click "Analyze" to get AI-powered insights for {ticker}.</div>
                 )}
                 {loading && (
                     <div className="flex items-center justify-center p-8">

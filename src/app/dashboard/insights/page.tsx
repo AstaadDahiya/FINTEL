@@ -1,9 +1,23 @@
+"use client";
+
 import AIInsights from "@/components/simulator/AIInsights";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 export default function InsightsPage() {
+    const [ticker, setTicker] = useState("AAPL");
+    const [inputValue, setInputValue] = useState("AAPL");
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (inputValue) {
+            setTicker(inputValue.toUpperCase());
+        }
+    };
+
     return (
         <div>
             <div className="mb-8">
@@ -18,14 +32,23 @@ export default function InsightsPage() {
                         <CardDescription>Enter a stock ticker to get the latest AI analysis.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="relative w-full max-w-sm">
-                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input type="search" placeholder="Search stocks (e.g., AAPL, GOOGL)..." className="pl-8" />
-                        </div>
+                        <form onSubmit={handleSearch} className="flex w-full max-w-sm items-center space-x-2">
+                            <div className="relative flex-grow">
+                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                    type="search"
+                                    placeholder="Search stocks (e.g., AAPL, GOOGL)..."
+                                    className="pl-8"
+                                    value={inputValue}
+                                    onChange={(e) => setInputValue(e.target.value)}
+                                />
+                            </div>
+                            <Button type="submit">Search</Button>
+                        </form>
                     </CardContent>
                 </Card>
 
-                <AIInsights ticker="AAPL" />
+                <AIInsights ticker={ticker} />
             </div>
         </div>
     );
