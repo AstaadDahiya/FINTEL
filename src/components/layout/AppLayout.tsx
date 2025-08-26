@@ -19,6 +19,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
   SidebarFooter,
+  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +31,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { usePathname } from "next/navigation";
+import PersonalizedLearning from "../dashboard/PersonalizedLearning";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -79,6 +81,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </Link>
             </SidebarMenuItem>
           </SidebarMenu>
+          <SidebarSeparator />
+          <div className="p-2 group-data-[collapsible=icon]:hidden">
+             <PersonalizedLearning />
+          </div>
         </SidebarContent>
         <SidebarFooter className="group-data-[collapsible=icon]:hidden">
            <SidebarMenu>

@@ -2,7 +2,6 @@ import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen, Target } from "lucide-react";
 import PortfolioSummary from "@/components/dashboard/PortfolioSummary";
-import PersonalizedLearning from "@/components/dashboard/PersonalizedLearning";
 
 export default function Dashboard() {
   return (
@@ -39,9 +38,6 @@ export default function Dashboard() {
         <PortfolioSummary />
       </div>
 
-      <div className="mt-8">
-        <PersonalizedLearning />
-      </div>
     </div>
   );
 }
