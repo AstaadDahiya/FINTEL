@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -43,7 +43,7 @@ export default function SimulatorPage() {
     const [isSearching, setIsSearching] = useState(false);
     const [stockCache, setStockCache] = useState<{[key: string]: StockData}>({});
 
-    const updatePortfolioStockPrices = async (tickersToUpdate: string[]) => {
+    const updatePortfolioStockPrices = useCallback(async (tickersToUpdate: string[]) => {
         if (tickersToUpdate.length === 0) return;
 
         const updatedCache = { ...stockCache };
@@ -60,9 +60,9 @@ export default function SimulatorPage() {
         if (cacheWasUpdated) {
             setStockCache(updatedCache);
         }
-    };
+    }, [stockCache]);
     
-    const handleSearch = async (e?: React.FormEvent, defaultTicker?: string) => {
+    const handleSearch = useCallback(async (e?: React.FormEvent, defaultTicker?: string) => {
         if (e) e.preventDefault();
         const tickerToSearch = (defaultTicker || searchInput).toUpperCase();
         if (!tickerToSearch) return;
@@ -99,7 +99,7 @@ export default function SimulatorPage() {
         } finally {
             setIsSearching(false);
         }
-    };
+    }, [searchInput, stockCache, toast]);
 
     useEffect(() => {
         const initialize = async () => {
@@ -110,8 +110,7 @@ export default function SimulatorPage() {
             setLoading(false);
         }
         initialize();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [handleSearch, portfolio.stocks, updatePortfolioStockPrices]);
 
     const handleTrade = (type: 'Buy' | 'Sell') => {
         if (!selectedStock) return;
@@ -327,7 +326,7 @@ export default function SimulatorPage() {
                                                     <TableCell className="font-medium">{trade.ticker}</TableCell>
                                                     <TableCell>{trade.quantity}</TableCell>
                                                     <TableCell>${trade.price.toFixed(2)}</TableCell>
-                                                    <TableCell>${(trade.quantity * trade.price).toFixed(2)}</TableCell>
+                                                    <TableCell>${(trade.quantity * trade.price).toFixed(2)}}</TableCell>
                                                 </TableRow>
                                             ))}
                                         </TableBody>
