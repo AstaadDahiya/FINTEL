@@ -37,10 +37,10 @@ import {
 import { usePathname } from "next/navigation";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
-import PersonalizedLearningContent from "../dashboard/PersonalizedLearning";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import PersonalizedLearningContent from "@/components/dashboard/PersonalizedLearning";
 import { useAuth } from "@/hooks/use-auth";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
