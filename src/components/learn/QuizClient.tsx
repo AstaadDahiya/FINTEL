@@ -1,6 +1,6 @@
 
 "use client"
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import type { LearningModule } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -9,30 +9,19 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle, XCircle, ArrowRight, RefreshCw } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import Link from 'next/link';
-import { useLocalStorage } from '@/hooks/use-local-storage';
-import { useAuth } from '@/hooks/use-auth';
 import { cn } from '@/lib/utils';
 
 interface Props {
   module: LearningModule;
+  onQuizComplete: (finalScore: number) => void;
 }
 
-type QuizScores = { [moduleSlug: string]: number };
-type CompletedModules = string[];
-
-export default function QuizClient({ module }: Props) {
-  const { user } = useAuth();
+export default function QuizClient({ module, onQuizComplete }: Props) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isAnswerChecked, setIsAnswerChecked] = useState(false);
   const [score, setScore] = useState(0);
   const [isQuizFinished, setIsQuizFinished] = useState(false);
-
-  const completedModulesKey = useMemo(() => user ? `completedModules_${user.uid}` : 'completedModules', [user]);
-  const quizScoresKey = useMemo(() => user ? `quizScores_${user.uid}` : 'quizScores', [user]);
-
-  const [, setQuizScores] = useLocalStorage<QuizScores>(quizScoresKey, {});
-  const [, setCompletedModules] = useLocalStorage<CompletedModules>(completedModulesKey, []);
 
   const currentQuestion = module.quiz[currentQuestionIndex];
 
@@ -50,6 +39,8 @@ export default function QuizClient({ module }: Props) {
     if (currentQuestionIndex < module.quiz.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
+      const finalScoreValue = Math.round(((score) / module.quiz.length) * 100);
+      onQuizComplete(finalScoreValue);
       setIsQuizFinished(true);
     }
   };
@@ -61,20 +52,8 @@ export default function QuizClient({ module }: Props) {
     setScore(0);
     setIsQuizFinished(false);
   };
-
+  
   const finalScore = useMemo(() => Math.round((score / module.quiz.length) * 100), [score, module.quiz.length]);
-
-  useEffect(() => {
-    if (isQuizFinished) {
-      setQuizScores(prevScores => ({ ...prevScores, [module.slug]: finalScore }));
-      setCompletedModules(prevCompleted => {
-        if (!prevCompleted.includes(module.slug)) {
-          return [...prevCompleted, module.slug];
-        }
-        return prevCompleted;
-      });
-    }
-  }, [isQuizFinished, module.slug, finalScore, setQuizScores, setCompletedModules]);
 
 
   if (isQuizFinished) {
