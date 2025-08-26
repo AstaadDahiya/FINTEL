@@ -32,10 +32,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { usePathname } from "next/navigation";
 import PersonalizedLearning from "../dashboard/PersonalizedLearning";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isActive = (path: string) => pathname === path || (path !== '/dashboard' && pathname.startsWith(path));
+  const [showPersonalizedLearning] = useLocalStorage('showPersonalizedLearning', true);
+
 
   return (
     <SidebarProvider>
@@ -81,16 +84,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </Link>
             </SidebarMenuItem>
           </SidebarMenu>
-          <SidebarSeparator />
-          <div className="p-2 group-data-[collapsible=icon]:hidden">
-             <PersonalizedLearning />
-          </div>
+          {showPersonalizedLearning && (
+            <>
+              <SidebarSeparator />
+              <div className="p-2 group-data-[collapsible=icon]:hidden">
+                <PersonalizedLearning />
+              </div>
+            </>
+          )}
         </SidebarContent>
         <SidebarFooter className="group-data-[collapsible=icon]:hidden">
            <SidebarMenu>
               <SidebarMenuItem>
-                <Link href="#" passHref>
-                  <SidebarMenuButton tooltip="Settings">
+                <Link href="/dashboard/settings" passHref>
+                  <SidebarMenuButton tooltip="Settings" isActive={isActive('/dashboard/settings')}>
                     <Settings />
                     <span>Settings</span>
                   </SidebarMenuButton>
@@ -116,7 +123,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/dashboard/settings">Settings</Link></DropdownMenuItem>
               <DropdownMenuItem>Support</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild><Link href="/">Logout</Link></DropdownMenuItem>
