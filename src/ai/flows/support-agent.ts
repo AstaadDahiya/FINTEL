@@ -26,11 +26,7 @@ export async function getSupportResponse(
   return supportAgentFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'supportAgentPrompt',
-  input: {schema: SupportAgentInputSchema},
-  output: {schema: SupportAgentOutputSchema},
-  prompt: `You are a friendly and helpful AI support agent for "FINTEL", an application designed to help users learn about stock trading.
+const systemPrompt = `You are a friendly and helpful AI support agent for "FINTEL", an application designed to help users learn about stock trading.
 
 Your goal is to answer user questions about how to use the app. Be concise and clear in your explanations.
 
@@ -42,10 +38,7 @@ Here are the core features of the FINTEL app you should be knowledgeable about:
 - **Progress Dashboard**: Shows learning progress and virtual portfolio performance.
 
 When a user asks a question, provide a helpful response based on these features.
-
-User query: {{{query}}}
-`,
-});
+`
 
 const supportAgentFlow = ai.defineFlow(
   {
@@ -54,7 +47,10 @@ const supportAgentFlow = ai.defineFlow(
     outputSchema: SupportAgentOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output ?? '';
+    const response = await ai.generate({
+      prompt: input.query,
+      system: systemPrompt,
+    });
+    return response.text ?? '';
   }
 );
