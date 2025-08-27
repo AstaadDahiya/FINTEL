@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react";
@@ -14,15 +15,11 @@ interface AIInsightsProps {
 
 export default function AIInsights({ ticker }: AIInsightsProps) {
     const [insights, setInsights] = useState<AIPoweredInsightsOutput | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     
-    useEffect(() => {
-        setInsights(null);
-        setError(null);
-    }, [ticker]);
-
     const handleFetchInsights = async () => {
+        if (!ticker) return;
         setLoading(true);
         setError(null);
         setInsights(null);
@@ -36,6 +33,11 @@ export default function AIInsights({ ticker }: AIInsightsProps) {
             setLoading(false);
         }
     }
+
+    useEffect(() => {
+        handleFetchInsights();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ticker]);
 
     const getSentimentColor = (score: number) => {
         if (score > 66) return "text-emerald-500";
@@ -55,21 +57,22 @@ export default function AIInsights({ ticker }: AIInsightsProps) {
                     <CardDescription>Get an AI analysis for {ticker}</CardDescription>
                   </div>
                   <Button size="sm" onClick={handleFetchInsights} disabled={loading} variant="outline" className="text-accent border-accent hover:bg-accent/20 hover:text-accent">
-                      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Analyze"}
+                      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Refresh"}
                   </Button>
                 </div>
             </CardHeader>
             <CardContent>
-                {!insights && !loading && !error && (
-                    <div className="text-center text-muted-foreground p-4">Click "Analyze" to get AI-powered insights for {ticker}.</div>
-                )}
                 {loading && (
-                    <div className="flex items-center justify-center p-8">
+                    <div className="flex items-center justify-center p-8 h-[220px]">
                         <Loader2 className="h-8 w-8 animate-spin text-accent" />
                     </div>
                 )}
-                {error && <Alert variant="destructive"><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>}
-                {insights && (
+                {error && (
+                    <div className="h-[220px] flex items-center justify-center">
+                        <Alert variant="destructive"><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>
+                    </div>
+                )}
+                {insights && !loading && (
                     <div className="space-y-4 text-sm">
                          <div className="flex items-center gap-4 p-4 rounded-lg bg-background/50">
                             <CircularProgress value={insights.sentimentScore} className={getSentimentColor(insights.sentimentScore)} />
