@@ -58,6 +58,7 @@ export default function SimulatorPage() {
         const updatedCache = { ...stockCache };
         let cacheWasUpdated = false;
         for (const ticker of tickersToUpdate) {
+            // Fetch only if not in cache already
             if (!updatedCache[ticker]) {
                 const data = await fetchStockData(ticker);
                 if (data) {
@@ -75,21 +76,21 @@ export default function SimulatorPage() {
       if (!tickerToSearch) return;
       setIsSearching(true);
       try {
-        if (stockCache[tickerToSearch]) {
-          setSelectedStock(stockCache[tickerToSearch]);
+        let data = stockCache[tickerToSearch];
+        if (!data) {
+          data = await fetchStockData(tickerToSearch);
+        }
+        
+        if (data) {
+          setSelectedStock(data);
+          setStockCache(prev => ({...prev, [tickerToSearch]: data!}));
         } else {
-          const data = await fetchStockData(tickerToSearch);
-          if (data) {
-            setSelectedStock(data);
-            setStockCache(prev => ({...prev, [tickerToSearch]: data}));
-          } else {
-            toast({
-              variant: "destructive",
-              title: "Invalid Ticker",
-              description: `Stock with ticker "${tickerToSearch}" not found or API limit reached.`,
-            });
-            setSelectedStock(null);
-          }
+          toast({
+            variant: "destructive",
+            title: "Invalid Ticker",
+            description: `Stock with ticker "${tickerToSearch}" not found or API limit reached.`,
+          });
+          setSelectedStock(null);
         }
       } catch (error) {
         console.error("Failed to fetch stock data", error);
@@ -111,16 +112,29 @@ export default function SimulatorPage() {
 
     useEffect(() => {
         setIsClient(true);
+    }, []);
+
+    useEffect(() => {
+        if (!isClient) return;
+    
         const initialize = async () => {
             setLoading(true);
+            
+            // Step 1: Fetch the default stock first.
             await executeSearch("AAPL");
+            
+            // Step 2: Then, fetch data for all stocks in the portfolio.
             const portfolioTickers = Object.keys(portfolio.stocks).filter(t => portfolio.stocks[t]! > 0);
-            await updatePortfolioStockPrices(portfolioTickers);
+            if (portfolioTickers.length > 0) {
+                await updatePortfolioStockPrices(portfolioTickers);
+            }
+            
             setLoading(false);
-        }
+        };
+    
         initialize();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [isClient]);
 
     const handleTrade = (type: 'Buy' | 'Sell') => {
         if (!selectedStock) return;
@@ -167,11 +181,23 @@ export default function SimulatorPage() {
         });
     };
     
-    const portfolioValue = isClient ? Object.entries(portfolio.stocks).reduce((acc, [ticker, qty]) => {
-        const stockPrice = stockCache[ticker]?.price || 0;
-        return acc + (stockPrice * (qty || 0));
-    }, 0) : 0;
+    const portfolioValue = useMemo(() => {
+        if (!isClient) return 0;
+        return Object.entries(portfolio.stocks).reduce((acc, [ticker, qty]) => {
+            const stockPrice = stockCache[ticker]?.price || 0;
+            return acc + (stockPrice * (qty || 0));
+        }, 0);
+    }, [portfolio.stocks, stockCache, isClient]);
+
     const totalValue = isClient ? portfolio.cash + portfolioValue : 0;
+
+    if (!isClient) {
+        return (
+             <div className="flex h-full w-full items-center justify-center p-16">
+                <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+        );
+    }
 
     return (
         <div>
@@ -183,7 +209,7 @@ export default function SimulatorPage() {
                 <div className="lg:col-span-2 flex flex-col gap-8">
                     <Card>
                         <CardHeader>
-                            {loading && !isClient ? (
+                            {loading ? (
                                <div className="flex items-center justify-center h-24">
                                   <Loader2 className="h-8 w-8 animate-spin text-primary" />
                                </div>
@@ -216,7 +242,24 @@ export default function SimulatorPage() {
                                     </form>
                                 </div>
                             ) : (
-                                <div className="text-center p-4 text-muted-foreground">Please search for a stock to begin.</div>
+                                <div className="text-center p-4">
+                                    <p className="text-muted-foreground">Please search for a stock to begin.</p>
+                                    <form onSubmit={handleSearch} className="flex items-center gap-2 w-full max-w-sm mx-auto mt-4">
+                                      <div className="relative flex-grow">
+                                          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                          <Input 
+                                            type="search" 
+                                            placeholder="e.g., AAPL, RELIANCE.NS" 
+                                            className="pl-8" 
+                                            value={searchInput}
+                                            onChange={e => setSearchInput(e.target.value)}
+                                          />
+                                      </div>
+                                      <Button type="submit" variant="outline" disabled={isSearching}>
+                                        {isSearching ? <Loader2 className="h-4 w-4 animate-spin"/> : "Search"}
+                                      </Button>
+                                    </form>
+                                </div>
                             )}
                         </CardHeader>
                         <CardContent>
@@ -281,7 +324,7 @@ export default function SimulatorPage() {
                              <div className="text-right">
                                 <p className="text-sm text-muted-foreground">Total Value</p>
                                 <p className="text-2xl font-bold">
-                                    {isClient ? `₹${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2})}`: <Loader2 className="h-6 w-6 animate-spin" />}
+                                    {`₹${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2})}`}
                                 </p>
                              </div>
                            </div>
@@ -332,9 +375,9 @@ export default function SimulatorPage() {
                                                 <TableCell className="font-medium">Cash</TableCell>
                                                 <TableCell>Currency</TableCell>
                                                 <TableCell>-</TableCell>
-                                                <TableCell className="text-right">{isClient ? `₹${portfolio.cash.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2})}` : <Loader2 className="h-4 w-4 animate-spin" />}</TableCell>
+                                                <TableCell className="text-right">{`₹${portfolio.cash.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2})}`}</TableCell>
                                             </TableRow>
-                                            {isClient && Object.entries(portfolio.stocks).map(([ticker, qty]) => {
+                                            {Object.entries(portfolio.stocks).map(([ticker, qty]) => {
                                                 if (!qty || qty === 0) return null;
                                                 const stock = stockCache[ticker as StockSymbol];
                                                 const value = stock ? (stock.price * qty) : 0;
@@ -343,17 +386,12 @@ export default function SimulatorPage() {
                                                         <TableCell className="font-medium">{ticker}</TableCell>
                                                         <TableCell>Stock</TableCell>
                                                         <TableCell>{qty}</TableCell>
-                                                        <TableCell className="text-right">₹{value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2}) || 'Loading...'}</TableCell>
+                                                        <TableCell className="text-right">
+                                                            {stock ? `₹${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2})}`: <Loader2 className="h-4 w-4 animate-spin ml-auto" />}
+                                                        </TableCell>
                                                     </TableRow>
                                                 )
                                             })}
-                                             {!isClient && (
-                                                <TableRow>
-                                                    <TableCell colSpan={4} className="h-24 text-center">
-                                                        <Loader2 className="h-6 w-6 animate-spin" />
-                                                    </TableCell>
-                                                </TableRow>
-                                            )}
                                         </TableBody>
                                     </Table>
                                 </TabsContent>
@@ -367,20 +405,14 @@ export default function SimulatorPage() {
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                            {isClient ? tradeHistory.slice(0,10).map((trade, index) => (
+                                            {tradeHistory.slice(0,10).map((trade, index) => (
                                                 <TableRow key={index}>
                                                     <TableCell className="font-medium">{trade.ticker}</TableCell>
                                                     <TableCell><Badge variant={trade.type === 'Buy' ? 'default' : 'destructive'} className={trade.type === 'Buy' ? 'bg-emerald-600' : 'bg-red-600'}>{trade.type}</Badge></TableCell>
                                                     <TableCell className="text-right">{trade.quantity}</TableCell>
                                                 </TableRow>
-                                            )) : (
-                                                <TableRow>
-                                                    <TableCell colSpan={3} className="h-24 text-center">
-                                                        <Loader2 className="h-6 w-6 animate-spin" />
-                                                    </TableCell>
-                                                </TableRow>
-                                            )}
-                                            {isClient && tradeHistory.length === 0 && (
+                                            ))}
+                                            {tradeHistory.length === 0 && (
                                                  <TableRow>
                                                     <TableCell colSpan={3} className="h-24 text-center">
                                                         No trade history.
@@ -398,5 +430,3 @@ export default function SimulatorPage() {
         </div>
     );
 }
-
-    
