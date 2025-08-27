@@ -102,7 +102,7 @@ const getAlphaVantageApiKey = () => {
 
 const ALPHA_VANTAGE_BASE_URL = 'https://www.alphavantage.co/query';
 
-async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | null> {
+async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | 'rate-limited'> {
     try {
         const apiKey = getAlphaVantageApiKey();
         if (!apiKey) return null;
@@ -123,9 +123,9 @@ async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | n
         const timeSeriesData = await timeSeriesRes.json();
         const overviewData = await overviewRes.json();
         
-        if (quoteData.Note || timeSeriesData.Note || overviewData.Note) {
+        if (quoteData.Note || timeSeriesData.Note || overviewData.Note || (quoteData['Information'] && quoteData['Information'].includes('rate limit'))) {
             console.warn(`Alpha Vantage API limit likely reached for ticker: ${ticker}`);
-            return null; // Explicitly return null for rate limit errors
+            return 'rate-limited';
         }
 
         const globalQuote = quoteData['Global Quote'];
@@ -170,7 +170,7 @@ async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | n
 const cache = new Map<string, { data: StockData | null, timestamp: number }>();
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
-export async function fetchStockData(ticker: string): Promise<StockData | null> {
+export async function fetchStockData(ticker: string): Promise<StockData | null | 'rate-limited'> {
     const now = Date.now();
     const cachedItem = cache.get(ticker);
 
@@ -180,7 +180,7 @@ export async function fetchStockData(ticker: string): Promise<StockData | null> 
 
     const isIndianStock = ticker.toUpperCase().endsWith('.NS') || ticker.toUpperCase().endsWith('.BSE');
     
-    let stockData: StockData | null = null;
+    let stockData: StockData | null | 'rate-limited' = null;
     
     try {
         if (isIndianStock) {
@@ -193,14 +193,18 @@ export async function fetchStockData(ticker: string): Promise<StockData | null> 
         stockData = null; 
     }
 
-    cache.set(ticker, { data: stockData, timestamp: now });
+    if(stockData === 'rate-limited') {
+        // If rate-limited, return the old cached data if it exists, otherwise return the rate-limit signal
+        return cachedItem?.data || 'rate-limited';
+    }
 
     if (stockData) {
+        cache.set(ticker, { data: stockData, timestamp: now });
         return stockData;
     }
     
-    console.warn(`Could not retrieve stock data for ${ticker}. It might be an invalid ticker or an API issue.`);
+    // If we get here, it means the fetch failed for a reason other than rate limiting (e.g. invalid ticker)
+    cache.set(ticker, { data: null, timestamp: now }); // Cache the failure
+    console.warn(`Could not retrieve stock data for ${ticker}. It might be an invalid ticker or a non-rate-limit API issue.`);
     return null;
 }
-
-    

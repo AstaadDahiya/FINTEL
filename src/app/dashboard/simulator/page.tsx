@@ -64,7 +64,7 @@ export default function SimulatorPage() {
             // Fetch only if not in cache already
             if (!updatedCache[ticker]) {
                 const data = await fetchStockData(ticker);
-                 if (data) {
+                 if (data && data !== 'rate-limited') {
                     updatedCache[ticker] = data;
                     cacheWasUpdated = true;
                 } else {
@@ -87,29 +87,24 @@ export default function SimulatorPage() {
           data = await fetchStockData(tickerToSearch);
         }
         
-        if (data) {
+        if (data === 'rate-limited') {
+            const errorMessage = `API rate limit reached. Please wait a minute and try again.`;
+            toast({ variant: "destructive", title: "API Limit Reached", description: errorMessage, });
+            setApiError(errorMessage);
+            setSelectedStock(stockCache[tickerToSearch] || null); // Show cached data if available
+        } else if (data) {
           setSelectedStock(data);
           setStockCache(prev => ({...prev, [tickerToSearch]: data!}));
         } else {
-          const errorMessage = `Stock with ticker "${tickerToSearch}" not found or API limit reached.`;
-          toast({
-            variant: "destructive",
-            title: "Invalid Ticker",
-            description: errorMessage,
-          });
-          if (stockCache[tickerToSearch] === null || (await fetchStockData(tickerToSearch)) === null) {
-              setApiError(errorMessage);
-          }
+          const errorMessage = `Stock with ticker "${tickerToSearch}" not found. Please check the symbol.`;
+          toast({ variant: "destructive", title: "Invalid Ticker", description: errorMessage });
+          setApiError(errorMessage);
           setSelectedStock(null);
         }
       } catch (error) {
         console.error("Failed to fetch stock data", error);
         const errorMessage = "Could not fetch stock data. Please try again later.";
-        toast({
-          variant: "destructive",
-          title: "API Error",
-          description: errorMessage,
-        });
+        toast({ variant: "destructive", title: "API Error", description: errorMessage });
         setApiError(errorMessage);
         setSelectedStock(null);
       } finally {
@@ -266,7 +261,6 @@ export default function SimulatorPage() {
                                 </div>
                             ) : (
                                 <div className="text-center p-4">
-                                    <p className="text-muted-foreground">Please search for a stock to begin.</p>
                                     <form onSubmit={handleSearch} className="flex items-center gap-2 w-full max-w-sm mx-auto mt-4">
                                       <div className="relative flex-grow">
                                           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -453,5 +447,3 @@ export default function SimulatorPage() {
         </div>
     );
 }
-
-    
