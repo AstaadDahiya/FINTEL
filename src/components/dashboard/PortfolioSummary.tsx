@@ -7,6 +7,7 @@ import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useEffect, useState, useMemo } from "react";
 import { fetchStockData, StockData } from "@/lib/alpha-vantage";
 import { useAuth } from "@/hooks/use-auth";
+import { formatCurrency } from "@/lib/utils";
 
 
 type StockSymbol = string;
@@ -31,32 +32,34 @@ export default function PortfolioSummary() {
   useEffect(() => {
     const updatePortfolioValues = async () => {
         const tickersToUpdate = Object.keys(portfolio.stocks).filter(ticker => portfolio.stocks[ticker]! > 0);
-        if (tickersToUpdate.length === 0) {
-            setTotalValue(portfolio.cash);
-            const initialValue = 10000;
-            const returnPercentage = ((portfolio.cash - initialValue) / initialValue) * 100;
-            setAllTimeReturn(returnPercentage);
-            return;
-        };
-
+        
+        let portfolioStockValue = 0;
         const newCache = { ...stockCache };
-        let currentPortfolioValue = 0;
+        
+        // We assume portfolio cash is in INR. For stocks, we convert USD to INR.
+        const INR_PER_USD = 83; 
 
         for (const ticker of tickersToUpdate) {
-            if (!newCache[ticker]) {
+            let stock = newCache[ticker];
+            if (!stock) {
                 const data = await fetchStockData(ticker);
-                if (data) {
+                if (data && data !== 'rate-limited') {
+                    stock = data;
                     newCache[ticker] = data;
                 }
             }
-            if(newCache[ticker]) {
-                currentPortfolioValue += newCache[ticker].price * (portfolio.stocks[ticker] || 0);
+            if (stock) {
+                let valueInINR = stock.price * (portfolio.stocks[ticker] || 0);
+                if (stock.currency === 'USD') {
+                    valueInINR *= INR_PER_USD;
+                }
+                portfolioStockValue += valueInINR;
             }
         }
-
+        
         setStockCache(newCache);
         
-        const currentTotalValue = portfolio.cash + currentPortfolioValue;
+        const currentTotalValue = portfolio.cash + portfolioStockValue;
         setTotalValue(currentTotalValue);
 
         const initialValue = 10000; // This should ideally be tracked based on deposits.
@@ -76,7 +79,7 @@ export default function PortfolioSummary() {
         <Wallet className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">₹{totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+        <div className="text-2xl font-bold">{formatCurrency(totalValue, 'INR')}</div>
         <div className={`flex items-center gap-1 text-xs ${allTimeReturn >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
            {allTimeReturn >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
           <span>{allTimeReturn.toFixed(2)}% all time return</span>
@@ -85,6 +88,3 @@ export default function PortfolioSummary() {
     </Card>
   )
 }
-
-    
-    

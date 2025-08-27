@@ -14,6 +14,7 @@ export interface StockData {
     dayLow?: number;
     yearHigh?: number;
     yearLow?: number;
+    currency: 'USD' | 'INR';
 }
 
 // --- Indian API Functions ---
@@ -75,6 +76,7 @@ async function fetchIndianStockData(ticker: string): Promise<StockData | null> {
             dayLow: parseFloat(quoteData.day_low),
             yearHigh: parseFloat(quoteData['52_week_high']),
             yearLow: parseFloat(quoteData['52_week_low']),
+            currency: 'INR',
         };
 
         return stockInfo;
@@ -102,7 +104,7 @@ const getAlphaVantageApiKey = () => {
 
 const ALPHA_VANTAGE_BASE_URL = 'https://www.alphavantage.co/query';
 
-async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | 'rate-limited'> {
+async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | 'rate-limited' | null> {
     try {
         const apiKey = getAlphaVantageApiKey();
         if (!apiKey) return null;
@@ -123,7 +125,7 @@ async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | '
         const timeSeriesData = await timeSeriesRes.json();
         const overviewData = await overviewRes.json();
         
-        if (quoteData.Note || timeSeriesData.Note || overviewData.Note || (quoteData['Information'] && quoteData['Information'].includes('rate limit'))) {
+        if (quoteData.Note || timeSeriesData.Note || overviewData.Note || (quoteData['Information'] && quoteData['Information'].includes('limit'))) {
             console.warn(`Alpha Vantage API limit likely reached for ticker: ${ticker}`);
             return 'rate-limited';
         }
@@ -131,8 +133,8 @@ async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | '
         const globalQuote = quoteData['Global Quote'];
         const dailySeries = timeSeriesData['Time Series (Daily)'];
 
-        if (!globalQuote || Object.keys(globalQuote).length === 0 || !dailySeries) {
-            console.warn(`No data found for Alpha Vantage ticker: ${ticker}`, { quoteData, timeSeriesData });
+        if (!globalQuote || Object.keys(globalQuote).length === 0 || !dailySeries || !overviewData.Currency) {
+            console.warn(`No data found for Alpha Vantage ticker: ${ticker}`, { quoteData, timeSeriesData, overviewData });
             return null;
         }
 
@@ -155,6 +157,7 @@ async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | '
             dayLow: parseFloat(globalQuote['04. low']),
             yearHigh: parseFloat(overviewData['52WeekHigh']),
             yearLow: parseFloat(overviewData['52WeekLow']),
+            currency: overviewData.Currency === 'USD' ? 'USD' : 'INR', // Defaulting non-USD to INR is a simplification
         };
         
         return stockInfo;
@@ -175,7 +178,8 @@ export async function fetchStockData(ticker: string): Promise<StockData | null |
     const cachedItem = cache.get(ticker);
 
     if (cachedItem && (now - cachedItem.timestamp) < CACHE_DURATION) {
-        return cachedItem.data;
+        // Return cached data if it's not a failed fetch (null)
+        if(cachedItem.data) return cachedItem.data;
     }
 
     const isIndianStock = ticker.toUpperCase().endsWith('.NS') || ticker.toUpperCase().endsWith('.BSE');

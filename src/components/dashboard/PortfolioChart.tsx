@@ -5,6 +5,7 @@ import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useAuth } from '@/hooks/use-auth';
 import { useMemo } from 'react';
+import { formatCurrency } from '@/lib/utils';
 
 // This is a simplified simulation. In a real app, you'd fetch this historical data from a server.
 const generateFakeHistory = (totalValue: number) => {
@@ -75,10 +76,10 @@ export default function PortfolioChart() {
                 >
                     <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${(value / 1000)}k`} />
+                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => formatCurrency(value, 'INR', { notation: 'compact' })} />
                     <Tooltip
                         cursor={{ stroke: 'hsl(var(--primary))', strokeWidth: 1, strokeDasharray: '3 3' }}
-                        content={<ChartTooltipContent formatter={(value) => `₹${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2})}`} />}
+                        content={<ChartTooltipContent formatter={(value) => formatCurrency(value as number, 'INR')} />}
                      />
                     <Line type="monotone" dataKey="value" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} />
                 </RechartsLineChart>
@@ -87,6 +88,3 @@ export default function PortfolioChart() {
     </div>
   );
 }
-
-    
-    

@@ -16,6 +16,7 @@ import { fetchStockData, StockData } from "@/lib/alpha-vantage";
 import { useAuth } from "@/hooks/use-auth";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { formatCurrency } from "@/lib/utils";
 
 type StockSymbol = string;
 
@@ -67,8 +68,11 @@ export default function SimulatorPage() {
                  if (data && data !== 'rate-limited') {
                     updatedCache[ticker] = data;
                     cacheWasUpdated = true;
+                } else if (data === 'rate-limited') {
+                     // Don't overwrite existing good data with a rate limit failure
+                     if (!updatedCache[ticker]) updatedCache[ticker] = null;
                 } else {
-                    updatedCache[ticker] = null; // Cache the failure
+                    updatedCache[ticker] = null; // Cache other failures
                 }
             }
         }
@@ -82,19 +86,15 @@ export default function SimulatorPage() {
       setIsSearching(true);
       setApiError(null);
       try {
-        let data = stockCache[tickerToSearch];
-        if (data === undefined) {
-          data = await fetchStockData(tickerToSearch);
-        }
+        const data = await fetchStockData(tickerToSearch);
         
         if (data === 'rate-limited') {
-            const errorMessage = `API rate limit reached. Please wait a minute and try again.`;
+            const errorMessage = `API rate limit reached. Displaying cached data if available. Please wait a minute and try again.`;
             toast({ variant: "destructive", title: "API Limit Reached", description: errorMessage, });
             setApiError(errorMessage);
-            setSelectedStock(stockCache[tickerToSearch] || null); // Show cached data if available
         } else if (data) {
           setSelectedStock(data);
-          setStockCache(prev => ({...prev, [tickerToSearch]: data!}));
+          setStockCache(prev => ({...prev, [tickerToSearch]: data}));
         } else {
           const errorMessage = `Stock with ticker "${tickerToSearch}" not found. Please check the symbol.`;
           toast({ variant: "destructive", title: "Invalid Ticker", description: errorMessage });
@@ -110,7 +110,7 @@ export default function SimulatorPage() {
       } finally {
         setIsSearching(false);
       }
-    }, [stockCache, toast]);
+    }, [toast]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -212,14 +212,11 @@ export default function SimulatorPage() {
                 <h1 className="text-3xl font-bold font-headline">Trading Simulator</h1>
                 <p className="text-muted-foreground">Practice trading with delayed real-world market data, risk-free.</p>
             </div>
-            {apiError && (
+            {apiError && !selectedStock && (
                  <Alert variant="destructive" className="mb-8">
                     <AlertTitle>API Error</AlertTitle>
                     <AlertDescription>
-                        {apiError.includes("limit") 
-                        ? "The API call failed, likely due to rate limiting on the free plan. Please wait a minute and try again, or search for another stock."
-                        : "Could not fetch data for the requested stock. Please check the ticker and try again."
-                        }
+                        {apiError}
                     </AlertDescription>
                 </Alert>
             )}
@@ -236,7 +233,7 @@ export default function SimulatorPage() {
                                     <div>
                                         <CardTitle className="text-2xl">{selectedStock.name} ({selectedStock.symbol})</CardTitle>
                                         <p className={`text-3xl font-bold mt-1 flex items-center gap-2 ${selectedStock.change >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                                          ₹{selectedStock.price.toFixed(2)} 
+                                          {formatCurrency(selectedStock.price, selectedStock.currency)}
                                           <span className="text-sm font-medium flex items-center">
                                             {selectedStock.change >= 0 ? <ArrowUp className="h-4 w-4"/> : <ArrowDown className="h-4 w-4"/>}
                                             {selectedStock.change.toFixed(2)} ({selectedStock.changePercent.toFixed(2)}%)
@@ -285,7 +282,7 @@ export default function SimulatorPage() {
                                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
                                 </div>
                             ) : selectedStock ? (
-                               <StockChart data={selectedStock.data} />
+                               <StockChart data={selectedStock.data} currency={selectedStock.currency} />
                             ) : (
                                 <div className="h-[350px] w-full flex items-center justify-center bg-muted rounded-md">
                                     <p className="text-muted-foreground">No data to display. Please search for a valid stock ticker.</p>
@@ -307,19 +304,19 @@ export default function SimulatorPage() {
                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                                    <div className="space-y-1">
                                        <p className="text-muted-foreground">Day High</p>
-                                       <p className="font-semibold">₹{selectedStock.dayHigh?.toFixed(2) || 'N/A'}</p>
+                                       <p className="font-semibold">{formatCurrency(selectedStock.dayHigh, selectedStock.currency) || 'N/A'}</p>
                                    </div>
                                    <div className="space-y-1">
                                        <p className="text-muted-foreground">Day Low</p>
-                                       <p className="font-semibold">₹{selectedStock.dayLow?.toFixed(2) || 'N/A'}</p>
+                                       <p className="font-semibold">{formatCurrency(selectedStock.dayLow, selectedStock.currency) || 'N/A'}</p>
                                    </div>
                                    <div className="space-y-1">
                                        <p className="text-muted-foreground">52 Wk High</p>
-                                       <p className="font-semibold">₹{selectedStock.yearHigh?.toFixed(2) || 'N/A'}</p>
+                                       <p className="font-semibold">{formatCurrency(selectedStock.yearHigh, selectedStock.currency) || 'N/A'}</p>
                                    </div>
                                     <div className="space-y-1">
                                        <p className="text-muted-foreground">52 Wk Low</p>
-                                       <p className="font-semibold">₹{selectedStock.yearLow?.toFixed(2) || 'N/A'}</p>
+                                       <p className="font-semibold">{formatCurrency(selectedStock.yearLow, selectedStock.currency) || 'N/A'}</p>
                                    </div>
                                </div>
                             ) : (
@@ -341,7 +338,7 @@ export default function SimulatorPage() {
                              <div className="text-right">
                                 <p className="text-sm text-muted-foreground">Total Value</p>
                                 <p className="text-2xl font-bold">
-                                    {`₹${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2})}`}
+                                    {formatCurrency(totalValue, 'INR')}
                                 </p>
                              </div>
                            </div>
@@ -369,7 +366,7 @@ export default function SimulatorPage() {
                                         </div>
                                         <div className="flex justify-between items-center text-sm text-muted-foreground">
                                             <span>Estimated Cost:</span>
-                                            <span className="font-semibold text-foreground">₹{selectedStock ? (quantity * selectedStock.price).toFixed(2) : '0.00'}</span>
+                                            <span className="font-semibold text-foreground">{selectedStock ? formatCurrency(quantity * selectedStock.price, selectedStock.currency) : formatCurrency(0, 'INR')}</span>
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                             <Button variant="outline" className="text-red-600 border-red-600/50 hover:bg-red-600/10 hover:text-red-700" onClick={() => handleTrade('Sell')} disabled={!selectedStock || loading}>Sell</Button>
@@ -392,7 +389,7 @@ export default function SimulatorPage() {
                                                 <TableCell className="font-medium">Cash</TableCell>
                                                 <TableCell>Currency</TableCell>
                                                 <TableCell>-</TableCell>
-                                                <TableCell className="text-right">{`₹${portfolio.cash.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2})}`}</TableCell>
+                                                <TableCell className="text-right">{formatCurrency(portfolio.cash, 'INR')}</TableCell>
                                             </TableRow>
                                             {Object.entries(portfolio.stocks).map(([ticker, qty]) => {
                                                 if (!qty || qty === 0) return null;
@@ -404,7 +401,7 @@ export default function SimulatorPage() {
                                                         <TableCell>Stock</TableCell>
                                                         <TableCell>{qty}</TableCell>
                                                         <TableCell className="text-right">
-                                                            {stock ? `₹${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2})}`: <Loader2 className="h-4 w-4 animate-spin ml-auto" />}
+                                                            {stock ? formatCurrency(value, stock.currency) : <Loader2 className="h-4 w-4 animate-spin ml-auto" />}
                                                         </TableCell>
                                                     </TableRow>
                                                 )
