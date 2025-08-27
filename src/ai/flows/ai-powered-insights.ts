@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -17,10 +18,24 @@ const AIPoweredInsightsInputSchema = z.object({
 export type AIPoweredInsightsInput = z.infer<typeof AIPoweredInsightsInputSchema>;
 
 const AIPoweredInsightsOutputSchema = z.object({
-  sentimentAnalysis: z.string().describe('Sentiment analysis of the stock.'),
-  sentimentScore: z.number().describe('A sentiment score for the stock, from 0 (very bearish) to 100 (very bullish).'),
-  quantitativeAnalysis: z.string().describe('Quantitative analysis of the stock.'),
-  forecastReasoning: z.string().describe('Explanation of the forecast reasoning.'),
+  sentimentAnalysis: z
+    .string()
+    .describe(
+      'Sentiment analysis of the stock based on latest news and social media content.'
+    ),
+  sentimentScore: z
+    .number()
+    .describe(
+      'A sentiment score for the stock, from 0 (very bearish) to 100 (very bullish), based on news and social media.'
+    ),
+  quantitativeAnalysis: z
+    .string()
+    .describe('Quantitative analysis of the stock.'),
+  forecastReasoning: z
+    .string()
+    .describe(
+      'Explanation of the forecast reasoning, considering if the stock will go up or down.'
+    ),
 });
 export type AIPoweredInsightsOutput = z.infer<typeof AIPoweredInsightsOutputSchema>;
 
@@ -32,12 +47,13 @@ const prompt = ai.definePrompt({
   name: 'aiPoweredInsightsPrompt',
   input: {schema: AIPoweredInsightsInputSchema},
   output: {schema: AIPoweredInsightsOutputSchema},
-  prompt: `You are an AI assistant providing insights for stock trading.
+  prompt: `You are an expert financial analyst AI. Your task is to provide AI-powered insights for a given stock ticker.
 
-  Provide a sentiment analysis and quantitative analysis for the stock ticker: {{{ticker}}}.
-  Also provide a sentiment score from 0 (very bearish) to 100 (very bullish).
-  Explain the forecast reasoning based on these analyses, focusing on transparency so the user understands the rationale behind the forecast.
-  Please provide a detailed explanation of forecast reasoning. 
+  For the stock ticker {{{ticker}}}, perform the following:
+  1.  **Sentiment Analysis**: Analyze the latest news articles and social media content to determine the current sentiment. Summarize your findings.
+  2.  **Sentiment Score**: Based on the sentiment analysis, provide a score from 0 (very bearish) to 100 (very bullish).
+  3.  **Quantitative Analysis**: Provide a brief quantitative analysis of the stock's recent performance.
+  4.  **Forecast and Reasoning**: Based on all the above information, provide a forecast on whether the stock is likely to go up or down. Explain the reasoning for your forecast in a clear and transparent manner.
   `,
 });
 
