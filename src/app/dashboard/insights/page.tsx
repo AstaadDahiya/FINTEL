@@ -1,3 +1,4 @@
+
 "use client";
 
 import AIInsights from "@/components/simulator/AIInsights";
@@ -8,8 +9,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 export default function InsightsPage() {
-    const [ticker, setTicker] = useState("AAPL");
-    const [inputValue, setInputValue] = useState("AAPL");
+    const [ticker, setTicker] = useState("RELIANCE.NS");
+    const [inputValue, setInputValue] = useState("RELIANCE.NS");
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -37,7 +38,7 @@ export default function InsightsPage() {
                                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                                 <Input
                                     type="search"
-                                    placeholder="Search stocks (e.g., AAPL, GOOGL)..."
+                                    placeholder="e.g., RELIANCE.NS, TCS.BSE, AAPL"
                                     className="pl-8"
                                     value={inputValue}
                                     onChange={(e) => setInputValue(e.target.value)}

@@ -38,14 +38,14 @@ export default function SimulatorPage() {
 
     const [portfolio, setPortfolio] = useLocalStorage<Portfolio>(portfolioKey, {
         cash: 10000,
-        stocks: { "AAPL": 5 }
+        stocks: { "RELIANCE.NS": 5 }
     });
     const [tradeHistory, setTradeHistory] = useLocalStorage<Trade[]>(tradeHistoryKey, []);
     const { toast } = useToast();
 
     const [selectedStock, setSelectedStock] = useState<StockData | null>(null);
     const [quantity, setQuantity] = useState(1);
-    const [searchInput, setSearchInput] = useState("AAPL");
+    const [searchInput, setSearchInput] = useState("RELIANCE.NS");
     const [loading, setLoading] = useState(true);
     const [isSearching, setIsSearching] = useState(false);
     const [stockCache, setStockCache] = useState<{[key: string]: StockData}>({});
@@ -111,7 +111,7 @@ export default function SimulatorPage() {
     useEffect(() => {
         const initialize = async () => {
             setLoading(true);
-            await handleSearch(undefined, "AAPL");
+            await handleSearch(undefined, "RELIANCE.NS");
             const portfolioTickers = Object.keys(portfolio.stocks).filter(t => portfolio.stocks[t]! > 0);
             await updatePortfolioStockPrices(portfolioTickers);
             setLoading(false);
@@ -202,7 +202,7 @@ export default function SimulatorPage() {
                                           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                                           <Input 
                                             type="search" 
-                                            placeholder="Search stocks..." 
+                                            placeholder="e.g., RELIANCE.NS, AAPL" 
                                             className="pl-8" 
                                             value={searchInput}
                                             onChange={e => setSearchInput(e.target.value)}
