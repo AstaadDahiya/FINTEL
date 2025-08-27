@@ -144,7 +144,7 @@ export default function Dashboard() {
                             </div>
                         </TableCell>
                         <TableCell className="font-medium">
-                            {activity.type === 'trade' ? `${activity.type.charAt(0).toUpperCase() + activity.type.slice(1)}: ${'ticker' in activity ? activity.ticker : ''}` : activity.title}
+                            {activity.type === 'trade' ? `${'ticker' in activity ? `Trade: ${activity.ticker}` : 'Trade'}` : activity.title}
                         </TableCell>
                         <TableCell className="text-right">
                             {activity.type === 'trade' && 'quantity' in activity ? (
