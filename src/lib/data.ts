@@ -35,8 +35,12 @@ export const learningModules: LearningModule[] = [
         text: 'A "market order" is an instruction to buy or sell a stock at the best available current price. It guarantees execution but not the price. A "limit order" is an instruction to buy or sell a stock at a specific price or better. It gives you control over the price but does not guarantee that the order will be executed.',
       },
        {
-        title: 'What are SEBI regulations?',
-        text: 'The Securities and Exchange Board of India (SEBI) is the regulator for the securities and commodity market in India. SEBI regulations are designed to protect the interests of investors in securities and to promote the development of, and to regulate the securities market. Key regulations cover insider trading, takeovers, and mutual funds.',
+        title: 'The Role of SEBI',
+        text: 'The Securities and Exchange Board of India (SEBI) is the primary regulator for the securities and commodity market in India. Established in 1992, its main purpose is to protect the interests of investors and to promote and regulate the Indian securities markets. SEBI ensures that the market is fair, transparent, and efficient.',
+      },
+      {
+        title: 'Key SEBI Regulations for Investors',
+        text: 'SEBI has implemented several key regulations every investor should be aware of. These include the Prohibition of Insider Trading regulations, which prevent company insiders from using non-public information for personal profit. Another is the Substantial Acquisition of Shares and Takeovers (SAST) Regulations, which governs how one company can acquire another. SEBI also has strict disclosure norms, requiring companies to regularly publish financial results and other important information to keep investors informed.'
       }
     ],
     quiz: [
@@ -57,6 +61,12 @@ export const learningModules: LearningModule[] = [
         options: ['To maximize profits for companies', 'To regulate the securities market and protect investors', 'To provide stock recommendations', 'To manage the national budget'],
         correctAnswer: 'To regulate the securities market and protect investors',
         explanation: 'SEBI\'s primary role is to ensure the Indian securities market is fair, transparent, and efficient, and to protect the interests of investors.',
+      },
+      {
+        question: 'Which of these is a key regulation enforced by SEBI?',
+        options: ['Rules for setting stock prices', 'Prohibition of Insider Trading regulations', 'Guidelines for how much profit a company can make', 'Regulations on which stocks an individual can buy'],
+        correctAnswer: 'Prohibition of Insider Trading regulations',
+        explanation: 'SEBI\'s regulations against insider trading are crucial for maintaining a fair market where no one has an unfair advantage from non-public information.',
       }
     ],
   },
