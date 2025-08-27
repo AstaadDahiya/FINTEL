@@ -38,7 +38,7 @@ export default function InsightsPage() {
                                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                                 <Input
                                     type="search"
-                                    placeholder="e.g., AAPL, GOOGL"
+                                    placeholder="e.g., AAPL, RELIANCE.NS"
                                     className="pl-8"
                                     value={inputValue}
                                     onChange={(e) => setInputValue(e.target.value)}
@@ -54,3 +54,5 @@ export default function InsightsPage() {
         </div>
     );
 }
+
+    

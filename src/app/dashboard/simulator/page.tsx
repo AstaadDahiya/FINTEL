@@ -197,7 +197,7 @@ export default function SimulatorPage() {
                                     <div>
                                         <CardTitle className="text-2xl">{selectedStock.name} ({selectedStock.symbol})</CardTitle>
                                         <p className={`text-3xl font-bold mt-1 flex items-center gap-2 ${selectedStock.change >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                                          ${selectedStock.price.toFixed(2)} 
+                                          ₹{selectedStock.price.toFixed(2)} 
                                           <span className="text-sm font-medium flex items-center">
                                             {selectedStock.change >= 0 ? <ArrowUp className="h-4 w-4"/> : <ArrowDown className="h-4 w-4"/>}
                                             {selectedStock.change.toFixed(2)} ({selectedStock.changePercent.toFixed(2)}%)
@@ -209,7 +209,7 @@ export default function SimulatorPage() {
                                           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                                           <Input 
                                             type="search" 
-                                            placeholder="e.g., AAPL, GOOGL" 
+                                            placeholder="e.g., AAPL, RELIANCE.NS" 
                                             className="pl-8" 
                                             value={searchInput}
                                             onChange={e => setSearchInput(e.target.value)}
@@ -259,7 +259,7 @@ export default function SimulatorPage() {
                             </div>
                             <div className="flex justify-between items-center text-sm text-muted-foreground">
                                 <span>Total Cost:</span>
-                                <span className="font-semibold text-foreground">${selectedStock ? (quantity * selectedStock.price).toFixed(2) : '0.00'}</span>
+                                <span className="font-semibold text-foreground">₹{selectedStock ? (quantity * selectedStock.price).toFixed(2) : '0.00'}</span>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <Button variant="outline" className="text-red-600 border-red-600/50 hover:bg-red-600/10 hover:text-red-700" onClick={() => handleTrade('Sell')} disabled={!selectedStock || loading}>Sell</Button>
@@ -279,7 +279,7 @@ export default function SimulatorPage() {
                              <div className="text-right">
                                 <p className="text-sm text-muted-foreground">Total Value</p>
                                 <p className="text-2xl font-bold">
-                                    {isClient ? `$${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2})}`: <Loader2 className="h-6 w-6 animate-spin" />}
+                                    {isClient ? `₹${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2})}`: <Loader2 className="h-6 w-6 animate-spin" />}
                                 </p>
                              </div>
                            </div>
@@ -305,7 +305,7 @@ export default function SimulatorPage() {
                                                 <TableCell className="font-medium">Cash</TableCell>
                                                 <TableCell>Currency</TableCell>
                                                 <TableCell>-</TableCell>
-                                                <TableCell>{isClient ? `$${portfolio.cash.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2})}` : <Loader2 className="h-4 w-4 animate-spin" />}</TableCell>
+                                                <TableCell>{isClient ? `₹${portfolio.cash.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2})}` : <Loader2 className="h-4 w-4 animate-spin" />}</TableCell>
                                             </TableRow>
                                             {isClient && Object.entries(portfolio.stocks).map(([ticker, qty]) => {
                                                 if (!qty || qty === 0) return null;
@@ -316,7 +316,7 @@ export default function SimulatorPage() {
                                                         <TableCell className="font-medium">{ticker}</TableCell>
                                                         <TableCell>Stock</TableCell>
                                                         <TableCell>{qty}</TableCell>
-                                                        <TableCell>${value}</TableCell>
+                                                        <TableCell>₹{value}</TableCell>
                                                     </TableRow>
                                                 )
                                             })}
@@ -349,8 +349,8 @@ export default function SimulatorPage() {
                                                     <TableCell className={trade.type === 'Buy' ? 'text-emerald-600' : 'text-red-600'}>{trade.type}</TableCell>
                                                     <TableCell className="font-medium">{trade.ticker}</TableCell>
                                                     <TableCell>{trade.quantity}</TableCell>
-                                                    <TableCell>${trade.price.toFixed(2)}</TableCell>
-                                                    <TableCell>${(trade.quantity * trade.price).toFixed(2)}</TableCell>
+                                                    <TableCell>₹{trade.price.toFixed(2)}</TableCell>
+                                                    <TableCell>₹{(trade.quantity * trade.price).toFixed(2)}</TableCell>
                                                 </TableRow>
                                             )) : (
                                                 <TableRow>
@@ -370,3 +370,5 @@ export default function SimulatorPage() {
         </div>
     );
 }
+
+    

@@ -76,7 +76,7 @@ export default function PortfolioSummary() {
         <Wallet className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+        <div className="text-2xl font-bold">₹{totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
         <div className={`flex items-center gap-1 text-xs ${allTimeReturn >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
            {allTimeReturn >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
           <span>{allTimeReturn.toFixed(2)}% all time return</span>
@@ -85,3 +85,5 @@ export default function PortfolioSummary() {
     </Card>
   )
 }
+
+    

@@ -1,3 +1,4 @@
+
 "use client"
 import { Line, LineChart as RechartsLineChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
@@ -22,7 +23,7 @@ export default function StockChart({ data }: StockChartProps) {
                 >
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} domain={['dataMin - 20', 'dataMax + 20']} tickFormatter={(value) => `$${value}`} />
+                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} domain={['dataMin - 20', 'dataMax + 20']} tickFormatter={(value) => `₹${value}`} />
                     <Tooltip
                         cursor={{ stroke: 'hsl(var(--primary))', strokeWidth: 1, strokeDasharray: '3 3' }}
                         content={<ChartTooltipContent />}
@@ -34,3 +35,5 @@ export default function StockChart({ data }: StockChartProps) {
     </div>
   );
 }
+
+    
