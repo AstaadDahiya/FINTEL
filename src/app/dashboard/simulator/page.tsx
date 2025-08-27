@@ -32,6 +32,11 @@ type Trade = {
 
 export default function SimulatorPage() {
     const { user } = useAuth();
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
 
     const portfolioKey = useMemo(() => user ? `portfolio_${user.uid}` : 'portfolio', [user]);
     const tradeHistoryKey = useMemo(() => user ? `tradeHistory_${user.uid}` : 'tradeHistory', [user]);
@@ -116,9 +121,11 @@ export default function SimulatorPage() {
             await updatePortfolioStockPrices(portfolioTickers);
             setLoading(false);
         }
-        initialize();
+        if (isClient) {
+          initialize();
+        }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [isClient]);
 
     const handleTrade = (type: 'Buy' | 'Sell') => {
         if (!selectedStock) return;
@@ -165,11 +172,11 @@ export default function SimulatorPage() {
         });
     };
     
-    const portfolioValue = Object.entries(portfolio.stocks).reduce((acc, [ticker, qty]) => {
+    const portfolioValue = isClient ? Object.entries(portfolio.stocks).reduce((acc, [ticker, qty]) => {
         const stockPrice = stockCache[ticker]?.price || 0;
         return acc + (stockPrice * (qty || 0));
-    }, 0);
-    const totalValue = portfolio.cash + portfolioValue;
+    }, 0) : 0;
+    const totalValue = isClient ? portfolio.cash + portfolioValue : 0;
 
     return (
         <div>
@@ -181,7 +188,7 @@ export default function SimulatorPage() {
                 <div className="lg:col-span-2">
                     <Card>
                         <CardHeader>
-                            {loading ? (
+                            {loading && !isClient ? (
                                <div className="flex items-center justify-center h-24">
                                   <Loader2 className="h-8 w-8 animate-spin text-primary" />
                                </div>
@@ -271,7 +278,9 @@ export default function SimulatorPage() {
                              </div>
                              <div className="text-right">
                                 <p className="text-sm text-muted-foreground">Total Value</p>
-                                <p className="text-2xl font-bold">${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                                <p className="text-2xl font-bold">
+                                    {isClient ? `$${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2})}`: <Loader2 className="h-6 w-6 animate-spin" />}
+                                </p>
                              </div>
                            </div>
                         </CardHeader>
@@ -296,9 +305,9 @@ export default function SimulatorPage() {
                                                 <TableCell className="font-medium">Cash</TableCell>
                                                 <TableCell>Currency</TableCell>
                                                 <TableCell>-</TableCell>
-                                                <TableCell>${portfolio.cash.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2})}</TableCell>
+                                                <TableCell>{isClient ? `$${portfolio.cash.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2})}` : <Loader2 className="h-4 w-4 animate-spin" />}</TableCell>
                                             </TableRow>
-                                            {Object.entries(portfolio.stocks).map(([ticker, qty]) => {
+                                            {isClient && Object.entries(portfolio.stocks).map(([ticker, qty]) => {
                                                 if (!qty || qty === 0) return null;
                                                 const stock = stockCache[ticker as StockSymbol];
                                                 const value = stock ? (stock.price * qty).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2}) : 'Loading...';
@@ -311,6 +320,13 @@ export default function SimulatorPage() {
                                                     </TableRow>
                                                 )
                                             })}
+                                             {!isClient && (
+                                                <TableRow>
+                                                    <TableCell colSpan={4} className="h-24 text-center">
+                                                        <Loader2 className="h-6 w-6 animate-spin" />
+                                                    </TableCell>
+                                                </TableRow>
+                                            )}
                                         </TableBody>
                                     </Table>
                                 </TabsContent>
@@ -327,16 +343,22 @@ export default function SimulatorPage() {
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                            {tradeHistory.map((trade, index) => (
+                                            {isClient ? tradeHistory.map((trade, index) => (
                                                 <TableRow key={index}>
                                                     <TableCell>{trade.date}</TableCell>
                                                     <TableCell className={trade.type === 'Buy' ? 'text-emerald-600' : 'text-red-600'}>{trade.type}</TableCell>
                                                     <TableCell className="font-medium">{trade.ticker}</TableCell>
                                                     <TableCell>{trade.quantity}</TableCell>
                                                     <TableCell>${trade.price.toFixed(2)}</TableCell>
-                                                    <TableCell>${(trade.quantity * trade.price).toFixed(2)}}</TableCell>
+                                                    <TableCell>${(trade.quantity * trade.price).toFixed(2)}</TableCell>
                                                 </TableRow>
-                                            ))}
+                                            )) : (
+                                                <TableRow>
+                                                    <TableCell colSpan={6} className="h-24 text-center">
+                                                        <Loader2 className="h-6 w-6 animate-spin" />
+                                                    </TableCell>
+                                                </TableRow>
+                                            )}
                                         </TableBody>
                                     </Table>
                                 </TabsContent>
@@ -348,3 +370,5 @@ export default function SimulatorPage() {
         </div>
     );
 }
+
+    
