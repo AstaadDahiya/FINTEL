@@ -34,6 +34,10 @@ export const learningModules: LearningModule[] = [
         title: 'Understanding Market Orders and Limit Orders',
         text: 'A "market order" is an instruction to buy or sell a stock at the best available current price. It guarantees execution but not the price. A "limit order" is an instruction to buy or sell a stock at a specific price or better. It gives you control over the price but does not guarantee that the order will be executed.',
       },
+       {
+        title: 'What are SEBI regulations?',
+        text: 'The Securities and Exchange Board of India (SEBI) is the regulator for the securities and commodity market in India. SEBI regulations are designed to protect the interests of investors in securities and to promote the development of, and to regulate the securities market. Key regulations cover insider trading, takeovers, and mutual funds.',
+      }
     ],
     quiz: [
       {
@@ -48,9 +52,15 @@ export const learningModules: LearningModule[] = [
         correctAnswer: 'Market orders guarantee execution, limit orders guarantee a price',
         explanation: 'A market order executes immediately at the current market price, while a limit order only executes if the stock reaches your specified price or better.',
       },
+       {
+        question: 'What is the main purpose of SEBI?',
+        options: ['To maximize profits for companies', 'To regulate the securities market and protect investors', 'To provide stock recommendations', 'To manage the national budget'],
+        correctAnswer: 'To regulate the securities market and protect investors',
+        explanation: 'SEBI\'s primary role is to ensure the Indian securities market is fair, transparent, and efficient, and to protect the interests of investors.',
+      }
     ],
   },
-  {
+   {
     slug: 'risk-assessment-techniques',
     title: 'Risk Assessment Techniques',
     description: 'Learn how investors use data to measure and understand investment risk.',
@@ -67,6 +77,10 @@ export const learningModules: LearningModule[] = [
         title: 'Standard Deviation: Gauging Price Fluctuation',
         text: 'Standard deviation is a statistical measure of the dispersion of a security\'s returns. A high standard deviation indicates that the stock\'s price has fluctuated significantly, suggesting higher volatility and risk. A low standard deviation implies the price has been more stable.',
       },
+      {
+        title: 'Value at Risk (VaR)',
+        text: 'Value at Risk (VaR) is a statistic that quantifies the extent of possible financial losses within a firm, portfolio, or position over a specific time frame. For example, a VaR of 1 lakh at 5% probability means there is a 5% chance that the portfolio could lose more than 1 lakh in a given day.',
+      },
     ],
     quiz: [
       {
@@ -81,9 +95,15 @@ export const learningModules: LearningModule[] = [
         correctAnswer: 'The stock has experienced wide price swings and is more volatile',
         explanation: 'Standard deviation measures the historical volatility of a stock. A higher value means the price has been less consistent, indicating higher risk.',
       },
+       {
+        question: 'What does a 5% VaR of 10,000 INR mean?',
+        options: ['You will lose exactly 10,000 INR', 'You have a 5% chance of losing more than 10,000 INR', 'You will gain 10,000 INR', 'You have a 95% chance of losing 10,000 INR'],
+        correctAnswer: 'You have a 5% chance of losing more than 10,000 INR',
+        explanation: 'VaR measures potential loss. A 5% VaR of 10,000 INR indicates the statistical probability of losing more than that amount is 5% over the specified timeframe.',
+      }
     ],
   },
-  {
+    {
     slug: 'algorithmic-trading-hft',
     title: 'Algorithmic Trading & HFT',
     description: 'A high-level overview of automated and high-frequency trading.',
@@ -100,6 +120,10 @@ export const learningModules: LearningModule[] = [
         title: 'Pros and Cons of Algo Trading',
         text: 'Pros include increased market liquidity, faster trade execution, and the removal of human emotion from trading decisions. Cons include the potential for large-scale errors if an algorithm is flawed, creating "flash crashes," and the high cost of technology, which creates a high barrier to entry.',
       },
+       {
+        title: 'Impact on Indian Markets',
+        text: 'In India, algorithmic trading accounts for a significant portion of the total orders placed on the exchanges. SEBI has specific regulations in place to prevent market manipulation and reduce systemic risks associated with high-speed, automated trading systems.',
+      },
     ],
     quiz: [
       {
@@ -114,6 +138,12 @@ export const learningModules: LearningModule[] = [
         correctAnswer: 'It can execute trades at very high speeds and remove emotion',
         explanation: 'One of the key benefits of algo trading is its ability to process information and execute trades far faster than any human, while also sticking strictly to its programmed logic without emotional bias.',
       },
+       {
+        question: 'What characterizes High-Frequency Trading (HFT)?',
+        options: ['Slow, long-term investments', 'A small number of large trades', 'Extremely high speed and high volume of trades', 'A focus on fundamental analysis'],
+        correctAnswer: 'Extremely high speed and high volume of trades',
+        explanation: 'HFT is a subset of algorithmic trading that involves executing a very large number of orders at extremely high speeds, often in microseconds.',
+      }
     ],
   },
   {
@@ -133,6 +163,10 @@ export const learningModules: LearningModule[] = [
         title: 'Methods of Diversification',
         text: 'You can diversify across different asset classes (stocks, bonds, commodities), across different sectors (e.g., technology, healthcare, finance), and across different geographies (domestic and international stocks). Exchange-Traded Funds (ETFs) are an excellent tool for achieving instant diversification.',
       },
+      {
+        title: 'Rebalancing Your Portfolio',
+        text: 'Rebalancing is the process of realigning the weightings of a portfolio of assets. Rebalancing involves periodically buying or selling assets in a portfolio to maintain an original or desired level of asset allocation or risk. For instance, if stocks have performed well, their weighting in your portfolio might increase, so you would sell some stocks to bring the allocation back in line.',
+      }
     ],
     quiz: [
       {
@@ -146,6 +180,111 @@ export const learningModules: LearningModule[] = [
         options: ['High correlation', 'The same level of risk', 'Low or negative correlation', 'Identical returns'],
         correctAnswer: 'Low or negative correlation',
         explanation: 'Assets that are not highly correlated are less likely to move in the same direction at the same time, which is the key to effective risk reduction through diversification.',
+      },
+       {
+        question: 'What is portfolio rebalancing?',
+        options: ['Selling all your investments', 'Buying more of your best-performing asset', 'Periodically adjusting your portfolio to its original asset allocation', 'Only investing once a year'],
+        correctAnswer: 'Periodically adjusting your portfolio to its original asset allocation',
+        explanation: 'Rebalancing is crucial for maintaining your desired risk level and ensuring your portfolio does not become over-concentrated in one area.',
+      }
+    ],
+  },
+  {
+    slug: 'technical-analysis',
+    title: 'Technical Analysis',
+    description: 'Learn to analyze statistical trends from trading activity, such as price movement and volume.',
+    content: [
+      {
+        title: 'Introduction to Technical Analysis',
+        text: 'Technical analysis is a trading discipline employed to evaluate investments and identify trading opportunities by analyzing statistical trends gathered from trading activity, such as price movement and volume. Unlike fundamental analysts who attempt to evaluate a security\'s intrinsic value, technical analysts focus on patterns of price movements, trading signals and various other analytical charting tools to evaluate a security\'s strength or weakness.',
+      },
+      {
+        title: 'Support and Resistance',
+        text: 'Support and resistance are two of the most basic and important concepts in technical analysis. Support is the price level at which demand is thought to be strong enough to prevent the price from falling further. Resistance is the price level at which selling is thought to be strong enough to prevent the price from rising further. These levels are key because they represent the points where the psychological battle between buyers (bulls) and sellers (bears) is most intense.',
+      },
+      {
+        title: 'Moving Averages',
+        text: 'A moving average is a widely used indicator in technical analysis that helps smooth out price action by filtering out the "noise" from random short-term price fluctuations. It is a trend-following, or lagging, indicator because it is based on past prices. The two basic and commonly used moving averages are the simple moving average (SMA) and the exponential moving average (EMA).',
+      },
+    ],
+    quiz: [
+      {
+        question: 'What is the primary focus of technical analysis?',
+        options: ['A company\'s financial health', 'The intrinsic value of a stock', 'Price patterns and trading volume', 'The global economic outlook'],
+        correctAnswer: 'Price patterns and trading volume',
+        explanation: 'Technical analysis is based on the idea that all relevant information is already reflected in a stock\'s price and trading volume, which can be analyzed to predict future movements.',
+      },
+      {
+        question: 'What does a "resistance" level indicate?',
+        options: ['A price level where buying is expected to be strong', 'A price level where selling is expected to be strong', 'The lowest price a stock has ever reached', 'The ideal price to buy a stock'],
+        correctAnswer: 'A price level where selling is expected to be strong',
+        explanation: 'Resistance is a price ceiling where selling pressure is expected to be strong enough to prevent the price from rising further.',
+      },
+    ],
+  },
+  {
+    slug: 'fundamental-analysis',
+    title: 'Fundamental Analysis',
+    description: 'Dive into the method of measuring a security’s intrinsic value by examining related economic and financial factors.',
+    content: [
+      {
+        title: 'What is Fundamental Analysis?',
+        text: 'Fundamental analysis is a method of evaluating a security in an attempt to measure its intrinsic value, by examining related economic, financial, and other qualitative and quantitative factors. The end goal is to produce a quantitative value that an investor can compare with a security\'s current price, thus indicating whether the security is undervalued or overvalued.',
+      },
+      {
+        title: 'Key Metrics: P/E Ratio and EPS',
+        text: 'The Price-to-Earnings (P/E) ratio is a key metric for valuation, calculated as the stock price per share divided by the annual earnings per share (EPS). A high P/E could mean that a stock\'s price is high relative to earnings and possibly overvalued. Earnings Per Share (EPS) is the portion of a company\'s profit allocated to each outstanding share of common stock, serving as an indicator of a company\'s profitability.',
+      },
+      {
+        title: 'Reading a Balance Sheet',
+        text: 'A balance sheet is a financial statement that reports a company\'s assets, liabilities, and shareholder equity at a specific point in time. It provides a snapshot of what a company owns and owes, as well as the amount invested by shareholders. The fundamental accounting equation is: Assets = Liabilities + Shareholder Equity.',
+      },
+    ],
+    quiz: [
+      {
+        question: 'What is the main goal of fundamental analysis?',
+        options: ['To identify short-term chart patterns', 'To determine a security\'s intrinsic value', 'To follow market trends blindly', 'To trade as frequently as possible'],
+        correctAnswer: 'To determine a security\'s intrinsic value',
+        explanation: 'Fundamental analysis focuses on determining if a stock is fairly valued, overvalued, or undervalued by analyzing the company\'s financial health and economic conditions.',
+      },
+      {
+        question: 'A high P/E ratio might suggest that a stock is:',
+        options: ['Undervalued', 'Fairly valued', 'Overvalued', 'A risk-free investment'],
+        correctAnswer: 'Overvalued',
+        explanation: 'A high P/E ratio often indicates that investors are expecting higher earnings growth in the future compared to the overall market, but it can also suggest that the stock is overvalued.',
+      },
+    ],
+  },
+  {
+    slug: 'advanced-options-trading',
+    title: 'Advanced Options Trading',
+    description: 'Explore complex strategies for options trading, including spreads and combinations.',
+    content: [
+      {
+        title: 'What are Options?',
+        text: 'Options are financial instruments that are derivatives based on the value of underlying securities such as stocks. An options contract offers the buyer the opportunity to buy or sell—depending on the type of contract they hold—the underlying asset. Unlike futures, the holder is not required to buy or sell the asset if they decide against it.',
+      },
+      {
+        title: 'Calls and Puts',
+        text: 'A "call" option gives the holder the right to buy an asset at a stated price within a specific timeframe. A "put" option gives the holder the right to sell an asset at a stated price within a specific timeframe. You buy calls when you are bullish on a stock and buy puts when you are bearish.',
+      },
+      {
+        title: 'Understanding Spreads',
+        text: 'An options spread is a strategy that involves buying and selling multiple options on the same underlying asset. This is done to reduce risk, but it also caps the potential profit. A common example is a "bull call spread," where you buy a call option at a certain strike price and simultaneously sell a call option with a higher strike price but the same expiration date.',
+      },
+    ],
+    quiz: [
+      {
+        question: 'When would an investor typically buy a call option?',
+        options: ['When they expect the stock price to fall', 'When they expect the stock price to rise', 'When they expect the stock price to stay flat', 'When they want to short a stock'],
+        correctAnswer: 'When they expect the stock price to rise',
+        explanation: 'A call option grants the right to buy a stock at a specific price, so it becomes profitable if the stock\'s market price rises above that strike price.',
+      },
+      {
+        question: 'What is the primary purpose of an options spread strategy?',
+        options: ['To maximize potential profit', 'To simplify the trading process', 'To reduce the cost and risk of an options position', 'To hold an option for a longer time'],
+        correctAnswer: 'To reduce the cost and risk of an options position',
+        explanation: 'By simultaneously buying and selling options, spreads can lower the net cost and define the maximum possible loss, which is a key risk management technique.',
       },
     ],
   },
