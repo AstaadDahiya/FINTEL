@@ -2,9 +2,10 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { getAuth, onAuthStateChanged, User, GoogleAuthProvider, signInWithPopup, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { getAuth, onAuthStateChanged, User, GoogleAuthProvider, signInWithPopup, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, updateEmail, updatePassword } from 'firebase/auth';
+import { auth, storage } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 interface AuthContextType {
   user: User | null;
@@ -13,6 +14,10 @@ interface AuthContextType {
   signInWithEmail: (email: string, pass: string) => Promise<void>;
   signUpWithEmail: (email: string, pass: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateUserDisplayName: (name: string) => Promise<void>;
+  updateUserEmail: (email: string) => Promise<void>;
+  updateUserPassword: (password: string) => Promise<void>;
+  updateUserProfilePicture: (file: File) => Promise<string>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -38,6 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       router.push('/dashboard');
     } catch (error) {
       console.error("Error signing in with Google", error);
+      throw error;
     }
   };
 
@@ -56,7 +62,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-
   const logout = async () => {
     try {
       await signOut(auth);
@@ -65,9 +70,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error("Error signing out", error);
     }
   };
+  
+  const updateUserProfile = async (updates: { displayName?: string; photoURL?: string }) => {
+    if (!auth.currentUser) throw new Error("User not logged in");
+    await updateProfile(auth.currentUser, updates);
+    setUser(auth.currentUser);
+  };
+  
+  const updateUserDisplayName = async (name: string) => {
+    await updateUserProfile({ displayName: name });
+  };
+  
+  const updateUserEmail = async (email: string) => {
+    if (!auth.currentUser) throw new Error("User not logged in");
+    await updateEmail(auth.currentUser, email);
+    setUser(auth.currentUser);
+  };
+
+  const updateUserPassword = async (password: string) => {
+    if (!auth.currentUser) throw new Error("User not logged in");
+    await updatePassword(auth.currentUser, password);
+  };
+
+  const updateUserProfilePicture = async (file: File) => {
+    if (!auth.currentUser) throw new Error("User not logged in");
+    const storageRef = ref(storage, `profile-pictures/${auth.currentUser.uid}`);
+    await uploadBytes(storageRef, file);
+    const photoURL = await getDownloadURL(storageRef);
+    await updateUserProfile({ photoURL });
+    return photoURL;
+  };
+
 
   return (
-    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signInWithEmail, signUpWithEmail, logout }}>
+    <AuthContext.Provider value={{ 
+        user, 
+        loading, 
+        signInWithGoogle, 
+        signInWithEmail, 
+        signUpWithEmail, 
+        logout,
+        updateUserDisplayName,
+        updateUserEmail,
+        updateUserPassword,
+        updateUserProfilePicture
+    }}>
       {children}
     </AuthContext.Provider>
   );

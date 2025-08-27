@@ -250,7 +250,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>{user?.displayName}</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem asChild><Link href="/dashboard/settings">Settings</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/dashboard/settings">Profile & Settings</Link></DropdownMenuItem>
               <DropdownMenuItem asChild><Link href="/dashboard/support">Support</Link></DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
