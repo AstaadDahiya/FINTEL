@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchStockData, StockData } from "@/lib/alpha-vantage";
 import { useAuth } from "@/hooks/use-auth";
+import { Badge } from "@/components/ui/badge";
 
 type StockSymbol = string;
 
@@ -185,7 +186,7 @@ export default function SimulatorPage() {
                 <p className="text-muted-foreground">Practice trading with delayed real-world market data, risk-free.</p>
             </div>
             <div className="grid gap-8 lg:grid-cols-3">
-                <div className="lg:col-span-2">
+                <div className="lg:col-span-2 flex flex-col gap-8">
                     <Card>
                         <CardHeader>
                             {loading && !isClient ? (
@@ -209,7 +210,7 @@ export default function SimulatorPage() {
                                           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                                           <Input 
                                             type="search" 
-                                            placeholder="e.g., AAPL, RELIANCE.NS" 
+                                            placeholder="e.g., AAPL" 
                                             className="pl-8" 
                                             value={searchInput}
                                             onChange={e => setSearchInput(e.target.value)}
@@ -238,42 +239,49 @@ export default function SimulatorPage() {
                             )}
                         </CardContent>
                     </Card>
-                </div>
-                <div className="lg:col-span-1 flex flex-col gap-8">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Trade {selectedStock?.symbol || '...'}</CardTitle>
+                           <CardTitle>Key Statistics</CardTitle>
+                           <CardDescription>Important data points for {selectedStock?.symbol || '...'}</CardDescription>
                         </CardHeader>
-                        <CardContent className="grid gap-4">
-                            <div className="grid gap-2">
-                                <Label htmlFor="quantity">Quantity</Label>
-                                <Input 
-                                  id="quantity" 
-                                  type="number" 
-                                  placeholder="1"
-                                  min="1"
-                                  value={quantity} 
-                                  onChange={e => setQuantity(parseInt(e.target.value, 10) || 1)}
-                                  disabled={!selectedStock || loading}
-                                />
-                            </div>
-                            <div className="flex justify-between items-center text-sm text-muted-foreground">
-                                <span>Total Cost:</span>
-                                <span className="font-semibold text-foreground">₹{selectedStock ? (quantity * selectedStock.price).toFixed(2) : '0.00'}</span>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <Button variant="outline" className="text-red-600 border-red-600/50 hover:bg-red-600/10 hover:text-red-700" onClick={() => handleTrade('Sell')} disabled={!selectedStock || loading}>Sell</Button>
-                                <Button className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={() => handleTrade('Buy')} disabled={!selectedStock || loading}>Buy</Button>
-                            </div>
+                        <CardContent>
+                             {loading || isSearching ? (
+                                <div className="h-[100px] w-full flex items-center justify-center">
+                                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                                </div>
+                            ) : selectedStock ? (
+                               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                   <div className="space-y-1">
+                                       <p className="text-muted-foreground">Day High</p>
+                                       <p className="font-semibold">₹{selectedStock.dayHigh?.toFixed(2) || 'N/A'}</p>
+                                   </div>
+                                   <div className="space-y-1">
+                                       <p className="text-muted-foreground">Day Low</p>
+                                       <p className="font-semibold">₹{selectedStock.dayLow?.toFixed(2) || 'N/A'}</p>
+                                   </div>
+                                   <div className="space-y-1">
+                                       <p className="text-muted-foreground">52 Wk High</p>
+                                       <p className="font-semibold">₹{selectedStock.yearHigh?.toFixed(2) || 'N/A'}</p>
+                                   </div>
+                                    <div className="space-y-1">
+                                       <p className="text-muted-foreground">52 Wk Low</p>
+                                       <p className="font-semibold">₹{selectedStock.yearLow?.toFixed(2) || 'N/A'}</p>
+                                   </div>
+                               </div>
+                            ) : (
+                                <div className="h-[100px] w-full flex items-center justify-center bg-muted rounded-md">
+                                    <p className="text-muted-foreground">No statistics to display.</p>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 </div>
-                <div className="lg:col-span-3">
+                <div className="lg:col-span-1 flex flex-col gap-8">
                     <Card>
-                        <CardHeader>
+                         <CardHeader>
                            <div className="flex justify-between items-center">
                              <div>
-                               <CardTitle>My Portfolio</CardTitle>
+                               <CardTitle>Portfolio</CardTitle>
                                <CardDescription>Your current holdings and cash balance.</CardDescription>
                              </div>
                              <div className="text-right">
@@ -285,19 +293,44 @@ export default function SimulatorPage() {
                            </div>
                         </CardHeader>
                         <CardContent>
-                            <Tabs defaultValue="overview">
-                                <TabsList>
-                                    <TabsTrigger value="overview">Overview</TabsTrigger>
-                                    <TabsTrigger value="history">Trade History</TabsTrigger>
+                            <Tabs defaultValue="trade">
+                                <TabsList className="grid w-full grid-cols-3">
+                                    <TabsTrigger value="trade">Trade</TabsTrigger>
+                                    <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
+                                    <TabsTrigger value="history">History</TabsTrigger>
                                 </TabsList>
-                                <TabsContent value="overview">
+                                <TabsContent value="trade">
+                                    <div className="grid gap-4 py-4">
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="quantity">Quantity</Label>
+                                            <Input 
+                                            id="quantity" 
+                                            type="number" 
+                                            placeholder="1"
+                                            min="1"
+                                            value={quantity} 
+                                            onChange={e => setQuantity(parseInt(e.target.value, 10) || 1)}
+                                            disabled={!selectedStock || loading}
+                                            />
+                                        </div>
+                                        <div className="flex justify-between items-center text-sm text-muted-foreground">
+                                            <span>Estimated Cost:</span>
+                                            <span className="font-semibold text-foreground">₹{selectedStock ? (quantity * selectedStock.price).toFixed(2) : '0.00'}</span>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <Button variant="outline" className="text-red-600 border-red-600/50 hover:bg-red-600/10 hover:text-red-700" onClick={() => handleTrade('Sell')} disabled={!selectedStock || loading}>Sell</Button>
+                                            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={() => handleTrade('Buy')} disabled={!selectedStock || loading}>Buy</Button>
+                                        </div>
+                                    </div>
+                                </TabsContent>
+                                <TabsContent value="portfolio">
                                     <Table>
                                         <TableHeader>
                                             <TableRow>
                                                 <TableHead>Asset</TableHead>
                                                 <TableHead>Type</TableHead>
-                                                <TableHead>Quantity</TableHead>
-                                                <TableHead>Current Value</TableHead>
+                                                <TableHead>Qty</TableHead>
+                                                <TableHead className="text-right">Value</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -305,18 +338,18 @@ export default function SimulatorPage() {
                                                 <TableCell className="font-medium">Cash</TableCell>
                                                 <TableCell>Currency</TableCell>
                                                 <TableCell>-</TableCell>
-                                                <TableCell>{isClient ? `₹${portfolio.cash.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2})}` : <Loader2 className="h-4 w-4 animate-spin" />}</TableCell>
+                                                <TableCell className="text-right">{isClient ? `₹${portfolio.cash.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2})}` : <Loader2 className="h-4 w-4 animate-spin" />}</TableCell>
                                             </TableRow>
                                             {isClient && Object.entries(portfolio.stocks).map(([ticker, qty]) => {
                                                 if (!qty || qty === 0) return null;
                                                 const stock = stockCache[ticker as StockSymbol];
-                                                const value = stock ? (stock.price * qty).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2}) : 'Loading...';
+                                                const value = stock ? (stock.price * qty) : 0;
                                                 return (
                                                     <TableRow key={ticker}>
                                                         <TableCell className="font-medium">{ticker}</TableCell>
                                                         <TableCell>Stock</TableCell>
                                                         <TableCell>{qty}</TableCell>
-                                                        <TableCell>₹{value}</TableCell>
+                                                        <TableCell className="text-right">₹{value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2}) || 'Loading...'}</TableCell>
                                                     </TableRow>
                                                 )
                                             })}
@@ -334,28 +367,29 @@ export default function SimulatorPage() {
                                      <Table>
                                         <TableHeader>
                                             <TableRow>
-                                                <TableHead>Date</TableHead>
-                                                <TableHead>Type</TableHead>
                                                 <TableHead>Ticker</TableHead>
-                                                <TableHead>Quantity</TableHead>
-                                                <TableHead>Price</TableHead>
-                                                <TableHead>Total</TableHead>
+                                                <TableHead>Type</TableHead>
+                                                <TableHead className="text-right">Qty</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                            {isClient ? tradeHistory.map((trade, index) => (
+                                            {isClient ? tradeHistory.slice(0,10).map((trade, index) => (
                                                 <TableRow key={index}>
-                                                    <TableCell>{trade.date}</TableCell>
-                                                    <TableCell className={trade.type === 'Buy' ? 'text-emerald-600' : 'text-red-600'}>{trade.type}</TableCell>
                                                     <TableCell className="font-medium">{trade.ticker}</TableCell>
-                                                    <TableCell>{trade.quantity}</TableCell>
-                                                    <TableCell>₹{trade.price.toFixed(2)}</TableCell>
-                                                    <TableCell>₹{(trade.quantity * trade.price).toFixed(2)}</TableCell>
+                                                    <TableCell><Badge variant={trade.type === 'Buy' ? 'default' : 'destructive'} className={trade.type === 'Buy' ? 'bg-emerald-600' : 'bg-red-600'}>{trade.type}</Badge></TableCell>
+                                                    <TableCell className="text-right">{trade.quantity}</TableCell>
                                                 </TableRow>
                                             )) : (
                                                 <TableRow>
-                                                    <TableCell colSpan={6} className="h-24 text-center">
+                                                    <TableCell colSpan={3} className="h-24 text-center">
                                                         <Loader2 className="h-6 w-6 animate-spin" />
+                                                    </TableCell>
+                                                </TableRow>
+                                            )}
+                                            {isClient && tradeHistory.length === 0 && (
+                                                 <TableRow>
+                                                    <TableCell colSpan={3} className="h-24 text-center">
+                                                        No trade history.
                                                     </TableCell>
                                                 </TableRow>
                                             )}
@@ -370,5 +404,7 @@ export default function SimulatorPage() {
         </div>
     );
 }
+
+    
 
     

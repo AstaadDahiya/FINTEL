@@ -1,3 +1,4 @@
+
 'use server';
 
 import { format, subDays } from 'date-fns';
@@ -9,6 +10,10 @@ export interface StockData {
     change: number;
     changePercent: number;
     data: { date: string, price: number }[];
+    dayHigh?: number;
+    dayLow?: number;
+    yearHigh?: number;
+    yearLow?: number;
 }
 
 // --- Indian API Functions ---
@@ -66,6 +71,10 @@ async function fetchIndianStockData(ticker: string): Promise<StockData | null> {
             change,
             changePercent,
             data: formattedData,
+            dayHigh: parseFloat(quoteData.day_high),
+            dayLow: parseFloat(quoteData.day_low),
+            yearHigh: parseFloat(quoteData['52_week_high']),
+            yearLow: parseFloat(quoteData['52_week_low']),
         };
 
         return stockInfo;
@@ -100,16 +109,19 @@ async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | n
 
         const quotePromise = fetch(`${ALPHA_VANTAGE_BASE_URL}?function=GLOBAL_QUOTE&symbol=${ticker}&apikey=${apiKey}`);
         const timeSeriesPromise = fetch(`${ALPHA_VANTAGE_BASE_URL}?function=TIME_SERIES_DAILY&symbol=${ticker}&outputsize=compact&apikey=${apiKey}`);
+        const overviewPromise = fetch(`${ALPHA_VANTAGE_BASE_URL}?function=OVERVIEW&symbol=${ticker}&apikey=${apiKey}`);
 
-        const [quoteRes, timeSeriesRes] = await Promise.all([quotePromise, timeSeriesPromise]);
 
-        if (!quoteRes.ok || !timeSeriesRes.ok) {
-            console.error("Alpha Vantage API request failed", { status: quoteRes.status, statusText: quoteRes.statusText });
+        const [quoteRes, timeSeriesRes, overviewRes] = await Promise.all([quotePromise, timeSeriesPromise, overviewPromise]);
+
+        if (!quoteRes.ok || !timeSeriesRes.ok || !overviewRes.ok) {
+            console.error("Alpha Vantage API request failed", { quoteStatus: quoteRes.status, timeSeriesStatus: timeSeriesRes.status });
             return null;
         }
         
         const quoteData = await quoteRes.json();
         const timeSeriesData = await timeSeriesRes.json();
+        const overviewData = await overviewRes.json();
         
         const globalQuote = quoteData['Global Quote'];
         const dailySeries = timeSeriesData['Time Series (Daily)'];
@@ -133,24 +145,16 @@ async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | n
 
         const stockInfo: StockData = {
             symbol: globalQuote['01. symbol'],
-            name: "Unknown", 
+            name: overviewData.Name || "Unknown", 
             price: parseFloat(globalQuote['05. price']),
             change: parseFloat(globalQuote['09. change']),
             changePercent: parseFloat(globalQuote['10. change percent'].replace('%', '')),
             data: formattedData,
+            dayHigh: parseFloat(globalQuote['03. high']),
+            dayLow: parseFloat(globalQuote['04. low']),
+            yearHigh: parseFloat(overviewData['52WeekHigh']),
+            yearLow: parseFloat(overviewData['52WeekLow']),
         };
-
-        try {
-            const overviewRes = await fetch(`${ALPHA_VANTAGE_BASE_URL}?function=OVERVIEW&symbol=${ticker}&apikey=${apiKey}`);
-            if (overviewRes.ok) {
-                const overviewData = await overviewRes.json();
-                if (overviewData.Name) {
-                    stockInfo.name = overviewData.Name;
-                }
-            }
-        } catch (nameError) {
-            console.error("Could not fetch company name", nameError);
-        }
         
         return stockInfo;
 
@@ -192,3 +196,5 @@ export async function fetchStockData(ticker: string): Promise<StockData | null> 
 
     return stockData;
 }
+
+    
