@@ -2,8 +2,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ArrowUp, TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet } from "lucide-react";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useEffect, useState, useMemo } from "react";
 import { fetchStockData, StockData } from "@/lib/alpha-vantage";
@@ -72,23 +71,15 @@ export default function PortfolioSummary() {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-sm font-medium">Virtual Portfolio</CardTitle>
-        <TrendingUp className="h-4 w-4 text-muted-foreground" />
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium">Virtual Portfolio Value</CardTitle>
+        <Wallet className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
         <div className={`flex items-center gap-1 text-xs ${allTimeReturn >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-           {allTimeReturn >= 0 ? <ArrowUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-          <span>{allTimeReturn.toFixed(2)}% all time</span>
-        </div>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {Object.keys(portfolio.stocks).map(ticker => {
-             if((portfolio.stocks[ticker as StockSymbol] || 0) > 0) {
-               return <Badge key={ticker} variant="secondary">{ticker}</Badge>
-             }
-             return null;
-          })}
+           {allTimeReturn >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+          <span>{allTimeReturn.toFixed(2)}% all time return</span>
         </div>
       </CardContent>
     </Card>
