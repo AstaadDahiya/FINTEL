@@ -148,7 +148,7 @@ export default function Dashboard() {
                         </TableCell>
                         <TableCell className="text-right">
                             {activity.type === 'trade' && 'quantity' in activity ? (
-                                <Badge variant={activity.type === 'Buy' ? 'default' : 'destructive'} className={activity.type === 'Sell' ? 'bg-red-600' : 'bg-emerald-600'}>
+                                <Badge variant={activity.type === 'Buy' ? 'default' : 'destructive'} className={activity.type === 'Buy' ? 'bg-emerald-600' : 'bg-red-600'}>
                                     {activity.type === 'Buy' ? '+' : '-'}
                                     {activity.quantity} Shares
                                 </Badge>
