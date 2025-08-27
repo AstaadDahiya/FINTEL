@@ -35,10 +35,6 @@ export default function SimulatorPage() {
     const { user } = useAuth();
     const [isClient, setIsClient] = useState(false);
 
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
-
     const portfolioKey = useMemo(() => user ? `portfolio_${user.uid}` : 'portfolio', [user]);
     const tradeHistoryKey = useMemo(() => user ? `tradeHistory_${user.uid}` : 'tradeHistory', [user]);
 
@@ -75,58 +71,56 @@ export default function SimulatorPage() {
         }
     }, [stockCache]);
     
-    const handleSearch = useCallback(async (e?: React.FormEvent, defaultTicker?: string) => {
-        if (e) e.preventDefault();
-        const tickerToSearch = (defaultTicker || searchInput).toUpperCase();
-        if (!tickerToSearch) return;
-
-        setIsSearching(true);
-
-        try {
-            if (stockCache[tickerToSearch]) {
-                setSelectedStock(stockCache[tickerToSearch]);
-            } else {
-                const data = await fetchStockData(tickerToSearch);
-                if (data) {
-                    setSelectedStock(data);
-                    setStockCache(prev => ({...prev, [tickerToSearch]: data}));
-                } else {
-                    toast({
-                        variant: "destructive",
-                        title: "Invalid Ticker",
-                        description: `Stock with ticker "${tickerToSearch}" not found or API limit reached.`,
-                    });
-                    if (!defaultTicker) { // Don't clear selected stock if default search fails
-                      setSelectedStock(null);
-                    }
-                }
-            }
-        } catch (error) {
-            console.error("Failed to fetch stock data", error);
+    const executeSearch = useCallback(async (tickerToSearch: string) => {
+      if (!tickerToSearch) return;
+      setIsSearching(true);
+      try {
+        if (stockCache[tickerToSearch]) {
+          setSelectedStock(stockCache[tickerToSearch]);
+        } else {
+          const data = await fetchStockData(tickerToSearch);
+          if (data) {
+            setSelectedStock(data);
+            setStockCache(prev => ({...prev, [tickerToSearch]: data}));
+          } else {
             toast({
-                variant: "destructive",
-                title: "API Error",
-                description: "Could not fetch stock data. Please try again later.",
+              variant: "destructive",
+              title: "Invalid Ticker",
+              description: `Stock with ticker "${tickerToSearch}" not found or API limit reached.`,
             });
             setSelectedStock(null);
-        } finally {
-            setIsSearching(false);
+          }
         }
-    }, [searchInput, stockCache, toast]);
+      } catch (error) {
+        console.error("Failed to fetch stock data", error);
+        toast({
+          variant: "destructive",
+          title: "API Error",
+          description: "Could not fetch stock data. Please try again later.",
+        });
+        setSelectedStock(null);
+      } finally {
+        setIsSearching(false);
+      }
+    }, [stockCache, toast]);
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        executeSearch(searchInput.toUpperCase());
+    };
 
     useEffect(() => {
+        setIsClient(true);
         const initialize = async () => {
             setLoading(true);
-            await handleSearch(undefined, "AAPL");
+            await executeSearch("AAPL");
             const portfolioTickers = Object.keys(portfolio.stocks).filter(t => portfolio.stocks[t]! > 0);
             await updatePortfolioStockPrices(portfolioTickers);
             setLoading(false);
         }
-        if (isClient) {
-          initialize();
-        }
+        initialize();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isClient]);
+    }, []);
 
     const handleTrade = (type: 'Buy' | 'Sell') => {
         if (!selectedStock) return;
@@ -405,5 +399,4 @@ export default function SimulatorPage() {
     );
 }
 
-    
     
