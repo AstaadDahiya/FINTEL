@@ -42,7 +42,7 @@ export default function PortfolioChart() {
     const portfolioKey = useMemo(() => user ? `portfolio_${user.uid}` : 'portfolio', [user]);
     const [portfolio] = useLocalStorage<Portfolio>(portfolioKey, {
         cash: 10000,
-        stocks: { "RELIANCE.NS": 5 }
+        stocks: { "AAPL": 5 }
     });
 
     const portfolioValue = Object.entries(portfolio.stocks).reduce((acc, [ticker, qty]) => {
@@ -88,4 +88,5 @@ export default function PortfolioChart() {
   );
 }
 
+    
     

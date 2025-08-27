@@ -21,7 +21,7 @@ export default function PortfolioSummary() {
   const portfolioKey = useMemo(() => user ? `portfolio_${user.uid}` : 'portfolio', [user]);
   const [portfolio] = useLocalStorage<Portfolio>(portfolioKey, {
     cash: 10000,
-    stocks: { "RELIANCE.NS": 5 }
+    stocks: { "AAPL": 5 }
   });
   
   const [stockCache, setStockCache] = useState<{[key: string]: StockData}>({});
@@ -86,4 +86,5 @@ export default function PortfolioSummary() {
   )
 }
 
+    
     
