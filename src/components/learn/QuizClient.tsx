@@ -28,7 +28,6 @@ export default function QuizClient({ module, slug }: Props) {
   const [isAnswerChecked, setIsAnswerChecked] = useState(false);
   const [score, setScore] = useState(0);
   const [isQuizFinished, setIsQuizFinished] = useState(false);
-  const [hasCompleted, setHasCompleted] = useState(false);
 
   const completedModulesKey = useMemo(() => user ? `completedModules_${user.uid}` : 'completedModules', [user]);
   const quizScoresKey = useMemo(() => user ? `quizScores_${user.uid}` : 'quizScores', [user]);
@@ -37,7 +36,7 @@ export default function QuizClient({ module, slug }: Props) {
   const [, setCompletedModules] = useLocalStorage<CompletedModules>(completedModulesKey, []);
   
   useEffect(() => {
-    if (isQuizFinished && !hasCompleted) {
+    if (isQuizFinished) {
       const finalScore = module.quiz.length > 0 ? Math.round((score / module.quiz.length) * 100) : 0;
       setQuizScores(prevScores => ({ ...prevScores, [slug]: finalScore }));
       setCompletedModules(prevCompleted => {
@@ -46,9 +45,8 @@ export default function QuizClient({ module, slug }: Props) {
         }
         return prevCompleted;
       });
-      setHasCompleted(true); // Prevent this effect from running again
     }
-  }, [isQuizFinished, hasCompleted, module.quiz.length, score, slug, setQuizScores, setCompletedModules]);
+  }, [isQuizFinished, module.quiz.length, score, slug, setQuizScores, setCompletedModules]);
 
 
   if (!module.quiz || module.quiz.length === 0) {
@@ -91,7 +89,6 @@ export default function QuizClient({ module, slug }: Props) {
     setIsAnswerChecked(false);
     setScore(0);
     setIsQuizFinished(false);
-    setHasCompleted(false);
   };
 
 
