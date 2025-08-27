@@ -123,15 +123,16 @@ async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | n
         const timeSeriesData = await timeSeriesRes.json();
         const overviewData = await overviewRes.json();
         
+        if (quoteData.Note || timeSeriesData.Note || overviewData.Note) {
+            console.warn(`Alpha Vantage API limit likely reached for ticker: ${ticker}`);
+            return null; // Explicitly return null for rate limit errors
+        }
+
         const globalQuote = quoteData['Global Quote'];
         const dailySeries = timeSeriesData['Time Series (Daily)'];
 
         if (!globalQuote || Object.keys(globalQuote).length === 0 || !dailySeries) {
-            if (quoteData.Note || timeSeriesData.Note) {
-                console.warn(`Alpha Vantage API limit likely reached for ticker: ${ticker}`);
-                return null;
-            }
-            console.warn(`No data found for ticker: ${ticker}`, { quoteData, timeSeriesData });
+            console.warn(`No data found for Alpha Vantage ticker: ${ticker}`, { quoteData, timeSeriesData });
             return null;
         }
 
@@ -166,7 +167,7 @@ async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | n
 
 
 // --- Main Fetch Function ---
-const cache = new Map<string, { data: StockData, timestamp: number }>();
+const cache = new Map<string, { data: StockData | null, timestamp: number }>();
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 export async function fetchStockData(ticker: string): Promise<StockData | null> {
@@ -189,17 +190,17 @@ export async function fetchStockData(ticker: string): Promise<StockData | null> 
         }
     } catch (error) {
         console.error(`Failed to fetch data for ${ticker}`, error);
-        return null; // Return null on any failure
+        stockData = null; 
     }
 
+    cache.set(ticker, { data: stockData, timestamp: now });
 
     if (stockData) {
-        cache.set(ticker, { data: stockData, timestamp: now });
         return stockData;
-    } 
+    }
     
-    // If the API fails for any reason (e.g., invalid ticker, rate limit), return null.
-    // The UI should handle the null case gracefully.
     console.warn(`Could not retrieve stock data for ${ticker}. It might be an invalid ticker or an API issue.`);
     return null;
 }
+
+    

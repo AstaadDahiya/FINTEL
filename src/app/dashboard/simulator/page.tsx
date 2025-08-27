@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchStockData, StockData } from "@/lib/alpha-vantage";
 import { useAuth } from "@/hooks/use-auth";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 type StockSymbol = string;
 
@@ -50,7 +51,9 @@ export default function SimulatorPage() {
     const [searchInput, setSearchInput] = useState("AAPL");
     const [loading, setLoading] = useState(true);
     const [isSearching, setIsSearching] = useState(false);
-    const [stockCache, setStockCache] = useState<{[key: string]: StockData}>({});
+    const [stockCache, setStockCache] = useState<{[key: string]: StockData | null}>({});
+    const [apiError, setApiError] = useState<string | null>(null);
+
 
     const updatePortfolioStockPrices = useCallback(async (tickersToUpdate: string[]) => {
         if (tickersToUpdate.length === 0) return;
@@ -61,9 +64,11 @@ export default function SimulatorPage() {
             // Fetch only if not in cache already
             if (!updatedCache[ticker]) {
                 const data = await fetchStockData(ticker);
-                if (data) {
+                 if (data) {
                     updatedCache[ticker] = data;
                     cacheWasUpdated = true;
+                } else {
+                    updatedCache[ticker] = null; // Cache the failure
                 }
             }
         }
@@ -75,9 +80,10 @@ export default function SimulatorPage() {
     const executeSearch = useCallback(async (tickerToSearch: string) => {
       if (!tickerToSearch) return;
       setIsSearching(true);
+      setApiError(null);
       try {
         let data = stockCache[tickerToSearch];
-        if (!data) {
+        if (data === undefined) {
           data = await fetchStockData(tickerToSearch);
         }
         
@@ -85,20 +91,26 @@ export default function SimulatorPage() {
           setSelectedStock(data);
           setStockCache(prev => ({...prev, [tickerToSearch]: data!}));
         } else {
+          const errorMessage = `Stock with ticker "${tickerToSearch}" not found or API limit reached.`;
           toast({
             variant: "destructive",
             title: "Invalid Ticker",
-            description: `Stock with ticker "${tickerToSearch}" not found or API limit reached.`,
+            description: errorMessage,
           });
+          if (stockCache[tickerToSearch] === null || (await fetchStockData(tickerToSearch)) === null) {
+              setApiError(errorMessage);
+          }
           setSelectedStock(null);
         }
       } catch (error) {
         console.error("Failed to fetch stock data", error);
+        const errorMessage = "Could not fetch stock data. Please try again later.";
         toast({
           variant: "destructive",
           title: "API Error",
-          description: "Could not fetch stock data. Please try again later.",
+          description: errorMessage,
         });
+        setApiError(errorMessage);
         setSelectedStock(null);
       } finally {
         setIsSearching(false);
@@ -205,6 +217,17 @@ export default function SimulatorPage() {
                 <h1 className="text-3xl font-bold font-headline">Trading Simulator</h1>
                 <p className="text-muted-foreground">Practice trading with delayed real-world market data, risk-free.</p>
             </div>
+            {apiError && (
+                 <Alert variant="destructive" className="mb-8">
+                    <AlertTitle>API Error</AlertTitle>
+                    <AlertDescription>
+                        {apiError.includes("limit") 
+                        ? "The API call failed, likely due to rate limiting on the free plan. Please wait a minute and try again, or search for another stock."
+                        : "Could not fetch data for the requested stock. Please check the ticker and try again."
+                        }
+                    </AlertDescription>
+                </Alert>
+            )}
             <div className="grid gap-8 lg:grid-cols-3">
                 <div className="lg:col-span-2 flex flex-col gap-8">
                     <Card>
@@ -430,3 +453,5 @@ export default function SimulatorPage() {
         </div>
     );
 }
+
+    
