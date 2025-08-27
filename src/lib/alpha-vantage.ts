@@ -26,7 +26,7 @@ async function fetchIndianStockData(ticker: string): Promise<StockData | null> {
         return null;
     }
     
-    const symbol = ticker.replace(/\.(NS|BSE)$/, '');
+    const symbol = ticker.replace(/\.(NS|BSE)$/i, '');
 
     try {
         const today = new Date();
@@ -52,10 +52,10 @@ async function fetchIndianStockData(ticker: string): Promise<StockData | null> {
         }
         
         const quoteData = quoteJson.data;
-        const historicalData = historicalJson.data;
+        const historicalData = historicalJson.data.data;
 
         const formattedData = historicalData.map((item: any) => ({
-            date: format(new Date(item.date), 'yyyy-MM-dd'),
+            date: format(new Date(item.date), 'dd-MM-yyyy'),
             price: parseFloat(item.close),
         })).reverse();
         
@@ -181,20 +181,25 @@ export async function fetchStockData(ticker: string): Promise<StockData | null> 
     
     let stockData: StockData | null = null;
     
-    if (isIndianStock) {
-        stockData = await fetchIndianStockData(ticker);
-    } else {
-        stockData = await fetchAlphaVantageStockData(ticker);
+    try {
+        if (isIndianStock) {
+            stockData = await fetchIndianStockData(ticker);
+        } else {
+            stockData = await fetchAlphaVantageStockData(ticker);
+        }
+    } catch (error) {
+        console.error(`Failed to fetch data for ${ticker}`, error);
+        return null; // Return null on any failure
     }
+
 
     if (stockData) {
         cache.set(ticker, { data: stockData, timestamp: now });
-    } else if (cachedItem) {
-        // If the API fails, return the cached data if it exists to avoid breaking the UI
-        return cachedItem.data;
-    }
-
-    return stockData;
-}
-
+        return stockData;
+    } 
     
+    // If the API fails for any reason (e.g., invalid ticker, rate limit), return null.
+    // The UI should handle the null case gracefully.
+    console.warn(`Could not retrieve stock data for ${ticker}. It might be an invalid ticker or an API issue.`);
+    return null;
+}
