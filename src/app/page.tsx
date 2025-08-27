@@ -209,10 +209,10 @@ export default function LoginPage() {
       <div className="hidden bg-muted lg:block">
         <Image
           src="https://picsum.photos/1200/900"
-          alt="Abstract financial graphics"
+          alt="Stock market chart"
           width="1200"
           height="900"
-          data-ai-hint="finance growth"
+          data-ai-hint="stock market"
           className="h-full w-full object-cover dark:brightness-[0.3]"
         />
       </div>
