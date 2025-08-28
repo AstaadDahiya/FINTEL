@@ -71,6 +71,17 @@ export default function LoginPage() {
     }
   };
 
+  const handleGoogleSignIn = () => {
+    signInWithGoogle().catch(error => {
+        toast({
+          variant: "destructive",
+          title: "Google Sign-In Failed",
+          description: "Could not sign in with Google. Please try again.",
+        });
+        console.error("Google Sign-in failed:", error);
+    })
+  }
+
   return (
     <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
       <div className="flex items-center justify-center py-12">
@@ -193,7 +204,7 @@ export default function LoginPage() {
               <Button type="submit" className="w-full">
                 {isLogin ? 'Login' : 'Sign Up'}
               </Button>
-              <Button variant="outline" className="w-full" onClick={signInWithGoogle}>
+              <Button variant="outline" className="w-full" onClick={handleGoogleSignIn}>
                 {isLogin ? 'Login' : 'Sign up'} with Google
               </Button>
             </div>
