@@ -49,7 +49,8 @@ export default function SimulatorPage() {
 
     const [selectedStock, setSelectedStock] = useState<StockData | null>(null);
     const [quantity, setQuantity] = useState(1);
-    const [searchInput, setSearchInput] = useState("AAPL");
+    const [usStockInput, setUsStockInput] = useState("AAPL");
+    const [inStockInput, setInStockInput] = useState("RELIANCE.NS");
     const [loading, setLoading] = useState(true);
     const [isSearching, setIsSearching] = useState(false);
     const [stockCache, setStockCache] = useState<{[key: string]: StockData | null}>({});
@@ -102,6 +103,11 @@ export default function SimulatorPage() {
             } else if (data) {
                 setSelectedStock(data);
                 setStockCache(prev => ({...prev, [upperCaseTicker]: data}));
+                 if (upperCaseTicker.endsWith('.NS')) {
+                    setInStockInput("");
+                } else {
+                    setUsStockInput("");
+                }
             } else {
                  const errorMessage = "An unknown error occurred while fetching stock data.";
                  toast({ variant: "destructive", title: "Error", description: errorMessage });
@@ -117,9 +123,9 @@ export default function SimulatorPage() {
         }
     }, [toast]);
 
-    const handleSearch = (e: React.FormEvent) => {
+    const handleSearch = (e: React.FormEvent, ticker: string) => {
         e.preventDefault();
-        executeSearch(searchInput);
+        executeSearch(ticker);
     };
 
     useEffect(() => {
@@ -144,7 +150,7 @@ export default function SimulatorPage() {
     
         initialize();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isClient, executeSearch, updatePortfolioStockPrices]);
+    }, [isClient]);
 
     const handleTrade = (type: 'Buy' | 'Sell') => {
         if (!selectedStock) return;
@@ -346,30 +352,30 @@ export default function SimulatorPage() {
                                             <TabsTrigger value="in-stock">Indian Stock</TabsTrigger>
                                         </TabsList>
                                         <TabsContent value="us-stock">
-                                            <form onSubmit={handleSearch} className="flex w-full items-center space-x-2 py-4">
+                                            <form onSubmit={(e) => handleSearch(e, usStockInput)} className="flex w-full items-center space-x-2 py-4">
                                                 <Input 
                                                     type="search" 
                                                     placeholder="e.g., AAPL" 
                                                     className="flex-grow" 
-                                                    value={searchInput}
-                                                    onChange={e => setSearchInput(e.target.value)}
+                                                    value={usStockInput}
+                                                    onChange={e => setUsStockInput(e.target.value)}
                                                 />
-                                                <Button type="submit" variant="outline" disabled={isSearching}>
-                                                    {isSearching ? <Loader2 className="h-4 w-4 animate-spin"/> : "Search"}
+                                                <Button type="submit" variant="outline" disabled={isSearching || !usStockInput}>
+                                                    {isSearching ? <Loader2 className="h-4 w-4 animate-spin"/> : <Search className="h-4 w-4"/>}
                                                 </Button>
                                             </form>
                                         </TabsContent>
                                         <TabsContent value="in-stock">
-                                             <form onSubmit={handleSearch} className="flex w-full items-center space-x-2 py-4">
+                                             <form onSubmit={(e) => handleSearch(e, inStockInput)} className="flex w-full items-center space-x-2 py-4">
                                                 <Input 
                                                     type="search" 
                                                     placeholder="e.g., RELIANCE.NS" 
                                                     className="flex-grow" 
-                                                    value={searchInput}
-                                                    onChange={e => setSearchInput(e.target.value)}
+                                                    value={inStockInput}
+                                                    onChange={e => setInStockInput(e.target.value)}
                                                 />
-                                                <Button type="submit" variant="outline" disabled={isSearching}>
-                                                    {isSearching ? <Loader2 className="h-4 w-4 animate-spin"/> : "Search"}
+                                                <Button type="submit" variant="outline" disabled={isSearching || !inStockInput}>
+                                                    {isSearching ? <Loader2 className="h-4 w-4 animate-spin"/> : <Search className="h-4 w-4"/>}
                                                 </Button>
                                             </form>
                                         </TabsContent>
@@ -468,3 +474,5 @@ export default function SimulatorPage() {
         </div>
     );
 }
+
+    
