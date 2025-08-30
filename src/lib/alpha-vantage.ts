@@ -27,15 +27,16 @@ async function fetchIndianStockData(ticker: string): Promise<StockData | null> {
         return null;
     }
     
-    const symbol = ticker.replace(/\.(NS|BSE)$/i, '');
+    // Only strip the suffix for the API call, keep the original ticker for the return object
+    const symbolForApi = ticker.replace(/\.(NS|BSE)$/i, '');
 
     try {
         const today = new Date();
         const fromDate = format(subDays(today, 60), 'yyyy-MM-dd');
         const toDate = format(today, 'yyyy-MM-dd');
         
-        const quotePromise = fetch(`${INDIAN_API_BASE_URL}get_stock_quote?api_key=${INDIAN_API_KEY}&symbol=${symbol}`);
-        const historicalPromise = fetch(`${INDIAN_API_BASE_URL}get_daily_historical_data?api_key=${INDIAN_API_KEY}&symbol=${symbol}&from_date=${fromDate}&to_date=${toDate}`);
+        const quotePromise = fetch(`${INDIAN_API_BASE_URL}get_stock_quote?api_key=${INDIAN_API_KEY}&symbol=${symbolForApi}`);
+        const historicalPromise = fetch(`${INDIAN_API_BASE_URL}get_daily_historical_data?api_key=${INDIAN_API_KEY}&symbol=${symbolForApi}&from_date=${fromDate}&to_date=${toDate}`);
 
         const [quoteRes, historicalRes] = await Promise.all([quotePromise, historicalPromise]);
 
@@ -66,7 +67,7 @@ async function fetchIndianStockData(ticker: string): Promise<StockData | null> {
         const changePercent = (change / prevClose) * 100;
         
         const stockInfo: StockData = {
-            symbol: ticker,
+            symbol: ticker, // Use the original ticker
             name: quoteData.company_name,
             price,
             change,
@@ -209,7 +210,9 @@ export async function fetchStockData(ticker: string): Promise<StockData | null |
     }
     
     // If we get here, it means the fetch failed for a reason other than rate limiting (e.g. invalid ticker)
-    cache.set(tickerKey, { data: null, timestamp: now }); // Cache the failure
+    // Don't cache a null result here permanently, as it could be a temporary network issue.
+    // Instead, we can cache the failure for a shorter duration.
+    cache.set(tickerKey, { data: null, timestamp: now }); // Cache failure for a short time
     console.warn(`Could not retrieve stock data for ${tickerKey}. It might be an invalid ticker or a non-rate-limit API issue.`);
     return null;
 }
