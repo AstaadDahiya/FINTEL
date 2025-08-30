@@ -20,8 +20,6 @@ export default function LandingPage() {
     }
   }, [user, loading, router]);
 
-  // The loading spinner will be handled by the AuthGuard on the dashboard pages.
-  // This page should be visible to non-logged-in users.
   if (loading || user) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
@@ -66,7 +64,7 @@ export default function LandingPage() {
                 <text x="0" y="30" fontFamily="system-ui, -apple-system, 'Inter', sans-serif" fontSize="26" fontWeight="800" letterSpacing="-0.8px" fill="currentColor">
                   FIN
                 </text>
-                <text x="58" y="30" fontFamily="system-ui, -apple-system, 'Inter', sans-serif" fontSize="26" fontWeight="300" letterSpacing="-0.8px" fill="url(#bullishBlue)">
+                <text x="48" y="30" fontFamily="system-ui, -apple-system, 'Inter', sans-serif" fontSize="26" fontWeight="300" letterSpacing="-0.8px" fill="url(#bullishBlue)">
                   TEL
                 </text>
               </g>

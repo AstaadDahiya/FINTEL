@@ -110,11 +110,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     <text x="0" y="30" fontFamily="system-ui, -apple-system, 'Inter', sans-serif" fontSize="26" fontWeight="800" letterSpacing="-0.8px" fill="currentColor" filter="url(#textGlow)">
                       FIN
                     </text>
-                    <text x="58" y="30" fontFamily="system-ui, -apple-system, 'Inter', sans-serif" fontSize="26" fontWeight="300" letterSpacing="-0.8px" fill="url(#bullishBlue)" filter="url(#textGlow)">
+                    <text x="48" y="30" fontFamily="system-ui, -apple-system, 'Inter', sans-serif" fontSize="26" fontWeight="300" letterSpacing="-0.8px" fill="url(#bullishBlue)" filter="url(#textGlow)">
                       TEL
                     </text>
-                    <rect x="55" y="25" width="8" height="1.5" rx="0.75" fill="url(#goldAccent)" opacity="0.6"/>
-                    <path d="M0 35 Q30 33 120 33" stroke="url(#profitGreen)" strokeWidth="1" fill="none" opacity="0.3"/>
+                    <rect x="52" y="25" width="8" height="1.5" rx="0.75" fill="url(#goldAccent)" opacity="0.6"/>
+                    <path d="M0 35 Q30 33 110 33" stroke="url(#profitGreen)" strokeWidth="1" fill="none" opacity="0.3"/>
                   </g>
                   <g transform="translate(180, 20)">
                     <circle cx="0" cy="0" r="2" fill="url(#profitGreen)" opacity="0.6"/>

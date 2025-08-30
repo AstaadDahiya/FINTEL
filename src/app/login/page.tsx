@@ -28,6 +28,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!loading && user) {
@@ -37,6 +38,7 @@ export default function LoginPage() {
   
   const handleAuthAction = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     if (isLogin) {
       try {
         await signInWithEmail(email, password);
@@ -56,6 +58,7 @@ export default function LoginPage() {
                 title: "Sign Up Failed",
                 description: "Please enter your name.",
              });
+             setIsSubmitting(false);
              return;
         }
       try {
@@ -70,6 +73,7 @@ export default function LoginPage() {
         console.error("Sign up failed:", error);
       }
     }
+    setIsSubmitting(false);
   };
   
   const handleGoogleSignIn = async () => {
@@ -86,8 +90,6 @@ export default function LoginPage() {
     }
   }
 
-  // The loading spinner will be handled by the AuthGuard on the dashboard pages.
-  // This page should be visible to non-logged-in users.
   if (loading || user) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
@@ -95,7 +97,6 @@ export default function LoginPage() {
       </div>
     );
   }
-
 
   return (
     <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
@@ -150,14 +151,14 @@ export default function LoginPage() {
                   </g>
                 </g>
                 <g transform="translate(48, 0)">
-                  <text x="0" y="30" fontFamily="system-ui, -apple-system, 'Inter', sans-serif" fontSize="26" fontWeight="800" letterSpacing="-0.8px" fill="currentColor" filter="url(#textGlow)">
-                    FIN
-                  </text>
-                  <text x="58" y="30" fontFamily="system-ui, -apple-system, 'Inter', sans-serif" fontSize="26" fontWeight="300" letterSpacing="-0.8px" fill="url(#bullishBlue)" filter="url(#textGlow)">
-                    TEL
-                  </text>
-                  <rect x="55" y="25" width="8" height="1.5" rx="0.75" fill="url(#goldAccent)" opacity="0.6"/>
-                  <path d="M0 35 Q30 33 120 33" stroke="url(#profitGreen)" strokeWidth="1" fill="none" opacity="0.3"/>
+                   <text x="0" y="30" fontFamily="system-ui, -apple-system, 'Inter', sans-serif" fontSize="26" fontWeight="800" letterSpacing="-0.8px" fill="currentColor" filter="url(#textGlow)">
+                      FIN
+                    </text>
+                    <text x="48" y="30" fontFamily="system-ui, -apple-system, 'Inter', sans-serif" fontSize="26" fontWeight="300" letterSpacing="-0.8px" fill="url(#bullishBlue)" filter="url(#textGlow)">
+                      TEL
+                    </text>
+                    <rect x="52" y="25" width="8" height="1.5" rx="0.75" fill="url(#goldAccent)" opacity="0.6"/>
+                    <path d="M0 35 Q30 33 110 33" stroke="url(#profitGreen)" strokeWidth="1" fill="none" opacity="0.3"/>
                 </g>
                 <g transform="translate(180, 20)">
                   <circle cx="0" cy="0" r="2" fill="url(#profitGreen)" opacity="0.6"/>
@@ -182,6 +183,7 @@ export default function LoginPage() {
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
                       required
+                      disabled={isSubmitting}
                     />
                   </div>
                 )}
@@ -194,6 +196,7 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
                 <div className="grid gap-2">
@@ -214,19 +217,21 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                   {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {isLogin ? 'Login' : 'Sign Up'}
                 </Button>
-                <Button variant="outline" className="w-full" type="button" onClick={handleGoogleSignIn}>
+                <Button variant="outline" className="w-full" type="button" onClick={handleGoogleSignIn} disabled={isSubmitting}>
                   {isLogin ? 'Login' : 'Sign up'} with Google
                 </Button>
               </div>
             </form>
           <div className="mt-4 text-center text-sm">
             {isLogin ? "Don't have an account?" : 'Already have an account?'}
-            <Button variant="link" onClick={() => setIsLogin(!isLogin)} className="underline">
+            <Button variant="link" onClick={() => setIsLogin(!isLogin)} className="underline" disabled={isSubmitting}>
               {isLogin ? 'Sign up' : 'Login'}
             </Button>
           </div>
