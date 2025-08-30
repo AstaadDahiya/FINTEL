@@ -32,7 +32,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!loading && user) {
-      router.push('/');
+      router.push('/dashboard');
     }
   }, [user, loading, router]);
   
@@ -42,7 +42,7 @@ export default function LoginPage() {
     if (isLogin) {
       try {
         await signInWithEmail(email, password);
-        router.push('/');
+        router.push('/dashboard');
       } catch (error) {
         toast({
           variant: "destructive",
@@ -63,7 +63,7 @@ export default function LoginPage() {
         }
       try {
         await signUpWithEmail(email, password, displayName);
-        router.push('/');
+        router.push('/dashboard');
       } catch (error) {
          toast({
           variant: "destructive",
@@ -238,7 +238,7 @@ export default function LoginPage() {
       </div>
       <div className="hidden bg-muted lg:block">
         <Image
-          src="https://image2url.com/images/1756559873652-b8416d65-7c4a-4d63-b985-7363c190e2c0.png"
+          src="https://picsum.photos/1200/900"
           alt="Stock market chart"
           width="1200"
           height="900"

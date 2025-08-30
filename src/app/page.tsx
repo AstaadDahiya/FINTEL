@@ -1,17 +1,38 @@
 
 "use client"
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowDown, BookOpen, LineChart, Newspaper, Sparkles } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { ArrowDown, BookOpen, LineChart, Loader2, Newspaper, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function LandingPage() {
+    const { user, loading } = useAuth();
+    const router = useRouter();
+
+    useEffect(() => {
+      if (!loading && user) {
+        router.push('/dashboard');
+      }
+    }, [user, loading, router]);
+
 
     const scrollToFeatures = () => {
         document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    if (loading || user) {
+      return (
+        <div className="flex h-screen w-full items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      );
     }
 
 
