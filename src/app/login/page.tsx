@@ -29,11 +29,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   useEffect(() => {
     if (!loading && user) {
@@ -95,7 +90,7 @@ export default function LoginPage() {
     }
   }
 
-  if (loading || !isClient) {
+  if (loading || user) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
@@ -243,11 +238,11 @@ export default function LoginPage() {
       </div>
       <div className="hidden bg-muted lg:block">
         <Image
-          src="https://picsum.photos/1200/900"
+          src="https://picsum.photos/seed/stocks/1200/900"
           alt="Stock market chart"
           width="1200"
           height="900"
-          data-ai-hint="stock market"
+          data-ai-hint="stock market ticker"
           className="h-full w-full object-cover dark:brightness-[0.3]"
         />
       </div>
