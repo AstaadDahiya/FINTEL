@@ -1,7 +1,7 @@
 
 'use server';
 
-import { format, subDays } from 'date-fns';
+import { format } from 'date-fns';
 
 export interface StockData {
     symbol: string;
@@ -65,13 +65,13 @@ async function fetchIndianStockDataMock(ticker: string): Promise<StockData | nul
 
 
 // --- Alpha Vantage API Functions ---
-const ALPHA_VANTAGE_API_KEYS = (process.env.ALPHA_VANTAGE_API_KEYS || '').split(',').filter(Boolean);
+const ALPHA_VANTAGE_API_KEYS = (process.env.ALPHA_VANTAGE_API_KEYS || 'demo').split(',').filter(Boolean);
 let currentKeyIndex = 0;
 
 const getAlphaVantageApiKey = () => {
     if (ALPHA_VANTAGE_API_KEYS.length === 0) {
-        console.warn("No Alpha Vantage API keys found in .env file (ALPHA_VANTAGE_API_KEYS). Some functionalities might be limited.");
-        return null;
+        console.warn("No Alpha Vantage API keys found in .env file (ALPHA_VANTAGE_API_KEYS). Using 'demo' key which is heavily limited.");
+        return 'demo';
     }
     const key = ALPHA_VANTAGE_API_KEYS[currentKeyIndex];
     currentKeyIndex = (currentKeyIndex + 1) % ALPHA_VANTAGE_API_KEYS.length;
@@ -110,7 +110,6 @@ async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | '
         const dailySeries = timeSeriesData['Time Series (Daily)'];
 
         if (!globalQuote || Object.keys(globalQuote).length === 0 || !dailySeries || !overviewData.Currency) {
-            console.warn(`No data found for Alpha Vantage ticker: ${ticker}`, { quoteData, timeSeriesData, overviewData });
             return null;
         }
 
@@ -186,6 +185,7 @@ export async function fetchStockData(ticker: string): Promise<StockData | 'rate-
     }
     
     cache.set(tickerKey, { data: null, timestamp: now });
-    console.warn(`Could not retrieve stock data for ${tickerKey}. It might be an invalid ticker or a non-rate-limit API issue.`);
     return 'not-found';
 }
+
+    

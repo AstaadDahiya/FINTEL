@@ -65,7 +65,7 @@ export default function SimulatorPage() {
         const promises = tickersToUpdate.map(async ticker => {
             if (!updatedCache[ticker]) {
                 const data = await fetchStockData(ticker);
-                if (data && typeof data === 'object') {
+                if (data && typeof data === 'object' && 'symbol' in data) {
                     updatedCache[ticker.toUpperCase()] = data;
                     cacheWasUpdated = true;
                 } else {
@@ -143,6 +143,7 @@ export default function SimulatorPage() {
         };
     
         initialize();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isClient]);
 
     const handleTrade = (type: 'Buy' | 'Sell') => {
@@ -459,3 +460,5 @@ export default function SimulatorPage() {
         </div>
     );
 }
+
+    
