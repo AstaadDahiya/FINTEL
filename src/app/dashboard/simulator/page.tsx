@@ -144,7 +144,7 @@ export default function SimulatorPage() {
     
         initialize();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isClient]);
+    }, [isClient, executeSearch, updatePortfolioStockPrices]);
 
     const handleTrade = (type: 'Buy' | 'Sell') => {
         if (!selectedStock) return;
@@ -243,7 +243,7 @@ export default function SimulatorPage() {
                                   <Loader2 className="h-8 w-8 animate-spin text-primary" />
                                </div>
                             ) : selectedStock ? (
-                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                                     <div>
                                         <CardTitle className="text-2xl">{selectedStock.name} ({selectedStock.symbol})</CardTitle>
                                         <p className={`text-3xl font-bold mt-1 flex items-center gap-2 ${selectedStock.change >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
@@ -254,41 +254,14 @@ export default function SimulatorPage() {
                                           </span>
                                         </p>
                                     </div>
-                                    <form onSubmit={handleSearch} className="flex items-center gap-2 w-full sm:w-64">
-                                      <div className="relative flex-grow">
-                                          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                          <Input 
-                                            type="search" 
-                                            placeholder="e.g., AAPL" 
-                                            className="pl-8" 
-                                            value={searchInput}
-                                            onChange={e => setSearchInput(e.target.value)}
-                                          />
-                                      </div>
-                                      <Button type="submit" size="icon" variant="outline" disabled={isSearching}>
-                                        {isSearching ? <Loader2 className="h-4 w-4 animate-spin"/> : <Search className="h-4 w-4"/>}
-                                      </Button>
-                                    </form>
+                                    <div className="w-full sm:w-auto">
+                                        {/* Search logic is now in the portfolio card */}
+                                    </div>
                                 </div>
                             ) : (
                                 <div className="text-center p-4">
                                     <p className="font-semibold text-destructive">Could not load stock data.</p>
-                                    <p className="text-sm text-muted-foreground mb-4">Please try searching for a different ticker.</p>
-                                    <form onSubmit={handleSearch} className="flex items-center gap-2 w-full max-w-sm mx-auto">
-                                      <div className="relative flex-grow">
-                                          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                          <Input 
-                                            type="search" 
-                                            placeholder="e.g., AAPL, RELIANCE.NS" 
-                                            className="pl-8" 
-                                            value={searchInput}
-                                            onChange={e => setSearchInput(e.target.value)}
-                                          />
-                                      </div>
-                                      <Button type="submit" variant="outline" disabled={isSearching}>
-                                        {isSearching ? <Loader2 className="h-4 w-4 animate-spin"/> : "Search"}
-                                      </Button>
-                                    </form>
+                                    <p className="text-sm text-muted-foreground mb-4">Please try searching for a ticker in the 'Portfolio' section.</p>
                                 </div>
                             )}
                         </CardHeader>
@@ -301,7 +274,7 @@ export default function SimulatorPage() {
                                <StockChart data={selectedStock.data} currency={selectedStock.currency} />
                             ) : (
                                 <div className="h-[350px] w-full flex items-center justify-center bg-muted rounded-md">
-                                    <p className="text-muted-foreground">No data to display. Please search for a valid stock ticker.</p>
+                                    <p className="text-muted-foreground">No data to display. Search for a stock to get started.</p>
                                 </div>
                             )}
                         </CardContent>
@@ -363,11 +336,46 @@ export default function SimulatorPage() {
                             <Tabs defaultValue="trade">
                                 <TabsList className="grid w-full grid-cols-3">
                                     <TabsTrigger value="trade">Trade</TabsTrigger>
-                                    <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
+                                    <TabsTrigger value="portfolio">Holdings</TabsTrigger>
                                     <TabsTrigger value="history">History</TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="trade">
-                                    <div className="grid gap-4 py-4">
+                                    <Tabs defaultValue="us-stock">
+                                        <TabsList className="grid w-full grid-cols-2">
+                                            <TabsTrigger value="us-stock">US Stock</TabsTrigger>
+                                            <TabsTrigger value="in-stock">Indian Stock</TabsTrigger>
+                                        </TabsList>
+                                        <TabsContent value="us-stock">
+                                            <form onSubmit={handleSearch} className="flex w-full items-center space-x-2 py-4">
+                                                <Input 
+                                                    type="search" 
+                                                    placeholder="e.g., AAPL" 
+                                                    className="flex-grow" 
+                                                    value={searchInput}
+                                                    onChange={e => setSearchInput(e.target.value)}
+                                                />
+                                                <Button type="submit" variant="outline" disabled={isSearching}>
+                                                    {isSearching ? <Loader2 className="h-4 w-4 animate-spin"/> : "Search"}
+                                                </Button>
+                                            </form>
+                                        </TabsContent>
+                                        <TabsContent value="in-stock">
+                                             <form onSubmit={handleSearch} className="flex w-full items-center space-x-2 py-4">
+                                                <Input 
+                                                    type="search" 
+                                                    placeholder="e.g., RELIANCE.NS" 
+                                                    className="flex-grow" 
+                                                    value={searchInput}
+                                                    onChange={e => setSearchInput(e.target.value)}
+                                                />
+                                                <Button type="submit" variant="outline" disabled={isSearching}>
+                                                    {isSearching ? <Loader2 className="h-4 w-4 animate-spin"/> : "Search"}
+                                                </Button>
+                                            </form>
+                                        </TabsContent>
+                                    </Tabs>
+                                    
+                                    <div className="grid gap-4 pt-4 border-t">
                                         <div className="grid gap-2">
                                             <Label htmlFor="quantity">Quantity</Label>
                                             <Input 
@@ -460,5 +468,3 @@ export default function SimulatorPage() {
         </div>
     );
 }
-
-    
