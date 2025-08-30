@@ -29,6 +29,11 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     if (!loading && user) {
@@ -90,7 +95,7 @@ export default function LoginPage() {
     }
   }
 
-  if (loading || user) {
+  if (loading || !isClient) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
@@ -157,7 +162,6 @@ export default function LoginPage() {
                     <text x="48" y="30" fontFamily="system-ui, -apple-system, 'Inter', sans-serif" fontSize="26" fontWeight="300" letterSpacing="-0.8px" fill="url(#bullishBlue)" filter="url(#textGlow)">
                       TEL
                     </text>
-                    <rect x="52" y="25" width="8" height="1.5" rx="0.75" fill="url(#goldAccent)" opacity="0.6"/>
                     <path d="M0 35 Q30 33 110 33" stroke="url(#profitGreen)" strokeWidth="1" fill="none" opacity="0.3"/>
                 </g>
                 <g transform="translate(180, 20)">
