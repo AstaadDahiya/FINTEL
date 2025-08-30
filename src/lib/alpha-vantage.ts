@@ -171,22 +171,25 @@ async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | '
 
 
 // --- Main Fetch Function ---
-const cache = new Map<string, { data: StockData | null, timestamp: number }>();
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const cache = new Map<string, { data: StockData | 'rate-limited' | null, timestamp: number }>();
+const CACHE_DURATION_SUCCESS = 5 * 60 * 1000; // 5 minutes
+const CACHE_DURATION_FAILURE = 1 * 60 * 1000; // 1 minute for failures/rate-limits
 
-export async function fetchStockData(ticker: string): Promise<StockData | null | 'rate-limited'> {
+export async function fetchStockData(ticker: string): Promise<StockData | 'rate-limited' | 'not-found' | null> {
     const now = Date.now();
     const tickerKey = ticker.toUpperCase();
     const cachedItem = cache.get(tickerKey);
 
-    if (cachedItem && (now - cachedItem.timestamp) < CACHE_DURATION) {
-        // Return cached data if it's not a failed fetch (null)
-        if(cachedItem.data) return cachedItem.data;
+    if (cachedItem && (now - cachedItem.timestamp) < (cachedItem.data ? CACHE_DURATION_SUCCESS : CACHE_DURATION_FAILURE)) {
+        if (cachedItem.data) return cachedItem.data;
+        // If cached item is null or rate-limited, we still proceed to re-fetch if cache is expired.
+        // If not expired, we return the cached failure.
+        return cachedItem.data === null ? 'not-found' : cachedItem.data;
     }
 
     const isIndianStock = tickerKey.endsWith('.NS') || tickerKey.endsWith('.BSE');
     
-    let stockData: StockData | null | 'rate-limited' = null;
+    let stockData: StockData | 'rate-limited' | null = null;
     
     try {
         if (isIndianStock) {
@@ -199,9 +202,9 @@ export async function fetchStockData(ticker: string): Promise<StockData | null |
         stockData = null; 
     }
 
-    if(stockData === 'rate-limited') {
-        // If rate-limited, return the old cached data if it exists, otherwise return the rate-limit signal
-        return cachedItem?.data || 'rate-limited';
+    if (stockData === 'rate-limited') {
+        cache.set(tickerKey, { data: 'rate-limited', timestamp: now });
+        return 'rate-limited';
     }
 
     if (stockData) {
@@ -209,10 +212,7 @@ export async function fetchStockData(ticker: string): Promise<StockData | null |
         return stockData;
     }
     
-    // If we get here, it means the fetch failed for a reason other than rate limiting (e.g. invalid ticker)
-    // Don't cache a null result here permanently, as it could be a temporary network issue.
-    // Instead, we can cache the failure for a shorter duration.
-    cache.set(tickerKey, { data: null, timestamp: now }); // Cache failure for a short time
+    cache.set(tickerKey, { data: null, timestamp: now });
     console.warn(`Could not retrieve stock data for ${tickerKey}. It might be an invalid ticker or a non-rate-limit API issue.`);
-    return null;
+    return 'not-found';
 }
