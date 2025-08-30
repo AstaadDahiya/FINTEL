@@ -34,7 +34,7 @@ export default function LoginPage() {
       router.push('/dashboard');
     }
   }, [user, loading, router]);
-
+  
   const handleAuthAction = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isLogin) {
@@ -72,18 +72,21 @@ export default function LoginPage() {
     }
   };
   
-  const handleGoogleSignIn = () => {
-    signInWithGoogle().catch(error => {
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle()
+    }
+    catch(error) {
         toast({
           variant: "destructive",
           title: "Google Sign-In Failed",
           description: "Could not sign in with Google. Please try again.",
         });
         console.error("Google Sign-in failed:", error);
-    })
+    }
   }
   
-  if (loading) {
+  if (loading || user) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
