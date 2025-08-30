@@ -17,6 +17,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
   const { user, loading, signInWithGoogle, signInWithEmail, signUpWithEmail } = useAuth();
@@ -27,6 +28,13 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    // This ensures the form content is only rendered on the client, preventing hydration errors.
+    setIsClient(true);
+  }, []);
+
 
   useEffect(() => {
     if (!loading && user) {
@@ -81,6 +89,15 @@ export default function LoginPage() {
         console.error("Google Sign-in failed:", error);
     })
   }
+  
+  if (loading || !isClient) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
 
   return (
     <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
@@ -155,60 +172,60 @@ export default function LoginPage() {
               {isLogin ? 'Welcome back! Please enter your details.' : 'Create an account to get started.'}
             </p>
           </div>
-          <form onSubmit={handleAuthAction}>
-            <div className="grid gap-4">
-              {!isLogin && (
+            <form onSubmit={handleAuthAction}>
+              <div className="grid gap-4">
+                {!isLogin && (
+                  <div className="grid gap-2">
+                    <Label htmlFor="name">Name</Label>
+                    <Input
+                      id="name"
+                      type="text"
+                      placeholder="John Doe"
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
                 <div className="grid gap-2">
-                  <Label htmlFor="name">Name</Label>
+                  <Label htmlFor="email">Email</Label>
                   <Input
-                    id="name"
-                    type="text"
-                    placeholder="John Doe"
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
+                    id="email"
+                    type="email"
+                    placeholder="m@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
-              )}
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  {isLogin && (
-                    <Link
-                      href="#"
-                      className="ml-auto inline-block text-sm underline"
-                    >
-                      Forgot your password?
-                    </Link>
-                  )}
+                <div className="grid gap-2">
+                  <div className="flex items-center">
+                    <Label htmlFor="password">Password</Label>
+                    {isLogin && (
+                      <Link
+                        href="#"
+                        className="ml-auto inline-block text-sm underline"
+                      >
+                        Forgot your password?
+                      </Link>
+                    )}
+                  </div>
+                  <Input 
+                    id="password" 
+                    type="password" 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
                 </div>
-                <Input 
-                  id="password" 
-                  type="password" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
+                <Button type="submit" className="w-full">
+                  {isLogin ? 'Login' : 'Sign Up'}
+                </Button>
+                <Button variant="outline" className="w-full" type="button" onClick={handleGoogleSignIn}>
+                  {isLogin ? 'Login' : 'Sign up'} with Google
+                </Button>
               </div>
-              <Button type="submit" className="w-full">
-                {isLogin ? 'Login' : 'Sign Up'}
-              </Button>
-              <Button variant="outline" className="w-full" onClick={handleGoogleSignIn}>
-                {isLogin ? 'Login' : 'Sign up'} with Google
-              </Button>
-            </div>
-          </form>
+            </form>
           <div className="mt-4 text-center text-sm">
             {isLogin ? "Don't have an account?" : 'Already have an account?'}
             <Button variant="link" onClick={() => setIsLogin(!isLogin)} className="underline">
