@@ -22,7 +22,7 @@ export default function PortfolioSummary() {
   const portfolioKey = useMemo(() => user ? `portfolio_${user.uid}` : 'portfolio', [user]);
   const [portfolio] = useLocalStorage<Portfolio>(portfolioKey, {
     cash: 10000,
-    stocks: { "AAPL": 5 }
+    stocks: { "AAPL": 5, "RELIANCE.NS": 10 }
   });
   
   const [stockCache, setStockCache] = useState<{[key: string]: StockData}>({});
@@ -36,14 +36,13 @@ export default function PortfolioSummary() {
         let portfolioStockValue = 0;
         const newCache = { ...stockCache };
         
-        // We assume portfolio cash is in INR. For stocks, we convert USD to INR.
         const INR_PER_USD = 83; 
 
         for (const ticker of tickersToUpdate) {
             let stock = newCache[ticker];
             if (!stock) {
                 const data = await fetchStockData(ticker);
-                if (data && data !== 'rate-limited') {
+                if (data && typeof data === 'object') {
                     stock = data;
                     newCache[ticker] = data;
                 }

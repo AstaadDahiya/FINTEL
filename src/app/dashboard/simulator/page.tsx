@@ -42,7 +42,7 @@ export default function SimulatorPage() {
 
     const [portfolio, setPortfolio] = useLocalStorage<Portfolio>(portfolioKey, {
         cash: 10000,
-        stocks: { "AAPL": 5 }
+        stocks: { "AAPL": 5, "RELIANCE.NS": 10 }
     });
     const [tradeHistory, setTradeHistory] = useLocalStorage<Trade[]>(tradeHistoryKey, []);
     const { toast } = useToast();
@@ -61,21 +61,21 @@ export default function SimulatorPage() {
 
         const updatedCache = { ...stockCache };
         let cacheWasUpdated = false;
-        for (const ticker of tickersToUpdate) {
-            // Fetch only if not in cache already
+        
+        const promises = tickersToUpdate.map(async ticker => {
             if (!updatedCache[ticker]) {
                 const data = await fetchStockData(ticker);
-                 if (data && typeof data === 'object') {
+                if (data && typeof data === 'object') {
                     updatedCache[ticker.toUpperCase()] = data;
                     cacheWasUpdated = true;
-                } else if (data === 'rate-limited') {
-                     // Don't overwrite existing good data with a rate limit failure
-                     if (!updatedCache[ticker.toUpperCase()]) updatedCache[ticker.toUpperCase()] = null;
                 } else {
-                    updatedCache[ticker.toUpperCase()] = null; // Cache other failures
+                    updatedCache[ticker.toUpperCase()] = null; 
                 }
             }
-        }
+        });
+
+        await Promise.all(promises);
+
         if (cacheWasUpdated) {
             setStockCache(updatedCache);
         }
@@ -86,20 +86,19 @@ export default function SimulatorPage() {
         const upperCaseTicker = tickerToSearch.toUpperCase();
         setIsSearching(true);
         setApiError(null);
+        setSelectedStock(null);
 
         try {
             const data = await fetchStockData(upperCaseTicker);
             
             if (data === 'rate-limited') {
-                const errorMessage = "API rate limit reached. Please wait a moment and try again.";
+                const errorMessage = "API rate limit reached. Live data for US stocks may be unavailable. Indian stocks are using mock data.";
                 toast({ variant: "destructive", title: "API Limit Reached", description: errorMessage });
                 setApiError(errorMessage);
-                setSelectedStock(null);
             } else if (data === 'not-found') {
                 const errorMessage = `Stock with ticker "${upperCaseTicker}" not found. Please check the symbol (e.g., AAPL for US, RELIANCE.NS for India).`;
                 toast({ variant: "destructive", title: "Invalid Ticker", description: errorMessage });
                 setApiError(errorMessage);
-                setSelectedStock(null);
             } else if (data) {
                 setSelectedStock(data);
                 setStockCache(prev => ({...prev, [upperCaseTicker]: data}));
@@ -107,18 +106,16 @@ export default function SimulatorPage() {
                  const errorMessage = "An unknown error occurred while fetching stock data.";
                  toast({ variant: "destructive", title: "Error", description: errorMessage });
                  setApiError(errorMessage);
-                 setSelectedStock(null);
             }
         } catch (error) {
             console.error("Failed to fetch stock data", error);
             const errorMessage = "Could not fetch stock data. Please try again later.";
             toast({ variant: "destructive", title: "API Error", description: errorMessage });
             setApiError(errorMessage);
-            setSelectedStock(null);
         } finally {
             setIsSearching(false);
         }
-    }, [toast, stockCache]);
+    }, [toast]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -135,10 +132,8 @@ export default function SimulatorPage() {
         const initialize = async () => {
             setLoading(true);
             
-            // Step 1: Fetch the default stock first.
             await executeSearch("AAPL");
             
-            // Step 2: Then, fetch data for all stocks in the portfolio.
             const portfolioTickers = Object.keys(portfolio.stocks).filter(t => portfolio.stocks[t]! > 0);
             if (portfolioTickers.length > 0) {
                 await updatePortfolioStockPrices(portfolioTickers);
@@ -148,12 +143,16 @@ export default function SimulatorPage() {
         };
     
         initialize();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isClient, portfolio.stocks, executeSearch, updatePortfolioStockPrices]);
+    }, [isClient]);
 
     const handleTrade = (type: 'Buy' | 'Sell') => {
         if (!selectedStock) return;
-        const tradeAmount = quantity * selectedStock.price;
+        
+        let tradeAmount = quantity * selectedStock.price;
+        // Assume INR for cash, convert USD stock price to INR for calculation
+        if (selectedStock.currency === 'USD') {
+            tradeAmount *= 83; // Rough conversion rate
+        }
         
         if (type === 'Buy') {
             if (portfolio.cash < tradeAmount) {
@@ -199,8 +198,14 @@ export default function SimulatorPage() {
     const portfolioValue = useMemo(() => {
         if (!isClient) return 0;
         return Object.entries(portfolio.stocks).reduce((acc, [ticker, qty]) => {
-            const stockPrice = stockCache[ticker]?.price || 0;
-            return acc + (stockPrice * (qty || 0));
+            const stock = stockCache[ticker as StockSymbol];
+            if (!stock) return acc;
+            
+            let value = stock.price * (qty || 0);
+            if (stock.currency === 'USD') {
+                value *= 83; // Rough conversion
+            }
+            return acc + value;
         }, 0);
     }, [portfolio.stocks, stockCache, isClient]);
 
@@ -218,9 +223,9 @@ export default function SimulatorPage() {
         <div>
             <div className="mb-8">
                 <h1 className="text-3xl font-bold font-headline">Trading Simulator</h1>
-                <p className="text-muted-foreground">Practice trading with delayed real-world market data, risk-free.</p>
+                <p className="text-muted-foreground">Practice trading with live US market data and mock Indian market data, risk-free.</p>
             </div>
-            {apiError && (
+            {apiError && !selectedStock && (
                  <Alert variant="destructive" className="mb-8">
                     <AlertTitle>Error</AlertTitle>
                     <AlertDescription>
@@ -232,7 +237,7 @@ export default function SimulatorPage() {
                 <div className="lg:col-span-2 flex flex-col gap-8">
                     <Card>
                         <CardHeader>
-                            {loading && !selectedStock ? (
+                            {loading || isSearching ? (
                                <div className="flex items-center justify-center h-24">
                                   <Loader2 className="h-8 w-8 animate-spin text-primary" />
                                </div>
@@ -266,7 +271,9 @@ export default function SimulatorPage() {
                                 </div>
                             ) : (
                                 <div className="text-center p-4">
-                                    <form onSubmit={handleSearch} className="flex items-center gap-2 w-full max-w-sm mx-auto mt-4">
+                                    <p className="font-semibold text-destructive">Could not load stock data.</p>
+                                    <p className="text-sm text-muted-foreground mb-4">Please try searching for a different ticker.</p>
+                                    <form onSubmit={handleSearch} className="flex items-center gap-2 w-full max-w-sm mx-auto">
                                       <div className="relative flex-grow">
                                           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                                           <Input 
@@ -285,7 +292,7 @@ export default function SimulatorPage() {
                             )}
                         </CardHeader>
                         <CardContent>
-                             {isSearching ? (
+                             {loading || isSearching ? (
                                 <div className="h-[350px] w-full flex items-center justify-center">
                                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
                                 </div>
@@ -304,7 +311,7 @@ export default function SimulatorPage() {
                            <CardDescription>Important data points for {selectedStock?.symbol || '...'}</CardDescription>
                         </CardHeader>
                         <CardContent>
-                             {isSearching ? (
+                             {loading || isSearching ? (
                                 <div className="h-[100px] w-full flex items-center justify-center">
                                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
                                 </div>
@@ -452,5 +459,3 @@ export default function SimulatorPage() {
         </div>
     );
 }
-
-    

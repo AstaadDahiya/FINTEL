@@ -17,75 +17,50 @@ export interface StockData {
     currency: 'USD' | 'INR';
 }
 
-// --- Indian API Functions ---
-const INDIAN_API_BASE_URL = 'https://stock.indianapi.in/api/v1/';
-const INDIAN_API_KEY = process.env.INDIAN_API_KEY;
-
-async function fetchIndianStockData(ticker: string): Promise<StockData | null> {
-    if (!INDIAN_API_KEY) {
-        console.error("Indian API key not found in .env file (INDIAN_API_KEY). Please obtain one from indianapi.in");
-        return null;
+// --- Mock Indian Stock Data ---
+function generateMockHistory(basePrice: number) {
+    const data = [];
+    let currentValue = basePrice;
+    for (let i = 30; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const fluctuation = (Math.random() - 0.5) * 0.03; // up to 1.5% change
+        currentValue *= (1 + fluctuation);
+         if (i === 0) {
+            currentValue = basePrice;
+        }
+        data.push({
+            date: format(date, 'yyyy-MM-dd'),
+            price: parseFloat(currentValue.toFixed(2)),
+        });
     }
+    return data;
+}
+
+async function fetchIndianStockDataMock(ticker: string): Promise<StockData | null> {
+    const mockPrice = parseFloat((Math.random() * (4000 - 500) + 500).toFixed(2));
+    const mockPrevClose = mockPrice * (1 + (Math.random() - 0.5) * 0.05);
+    const change = mockPrice - mockPrevClose;
+    const changePercent = (change / mockPrevClose) * 100;
     
-    // Only strip the suffix for the API call, keep the original ticker for the return object
-    const symbolForApi = ticker.replace(/\.(NS|BSE)$/i, '');
-
-    try {
-        const today = new Date();
-        const fromDate = format(subDays(today, 60), 'yyyy-MM-dd');
-        const toDate = format(today, 'yyyy-MM-dd');
-        
-        const quotePromise = fetch(`${INDIAN_API_BASE_URL}get_stock_quote?api_key=${INDIAN_API_KEY}&symbol=${symbolForApi}`);
-        const historicalPromise = fetch(`${INDIAN_API_BASE_URL}get_daily_historical_data?api_key=${INDIAN_API_KEY}&symbol=${symbolForApi}&from_date=${fromDate}&to_date=${toDate}`);
-
-        const [quoteRes, historicalRes] = await Promise.all([quotePromise, historicalPromise]);
-
-        if (!quoteRes.ok || !historicalRes.ok) {
-            console.error(`Indian API request failed for ${ticker}`, { quoteStatus: quoteRes.status, historicalStatus: historicalRes.status });
-            return null;
-        }
-
-        const quoteJson = await quoteRes.json();
-        const historicalJson = await historicalRes.json();
-        
-        if (!quoteJson.success || !historicalJson.success || !quoteJson.data || !historicalJson.data) {
-             console.warn(`No data found for Indian ticker: ${ticker}`, { quoteJson, historicalJson });
-            return null;
-        }
-        
-        const quoteData = quoteJson.data;
-        const historicalData = historicalJson.data.data;
-
-        const formattedData = historicalData.map((item: any) => ({
-            date: format(new Date(item.date), 'dd-MM-yyyy'),
-            price: parseFloat(item.close),
-        })).reverse();
-        
-        const price = parseFloat(quoteData.current_price);
-        const prevClose = parseFloat(quoteData.previous_close);
-        const change = price - prevClose;
-        const changePercent = (change / prevClose) * 100;
-        
-        const stockInfo: StockData = {
-            symbol: ticker, // Use the original ticker
-            name: quoteData.company_name,
-            price,
-            change,
-            changePercent,
-            data: formattedData,
-            dayHigh: parseFloat(quoteData.day_high),
-            dayLow: parseFloat(quoteData.day_low),
-            yearHigh: parseFloat(quoteData['52_week_high']),
-            yearLow: parseFloat(quoteData['52_week_low']),
-            currency: 'INR',
-        };
-
-        return stockInfo;
-
-    } catch (error) {
-        console.error(`Error fetching Indian stock data for ${ticker}:`, error);
-        return null;
-    }
+    // Use a hash of the ticker to create a somewhat consistent but random name
+    const nameHash = ticker.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const mockNames = ['Reliance Industries', 'Tata Consultancy', 'HDFC Bank', 'Infosys Ltd', 'ICICI Bank'];
+    
+    const mockData: StockData = {
+        symbol: ticker,
+        name: `${mockNames[nameHash % mockNames.length]} (Mock)`,
+        price: mockPrice,
+        change: change,
+        changePercent: changePercent,
+        data: generateMockHistory(mockPrice),
+        dayHigh: mockPrice * 1.02,
+        dayLow: mockPrice * 0.98,
+        yearHigh: mockPrice * 1.5,
+        yearLow: mockPrice * 0.8,
+        currency: 'INR',
+    };
+    return Promise.resolve(mockData);
 }
 
 
@@ -158,7 +133,7 @@ async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | '
             dayLow: parseFloat(globalQuote['04. low']),
             yearHigh: parseFloat(overviewData['52WeekHigh']),
             yearLow: parseFloat(overviewData['52WeekLow']),
-            currency: overviewData.Currency === 'USD' ? 'USD' : 'INR', // Defaulting non-USD to INR is a simplification
+            currency: 'USD',
         };
         
         return stockInfo;
@@ -181,10 +156,8 @@ export async function fetchStockData(ticker: string): Promise<StockData | 'rate-
     const cachedItem = cache.get(tickerKey);
 
     if (cachedItem && (now - cachedItem.timestamp) < (cachedItem.data ? CACHE_DURATION_SUCCESS : CACHE_DURATION_FAILURE)) {
-        if (cachedItem.data) return cachedItem.data;
-        // If cached item is null or rate-limited, we still proceed to re-fetch if cache is expired.
-        // If not expired, we return the cached failure.
-        return cachedItem.data === null ? 'not-found' : cachedItem.data;
+        if (cachedItem.data === null) return 'not-found';
+        return cachedItem.data;
     }
 
     const isIndianStock = tickerKey.endsWith('.NS') || tickerKey.endsWith('.BSE');
@@ -193,7 +166,7 @@ export async function fetchStockData(ticker: string): Promise<StockData | 'rate-
     
     try {
         if (isIndianStock) {
-            stockData = await fetchIndianStockData(tickerKey);
+            stockData = await fetchIndianStockDataMock(tickerKey);
         } else {
             stockData = await fetchAlphaVantageStockData(tickerKey);
         }
