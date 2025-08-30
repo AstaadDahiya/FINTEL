@@ -4,12 +4,12 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from '@/components/theme-provider';
 import { AuthProvider, useAuth } from '@/hooks/use-auth';
-import { usePathname } from 'next/navigation';
-import AuthGuard from '@/components/auth/AuthGuard';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import LoginPage from './login/page';
+import LandingPage from './page';
+import AppLayout from './dashboard/layout';
 
 function RootContent({
   children,
@@ -21,8 +21,11 @@ function RootContent({
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && user && pathname === '/login') {
+    if (!loading && user && (pathname === '/login' || pathname === '/')) {
       router.push('/dashboard');
+    }
+    if (!loading && !user && pathname.startsWith('/dashboard')) {
+      router.push('/login');
     }
   }, [user, loading, pathname, router]);
 
@@ -35,10 +38,26 @@ function RootContent({
   }
 
   if (!user) {
-    return <LoginPage />;
+    if (pathname === '/login') {
+      return <LoginPage />;
+    }
+    return <LandingPage />;
+  }
+  
+  if (pathname.startsWith('/dashboard')) {
+      return <AppLayout>{children}</AppLayout>
+  }
+  
+  // Default case for authenticated users if they hit "/"
+  if (pathname === '/') {
+     // Redirect to dashboard, but AppLayout will be picked by the above condition.
+     // This just needs to not return null or the landing page.
+     return <div className="flex h-screen w-full items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
   }
 
-  return <AuthGuard>{children}</AuthGuard>;
+  return <>{children}</>;
 }
 
 
