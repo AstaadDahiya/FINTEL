@@ -32,7 +32,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!loading && user) {
-      router.push('/dashboard');
+      router.push('/');
     }
   }, [user, loading, router]);
   
@@ -42,7 +42,7 @@ export default function LoginPage() {
     if (isLogin) {
       try {
         await signInWithEmail(email, password);
-        router.push('/dashboard');
+        router.push('/');
       } catch (error) {
         toast({
           variant: "destructive",
@@ -63,7 +63,7 @@ export default function LoginPage() {
         }
       try {
         await signUpWithEmail(email, password, displayName);
-        router.push('/dashboard');
+        router.push('/');
       } catch (error) {
          toast({
           variant: "destructive",

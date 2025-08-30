@@ -1,14 +1,32 @@
 
-import type { Metadata } from 'next';
+"use client"
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from '@/components/theme-provider';
-import { AuthProvider } from '@/hooks/use-auth';
+import { AuthProvider, useAuth } from '@/hooks/use-auth';
+import { usePathname } from 'next/navigation';
+import AppLayout from '@/components/layout/AppLayout';
 
-export const metadata: Metadata = {
-  title: 'FINTEL',
-  description: 'Learn to invest with confidence.',
-};
+function RootContent({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  const pathname = usePathname();
+  const { user, loading } = useAuth();
+
+  const isAuthPage = pathname === '/login';
+
+  if(loading) {
+    return null;
+  }
+
+  if(isAuthPage) {
+    return <>{children}</>;
+  }
+
+  return <AppLayout>{children}</AppLayout>
+}
 
 export default function RootLayout({
   children,
@@ -18,6 +36,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <title>FINTEL</title>
+        <meta name="description" content="Learn to invest with confidence." />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
@@ -30,7 +50,7 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
           >
-              {children}
+              <RootContent>{children}</RootContent>
               <Toaster />
           </ThemeProvider>
         </AuthProvider>
