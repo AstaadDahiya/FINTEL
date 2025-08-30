@@ -238,11 +238,11 @@ export default function LoginPage() {
       </div>
       <div className="hidden bg-muted lg:block">
         <Image
-          src="https://picsum.photos/1200/900"
-          alt="Stock market chart"
+          src="https://image2url.com/images/1756559873652-b8416d65-7c4a-4d63-b985-7363c190e2c0.png"
+          alt="Abstract background image"
           width="1200"
           height="900"
-          data-ai-hint="stock market"
+          data-ai-hint="abstract background"
           className="h-full w-full object-cover dark:brightness-[0.3]"
         />
       </div>
