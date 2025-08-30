@@ -124,17 +124,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </svg>
                 <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" className="size-8 hidden group-data-[collapsible=icon]:block">
                   <defs>
-                      <linearGradient id="bullishBlueIcon" x1="0%" y1="100%" x2="100%" y2="0%">
+                      <linearGradient id="bullishBlueIcon" x1_1="0%" y1_1="100%" x2_1="100%" y2_1="0%">
                         <stop offset="0%" style={{stopColor:"#1e3a8a",stopOpacity:1}} />
                         <stop offset="50%" style={{stopColor:"#3b82f6",stopOpacity:1}} />
                         <stop offset="100%" style={{stopColor:"#60a5fa",stopOpacity:1}} />
                       </linearGradient>
-                      <linearGradient id="profitGreenIcon" x1="0%" y1="100%" x2="100%" y2="0%">
+                      <linearGradient id="profitGreenIcon" x1_2="0%" y1_2="100%" x2_2="100%" y2_2="0%">
                         <stop offset="0%" style={{stopColor:"#15803d",stopOpacity:1}} />
                         <stop offset="50%" style={{stopColor:"#22c55e",stopOpacity:1}} />
                         <stop offset="100%" style={{stopColor:"#4ade80",stopOpacity:1}} />
                       </linearGradient>
-                      <linearGradient id="goldAccentIcon" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <linearGradient id="goldAccentIcon" x1_3="0%" y1_3="0%" x2_3="100%" y2_3="100%">
                         <stop offset="0%" style={{stopColor:"#f59e0b",stopOpacity:1}} />
                         <stop offset="100%" style={{stopColor:"#fbbf24",stopOpacity:1}} />
                       </linearGradient>
