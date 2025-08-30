@@ -66,13 +66,13 @@ export default function SimulatorPage() {
             if (!updatedCache[ticker]) {
                 const data = await fetchStockData(ticker);
                  if (data && data !== 'rate-limited') {
-                    updatedCache[ticker] = data;
+                    updatedCache[ticker.toUpperCase()] = data;
                     cacheWasUpdated = true;
                 } else if (data === 'rate-limited') {
                      // Don't overwrite existing good data with a rate limit failure
-                     if (!updatedCache[ticker]) updatedCache[ticker] = null;
+                     if (!updatedCache[ticker.toUpperCase()]) updatedCache[ticker.toUpperCase()] = null;
                 } else {
-                    updatedCache[ticker] = null; // Cache other failures
+                    updatedCache[ticker.toUpperCase()] = null; // Cache other failures
                 }
             }
         }
@@ -83,20 +83,27 @@ export default function SimulatorPage() {
     
     const executeSearch = useCallback(async (tickerToSearch: string) => {
       if (!tickerToSearch) return;
+      const upperCaseTicker = tickerToSearch.toUpperCase();
       setIsSearching(true);
       setApiError(null);
       try {
-        const data = await fetchStockData(tickerToSearch);
+        const data = await fetchStockData(upperCaseTicker);
         
         if (data === 'rate-limited') {
             const errorMessage = `API rate limit reached. Displaying cached data if available. Please wait a minute and try again.`;
             toast({ variant: "destructive", title: "API Limit Reached", description: errorMessage, });
             setApiError(errorMessage);
+             // Try to use cached data if available
+            if (stockCache[upperCaseTicker]) {
+                setSelectedStock(stockCache[upperCaseTicker]);
+            } else {
+                setSelectedStock(null);
+            }
         } else if (data) {
           setSelectedStock(data);
-          setStockCache(prev => ({...prev, [tickerToSearch]: data}));
+          setStockCache(prev => ({...prev, [upperCaseTicker]: data}));
         } else {
-          const errorMessage = `Stock with ticker "${tickerToSearch}" not found. Please check the symbol.`;
+          const errorMessage = `Stock with ticker "${upperCaseTicker}" not found. Please check the symbol (e.g., AAPL for US, RELIANCE.NS for India).`;
           toast({ variant: "destructive", title: "Invalid Ticker", description: errorMessage });
           setApiError(errorMessage);
           setSelectedStock(null);
@@ -110,11 +117,11 @@ export default function SimulatorPage() {
       } finally {
         setIsSearching(false);
       }
-    }, [toast]);
+    }, [toast, stockCache]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        executeSearch(searchInput.toUpperCase());
+        executeSearch(searchInput);
     };
 
     useEffect(() => {
@@ -140,7 +147,8 @@ export default function SimulatorPage() {
         };
     
         initialize();
-    }, [isClient, executeSearch, updatePortfolioStockPrices, portfolio.stocks]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isClient]);
 
     const handleTrade = (type: 'Buy' | 'Sell') => {
         if (!selectedStock) return;

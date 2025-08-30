@@ -23,7 +23,7 @@ const INDIAN_API_KEY = process.env.INDIAN_API_KEY;
 
 async function fetchIndianStockData(ticker: string): Promise<StockData | null> {
     if (!INDIAN_API_KEY) {
-        console.error("Indian API key not found in .env file (INDIAN_API_KEY)");
+        console.error("Indian API key not found in .env file (INDIAN_API_KEY). Please obtain one from indianapi.in");
         return null;
     }
     
@@ -175,25 +175,26 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 export async function fetchStockData(ticker: string): Promise<StockData | null | 'rate-limited'> {
     const now = Date.now();
-    const cachedItem = cache.get(ticker);
+    const tickerKey = ticker.toUpperCase();
+    const cachedItem = cache.get(tickerKey);
 
     if (cachedItem && (now - cachedItem.timestamp) < CACHE_DURATION) {
         // Return cached data if it's not a failed fetch (null)
         if(cachedItem.data) return cachedItem.data;
     }
 
-    const isIndianStock = ticker.toUpperCase().endsWith('.NS') || ticker.toUpperCase().endsWith('.BSE');
+    const isIndianStock = tickerKey.endsWith('.NS') || tickerKey.endsWith('.BSE');
     
     let stockData: StockData | null | 'rate-limited' = null;
     
     try {
         if (isIndianStock) {
-            stockData = await fetchIndianStockData(ticker);
+            stockData = await fetchIndianStockData(tickerKey);
         } else {
-            stockData = await fetchAlphaVantageStockData(ticker);
+            stockData = await fetchAlphaVantageStockData(tickerKey);
         }
     } catch (error) {
-        console.error(`Failed to fetch data for ${ticker}`, error);
+        console.error(`Failed to fetch data for ${tickerKey}`, error);
         stockData = null; 
     }
 
@@ -203,12 +204,12 @@ export async function fetchStockData(ticker: string): Promise<StockData | null |
     }
 
     if (stockData) {
-        cache.set(ticker, { data: stockData, timestamp: now });
+        cache.set(tickerKey, { data: stockData, timestamp: now });
         return stockData;
     }
     
     // If we get here, it means the fetch failed for a reason other than rate limiting (e.g. invalid ticker)
-    cache.set(ticker, { data: null, timestamp: now }); // Cache the failure
-    console.warn(`Could not retrieve stock data for ${ticker}. It might be an invalid ticker or a non-rate-limit API issue.`);
+    cache.set(tickerKey, { data: null, timestamp: now }); // Cache the failure
+    console.warn(`Could not retrieve stock data for ${tickerKey}. It might be an invalid ticker or a non-rate-limit API issue.`);
     return null;
 }
