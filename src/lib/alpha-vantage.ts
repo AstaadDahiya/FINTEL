@@ -83,9 +83,8 @@ async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | '
 
             const [quoteRes, timeSeriesRes, overviewRes] = await Promise.all([quotePromise, timeSeriesPromise, overviewPromise]);
             
-            // If any response is not ok, something is wrong with the request itself (not necessarily the key)
             if (!quoteRes.ok || !timeSeriesRes.ok || !overviewRes.ok) {
-                 console.error("Alpha Vantage API request failed with status", { quote: quoteRes.status, series: timeSeriesRes.status, overview: overviewRes.status });
+                 console.error(`Alpha Vantage API request failed with key ...${apiKey.slice(-4)}`, { quote: quoteRes.status, series: timeSeriesRes.status, overview: overviewRes.status });
                  continue; // Try next key
             }
             
@@ -93,22 +92,20 @@ async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | '
             const timeSeriesData = await timeSeriesRes.json();
             const overviewData = await overviewRes.json();
             
-            // Check for rate limit note in any of the responses
             if (quoteData.Note?.includes('limit') || timeSeriesData.Note?.includes('limit') || overviewData.Note?.includes('limit') || quoteData.Information?.includes('limit')) {
                 console.warn(`Alpha Vantage API limit reached for key: ...${apiKey.slice(-4)}. Trying next key.`);
                 continue; // This key is rate-limited, try the next one
             }
 
             const globalQuote = quoteData['Global Quote'];
+            
+            if (!globalQuote || Object.keys(globalQuote).length === 0) {
+                 console.log(`No global quote for ${ticker} with key ...${apiKey.slice(-4)}. Assuming invalid ticker.`);
+                 return null; // Return null (not-found) if we get a response but no data
+            }
+            
             const dailySeries = timeSeriesData['Time Series (Daily)'];
 
-            // If we have a successful response but no quote data, the ticker is likely invalid
-            if (!globalQuote || Object.keys(globalQuote).length === 0) {
-                 console.log(`No global quote for ${ticker}. Assuming invalid ticker.`);
-                 return null;
-            }
-
-            // We have a successful response with this key, process the data
             const formattedData = dailySeries ? Object.entries(dailySeries)
                 .map(([date, values]: [string, any]) => ({
                     date,
@@ -135,12 +132,12 @@ async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | '
 
         } catch (error) {
             console.error(`Error fetching Alpha Vantage stock data for ${ticker} with key ...${apiKey.slice(-4)}:`, error);
-            // Don't continue the loop on network errors etc., just fail for this fetch attempt
+            // This is likely a network error, not a key issue. Don't continue, just fail.
             return null; 
         }
     }
     
-    // If the loop completes, it means all keys were rate-limited
+    // If the loop completes without returning, it means all keys were rate-limited
     console.error(`All ${ALPHA_VANTAGE_API_KEYS.length} Alpha Vantage API keys are rate-limited.`);
     return 'rate-limited';
 }
