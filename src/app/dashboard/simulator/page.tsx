@@ -140,8 +140,7 @@ export default function SimulatorPage() {
         };
     
         initialize();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isClient]);
+    }, [isClient, executeSearch, updatePortfolioStockPrices, portfolio.stocks]);
 
     const handleTrade = (type: 'Buy' | 'Sell') => {
         if (!selectedStock) return;
@@ -444,3 +443,5 @@ export default function SimulatorPage() {
         </div>
     );
 }
+
+    
