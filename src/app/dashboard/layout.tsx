@@ -42,7 +42,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import PersonalizedLearningContent from "@/components/dashboard/PersonalizedLearning";
 import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import AuthGuard from "@/components/auth/AuthGuard";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -54,12 +53,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
 
   return (
-    <AuthGuard>
       <SidebarProvider>
         <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <Sidebar side="left" collapsible="icon">
           <SidebarHeader>
-            <Link href="/" className="block">
+            <Link href="/dashboard" className="block">
               <div className="flex items-center gap-2 p-2 group-data-[collapsible=icon]:justify-center">
               <svg viewBox="0 0 220 55" xmlns="http://www.w3.org/2000/svg" className="h-12 w-auto group-data-[collapsible=icon]:hidden text-foreground">
                   <defs>
@@ -275,6 +273,5 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </DialogContent>
         </Dialog>
       </SidebarProvider>
-    </AuthGuard>
   );
 }

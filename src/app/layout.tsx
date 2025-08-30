@@ -1,5 +1,4 @@
 
-
 "use client"
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
@@ -7,10 +6,10 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { AuthProvider, useAuth } from '@/hooks/use-auth';
 import { usePathname } from 'next/navigation';
 import AuthGuard from '@/components/auth/AuthGuard';
-import AppLayout from './dashboard/layout';
-import LoginPage from './login/page';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { Loader2 } from 'lucide-react';
+import LoginPage from './login/page';
 
 function RootContent({
   children,
@@ -25,33 +24,21 @@ function RootContent({
     if (!loading && user && pathname === '/login') {
       router.push('/dashboard');
     }
-    if (!loading && !user && pathname !== '/login') {
-      router.push('/login');
-    }
   }, [user, loading, pathname, router]);
 
-
   if (loading) {
-    // You can return a global loading indicator here
-    return null;
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
   }
 
   if (!user) {
     return <LoginPage />;
   }
-  
-  if (pathname.startsWith('/dashboard')) {
-      return <AppLayout>{children}</AppLayout>;
-  }
 
-  // Redirect to dashboard if logged in and at root
-  if (pathname === '/') {
-    router.push('/dashboard');
-    return null; // Or a loading indicator
-  }
-
-  // Fallback for any other page if needed, or just show children
-  return <>{children}</>;
+  return <AuthGuard>{children}</AuthGuard>;
 }
 
 
