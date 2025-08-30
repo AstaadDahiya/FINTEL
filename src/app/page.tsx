@@ -14,6 +14,12 @@ export default function LandingPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
+  useEffect(() => {
+    if (user) {
+      router.push('/dashboard');
+    }
+  }, [user, router]);
+
   if (loading || user) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
@@ -79,30 +85,20 @@ export default function LandingPage() {
       <main className="flex-1">
         <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
           <div className="container px-4 md:px-6">
-            <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 xl:grid-cols-2">
-              <div className="flex flex-col justify-center space-y-4">
-                <div className="space-y-2">
-                  <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none font-headline">
-                    Welcome to Fintel
-                  </h1>
-                  <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                    A simple and clean platform to learn about stock trading, practice with a paper trading account, and get AI-powered insights.
-                  </p>
-                </div>
-                <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Button asChild size="lg">
-                    <Link href="/login">Get Started</Link>
-                  </Button>
-                </div>
+            <div className="flex flex-col items-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none font-headline">
+                  Welcome to Fintel
+                </h1>
+                <p className="mx-auto max-w-[600px] text-muted-foreground md:text-xl">
+                  A simple and clean platform to learn about stock trading, practice with a paper trading account, and get AI-powered insights.
+                </p>
               </div>
-              <Image
-                src="https://image2url.com/images/1756559873652-b8416d65-7c4a-4d63-b985-7363c190e2c0.png"
-                width="800"
-                height="500"
-                alt="Hero"
-                data-ai-hint="investment app"
-                className="mx-auto aspect-[16/10] overflow-hidden rounded-xl object-cover sm:w-full"
-              />
+              <div className="space-x-4">
+                <Button asChild size="lg">
+                  <Link href="/login">Get Started</Link>
+                </Button>
+              </div>
             </div>
           </div>
         </section>

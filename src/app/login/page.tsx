@@ -238,11 +238,11 @@ export default function LoginPage() {
       </div>
       <div className="hidden bg-muted lg:block">
         <Image
-          src="https://placehold.co/1200x900/1e293b/ffffff?text=FINTEL"
+          src="https://image2url.com/images/1756559873652-b8416d65-7c4a-4d63-b985-7363c190e2c0.png"
           alt="Stock market chart"
           width="1200"
           height="900"
-          data-ai-hint="stock market ticker"
+          data-ai-hint="stock market"
           className="h-full w-full object-cover dark:brightness-[0.3]"
         />
       </div>
