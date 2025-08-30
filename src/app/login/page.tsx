@@ -238,7 +238,7 @@ export default function LoginPage() {
       </div>
       <div className="hidden bg-muted lg:block">
         <Image
-          src="https://picsum.photos/seed/stocks/1200/900"
+          src="https://placehold.co/1200x900/1e293b/ffffff?text=FINTEL"
           alt="Stock market chart"
           width="1200"
           height="900"
