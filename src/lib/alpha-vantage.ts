@@ -101,7 +101,8 @@ async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | '
             
             if (!globalQuote || Object.keys(globalQuote).length === 0) {
                  console.log(`No global quote for ${ticker} with key ...${apiKey.slice(-4)}. Assuming invalid ticker.`);
-                 return null; // Return null (not-found) if we get a response but no data
+                 // This is an important change: if one key gives a "not found", we assume the ticker is bad and stop trying other keys.
+                 return null;
             }
             
             const dailySeries = timeSeriesData['Time Series (Daily)'];
@@ -133,7 +134,8 @@ async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | '
         } catch (error) {
             console.error(`Error fetching Alpha Vantage stock data for ${ticker} with key ...${apiKey.slice(-4)}:`, error);
             // This is likely a network error, not a key issue. Don't continue, just fail.
-            return null; 
+            // But to be safe with multiple keys, we can try the next one.
+            continue;
         }
     }
     
