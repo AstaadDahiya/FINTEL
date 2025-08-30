@@ -5,7 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from '@/components/theme-provider';
 import { AuthProvider, useAuth } from '@/hooks/use-auth';
 import { usePathname } from 'next/navigation';
-import AppLayout from '@/components/layout/AppLayout';
+import AuthGuard from '@/components/auth/AuthGuard';
+import AppLayout from './dashboard/layout';
 
 function RootContent({
   children,
@@ -13,11 +14,12 @@ function RootContent({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const { user, loading } = useAuth();
+  const { loading } = useAuth();
 
   const isAuthPage = pathname === '/login';
 
   if(loading) {
+    // You can return a global loading indicator here
     return null;
   }
 
@@ -25,7 +27,8 @@ function RootContent({
     return <>{children}</>;
   }
 
-  return <AppLayout>{children}</AppLayout>
+  // Wrap content with AppLayout, which includes AuthGuard
+  return <AppLayout>{children}</AppLayout>;
 }
 
 export default function RootLayout({

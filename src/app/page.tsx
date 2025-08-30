@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Progress } from "@/components/ui/progress";
@@ -91,7 +92,7 @@ export default function Dashboard() {
                 </div>
             </div>
             <Button size="sm" variant="outline" className="w-full mt-4" asChild>
-                <Link href="/learn">Continue Learning</Link>
+                <Link href="/dashboard/learn">Continue Learning</Link>
             </Button>
           </CardContent>
         </Card>
