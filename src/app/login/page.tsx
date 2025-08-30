@@ -85,7 +85,9 @@ export default function LoginPage() {
         console.error("Google Sign-in failed:", error);
     }
   }
-  
+
+  // The loading spinner will be handled by the AuthGuard on the dashboard pages.
+  // This page should be visible to non-logged-in users.
   if (loading || user) {
     return (
       <div className="flex h-screen w-full items-center justify-center">

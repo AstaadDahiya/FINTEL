@@ -20,6 +20,8 @@ export default function LandingPage() {
     }
   }, [user, loading, router]);
 
+  // The loading spinner will be handled by the AuthGuard on the dashboard pages.
+  // This page should be visible to non-logged-in users.
   if (loading || user) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
@@ -27,6 +29,7 @@ export default function LandingPage() {
       </div>
     );
   }
+
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
