@@ -1,4 +1,5 @@
 
+
 "use client"
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
@@ -7,6 +8,9 @@ import { AuthProvider, useAuth } from '@/hooks/use-auth';
 import { usePathname } from 'next/navigation';
 import AuthGuard from '@/components/auth/AuthGuard';
 import AppLayout from './dashboard/layout';
+import LoginPage from './login/page';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 function RootContent({
   children,
@@ -14,22 +18,42 @@ function RootContent({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const { loading } = useAuth();
+  const { user, loading } = useAuth();
+  const router = useRouter();
 
-  const isAuthPage = pathname === '/login';
+  useEffect(() => {
+    if (!loading && user && pathname === '/login') {
+      router.push('/dashboard');
+    }
+    if (!loading && !user && pathname !== '/login') {
+      router.push('/login');
+    }
+  }, [user, loading, pathname, router]);
 
-  if(loading) {
+
+  if (loading) {
     // You can return a global loading indicator here
     return null;
   }
 
-  if(isAuthPage) {
-    return <>{children}</>;
+  if (!user) {
+    return <LoginPage />;
+  }
+  
+  if (pathname.startsWith('/dashboard')) {
+      return <AppLayout>{children}</AppLayout>;
   }
 
-  // Wrap content with AppLayout, which includes AuthGuard
-  return <AppLayout>{children}</AppLayout>;
+  // Redirect to dashboard if logged in and at root
+  if (pathname === '/') {
+    router.push('/dashboard');
+    return null; // Or a loading indicator
+  }
+
+  // Fallback for any other page if needed, or just show children
+  return <>{children}</>;
 }
+
 
 export default function RootLayout({
   children,
