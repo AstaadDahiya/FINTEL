@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, ArrowUp, ArrowDown, Loader2 } from "lucide-react";
+import { Search, ArrowUp, ArrowDown, Loader2, AlertTriangle } from "lucide-react";
 import StockChart from "@/components/simulator/StockChart";
 import { Label } from "@/components/ui/label";
 import { useLocalStorage } from "@/hooks/use-local-storage";
@@ -92,9 +92,13 @@ export default function SimulatorPage() {
         try {
             const data = await fetchStockData(upperCaseTicker);
             
-            if (data === 'rate-limited') {
-                const errorMessage = "API rate limit reached. Live data for US stocks may be unavailable. Indian stocks are using mock data.";
-                toast({ variant: "destructive", title: "API Limit Reached", description: errorMessage });
+            if (data === 'no-key') {
+                const errorMessage = "Alpha Vantage API Key is missing. Please add it to your .env file to fetch live US stock data.";
+                toast({ variant: "destructive", title: "API Key Missing", description: errorMessage, duration: 10000 });
+                setApiError(errorMessage);
+            } else if (data === 'rate-limited') {
+                const errorMessage = "API rate limit reached for US stocks. Please try again later or use a different API key. Indian stocks use mock data and are unaffected.";
+                toast({ variant: "destructive", title: "API Limit Reached", description: errorMessage, duration: 10000 });
                 setApiError(errorMessage);
             } else if (data === 'not-found') {
                 const errorMessage = `Stock with ticker "${upperCaseTicker}" not found. Please check the symbol (e.g., AAPL for US, RELIANCE.NS for India).`;
@@ -232,8 +236,9 @@ export default function SimulatorPage() {
                 <h1 className="text-3xl font-bold font-headline">Trading Simulator</h1>
                 <p className="text-muted-foreground">Practice trading with live US market data and mock Indian market data, risk-free.</p>
             </div>
-            {apiError && !selectedStock && (
+            {apiError && (
                  <Alert variant="destructive" className="mb-8">
+                    <AlertTriangle className="h-4 w-4" />
                     <AlertTitle>Error</AlertTitle>
                     <AlertDescription>
                         {apiError}
@@ -474,5 +479,3 @@ export default function SimulatorPage() {
         </div>
     );
 }
-
-    

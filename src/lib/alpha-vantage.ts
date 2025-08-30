@@ -65,13 +65,13 @@ async function fetchIndianStockDataMock(ticker: string): Promise<StockData | nul
 
 
 // --- Alpha Vantage API Functions ---
-const ALPHA_VANTAGE_API_KEYS = (process.env.ALPHA_VANTAGE_API_KEYS || 'demo').split(',').filter(Boolean);
+const ALPHA_VANTAGE_API_KEYS = (process.env.ALPHA_VANTAGE_API_KEYS || '').split(',').filter(key => key && key !== 'YOUR_API_KEY_HERE');
 let currentKeyIndex = 0;
 
 const getAlphaVantageApiKey = () => {
     if (ALPHA_VANTAGE_API_KEYS.length === 0) {
-        console.warn("No Alpha Vantage API keys found in .env file (ALPHA_VANTAGE_API_KEYS). Using 'demo' key which is heavily limited.");
-        return 'demo';
+        console.error("No Alpha Vantage API keys found in .env file (ALPHA_VANTAGE_API_KEYS). Please obtain a free key from https://www.alphavantage.co/support/#api-key");
+        return null;
     }
     const key = ALPHA_VANTAGE_API_KEYS[currentKeyIndex];
     currentKeyIndex = (currentKeyIndex + 1) % ALPHA_VANTAGE_API_KEYS.length;
@@ -80,15 +80,16 @@ const getAlphaVantageApiKey = () => {
 
 const ALPHA_VANTAGE_BASE_URL = 'https://www.alphavantage.co/query';
 
-async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | 'rate-limited' | null> {
-    try {
-        const apiKey = getAlphaVantageApiKey();
-        if (!apiKey) return null;
+async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | 'rate-limited' | 'no-key' | null> {
+    const apiKey = getAlphaVantageApiKey();
+    if (!apiKey) {
+        return 'no-key';
+    }
 
+    try {
         const quotePromise = fetch(`${ALPHA_VANTAGE_BASE_URL}?function=GLOBAL_QUOTE&symbol=${ticker}&apikey=${apiKey}`);
         const timeSeriesPromise = fetch(`${ALPHA_VANTAGE_BASE_URL}?function=TIME_SERIES_DAILY&symbol=${ticker}&outputsize=compact&apikey=${apiKey}`);
         const overviewPromise = fetch(`${ALPHA_VANTAGE_BASE_URL}?function=OVERVIEW&symbol=${ticker}&apikey=${apiKey}`);
-
 
         const [quoteRes, timeSeriesRes, overviewRes] = await Promise.all([quotePromise, timeSeriesPromise, overviewPromise]);
 
@@ -109,17 +110,17 @@ async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | '
         const globalQuote = quoteData['Global Quote'];
         const dailySeries = timeSeriesData['Time Series (Daily)'];
 
-        if (!globalQuote || Object.keys(globalQuote).length === 0 || !dailySeries) {
+        if (!globalQuote || Object.keys(globalQuote).length === 0) {
             return null;
         }
 
-        const formattedData = Object.entries(dailySeries)
+        const formattedData = dailySeries ? Object.entries(dailySeries)
             .map(([date, values]: [string, any]) => ({
                 date,
                 price: parseFloat(values['4. close']),
             }))
             .reverse()
-            .slice(-30);
+            .slice(-30) : [];
 
         const stockInfo: StockData = {
             symbol: globalQuote['01. symbol'],
@@ -145,11 +146,11 @@ async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | '
 
 
 // --- Main Fetch Function ---
-const cache = new Map<string, { data: StockData | 'rate-limited' | null, timestamp: number }>();
+const cache = new Map<string, { data: StockData | 'rate-limited' | 'no-key' | null, timestamp: number }>();
 const CACHE_DURATION_SUCCESS = 5 * 60 * 1000; // 5 minutes
 const CACHE_DURATION_FAILURE = 1 * 60 * 1000; // 1 minute for failures/rate-limits
 
-export async function fetchStockData(ticker: string): Promise<StockData | 'rate-limited' | 'not-found' | null> {
+export async function fetchStockData(ticker: string): Promise<StockData | 'rate-limited' | 'not-found' | 'no-key' | null> {
     const now = Date.now();
     const tickerKey = ticker.toUpperCase();
     const cachedItem = cache.get(tickerKey);
@@ -161,7 +162,7 @@ export async function fetchStockData(ticker: string): Promise<StockData | 'rate-
 
     const isIndianStock = tickerKey.endsWith('.NS') || tickerKey.endsWith('.BSE');
     
-    let stockData: StockData | 'rate-limited' | null = null;
+    let stockData: StockData | 'rate-limited' | 'no-key' | null = null;
     
     try {
         if (isIndianStock) {
@@ -178,6 +179,12 @@ export async function fetchStockData(ticker: string): Promise<StockData | 'rate-
         cache.set(tickerKey, { data: 'rate-limited', timestamp: now });
         return 'rate-limited';
     }
+    
+    if (stockData === 'no-key') {
+        cache.set(tickerKey, { data: 'no-key', timestamp: now });
+        return 'no-key';
+    }
+
 
     if (stockData) {
         cache.set(tickerKey, { data: stockData, timestamp: now });
