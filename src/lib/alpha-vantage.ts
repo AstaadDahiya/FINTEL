@@ -109,7 +109,7 @@ async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | '
         const globalQuote = quoteData['Global Quote'];
         const dailySeries = timeSeriesData['Time Series (Daily)'];
 
-        if (!globalQuote || Object.keys(globalQuote).length === 0 || !dailySeries || !overviewData.Currency) {
+        if (!globalQuote || Object.keys(globalQuote).length === 0 || !dailySeries) {
             return null;
         }
 
@@ -123,7 +123,7 @@ async function fetchAlphaVantageStockData(ticker: string): Promise<StockData | '
 
         const stockInfo: StockData = {
             symbol: globalQuote['01. symbol'],
-            name: overviewData.Name || "Unknown", 
+            name: overviewData.Name || globalQuote['01. symbol'], 
             price: parseFloat(globalQuote['05. price']),
             change: parseFloat(globalQuote['09. change']),
             changePercent: parseFloat(globalQuote['10. change percent'].replace('%', '')),
@@ -187,5 +187,3 @@ export async function fetchStockData(ticker: string): Promise<StockData | 'rate-
     cache.set(tickerKey, { data: null, timestamp: now });
     return 'not-found';
 }
-
-    
