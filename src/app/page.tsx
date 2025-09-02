@@ -157,7 +157,7 @@ export default function LandingPage() {
                <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2"><Bot /> Chatbot</CardTitle>
-                </CardHeader>
+                </Header>
                 <CardContent>
                   <CardDescription>Get instant answers to your questions about the app and trading concepts.</CardDescription>
                 </CardContent>
