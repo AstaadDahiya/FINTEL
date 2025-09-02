@@ -218,13 +218,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <SidebarFooter className="group-data-[collapsible=icon]:hidden">
             <SidebarMenu>
                  <SidebarMenuItem>
-                  <Link href="/" passHref legacyBehavior>
-                    <a>
-                      <SidebarMenuButton tooltip="Main Site" isActive={isActive('/')}>
-                        <Globe />
-                        <span>Main Site</span>
-                      </SidebarMenuButton>
-                    </a>
+                  <Link href="/" passHref>
+                    <SidebarMenuButton tooltip="Main Site" isActive={isActive('/')}>
+                      <Globe />
+                      <span>Main Site</span>
+                    </SidebarMenuButton>
                   </Link>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
@@ -290,3 +288,5 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </AuthGuard>
   );
 }
+
+    
