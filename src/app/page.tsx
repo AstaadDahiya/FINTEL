@@ -20,7 +20,7 @@ export default function LandingPage() {
       if (!loading && user) {
         router.push('/dashboard');
       }
-    }, [user, loading, router]);
+    }, [user, loading]);
 
 
     const scrollToFeatures = () => {

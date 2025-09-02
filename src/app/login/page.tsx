@@ -34,7 +34,7 @@ export default function LoginPage() {
     if (!loading && user) {
       router.push('/dashboard');
     }
-  }, [user, loading, router]);
+  }, [user, loading]);
   
   const handleAuthAction = async (e: React.FormEvent) => {
     e.preventDefault();
