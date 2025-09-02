@@ -215,9 +215,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <SidebarMenu>
                  <SidebarMenuItem>
                   <Link href="/" passHref>
-                    <SidebarMenuButton tooltip="Landing Page" isActive={isActive('/')}>
+                    <SidebarMenuButton tooltip="Main Site" isActive={isActive('/')}>
                       <Globe />
-                      <span>Landing Page</span>
+                      <span>Main Site</span>
                     </SidebarMenuButton>
                   </Link>
                 </SidebarMenuItem>
