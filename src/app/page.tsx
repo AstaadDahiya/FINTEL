@@ -20,6 +20,7 @@ const heroImages = [
   "https://image2url.com/images/1756830404548-6e4a7635-2a56-44fd-8919-9cf6b4c861cd.png",
   "https://image2url.com/images/1756830449257-7fdaae2d-92ec-40f0-95f6-8b7c36940aef.png",
   "https://image2url.com/images/1756830480908-de394a05-247f-42c2-ba04-d90442d15260.png",
+  "https://image2url.com/images/1756830589377-5b75abb9-dffd-4c20-8a34-a3cb4fed4009.png",
 ];
 
 
