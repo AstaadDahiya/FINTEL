@@ -11,6 +11,8 @@ import { ArrowDown, BookOpen, LineChart, Loader2, Newspaper, Sparkles, TextSelec
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import Image from "next/image";
+
 
 export default function LandingPage() {
     const { user, loading } = useAuth();
@@ -78,6 +80,9 @@ export default function LandingPage() {
             <span className="text-lg">FINTEL</span>
           </Link>
           <nav className="ml-auto flex items-center gap-4">
+             <Button variant="ghost" asChild>
+                <Link href="/login">Login</Link>
+            </Button>
             <Button asChild>
               <Link href="/login">Sign Up</Link>
             </Button>
@@ -85,7 +90,7 @@ export default function LandingPage() {
         </div>
       </header>
       <main className="flex-1">
-        <section className="flex h-[calc(100vh-3.5rem)] w-full items-center justify-center bg-muted/20">
+        <section className="flex h-[calc(80vh-3.5rem)] w-full items-center justify-center bg-muted/20">
           <div className="container text-center">
             <h1 className="text-4xl font-extrabold tracking-tight lg:text-6xl font-headline">
               FINTEL
@@ -100,6 +105,26 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
+
+         <section className="py-16 sm:py-24 bg-background">
+          <div className="container">
+              <div className="relative">
+                  <div className="absolute -inset-2">
+                      <div className="w-full h-full max-w-6xl mx-auto opacity-30 blur-lg bg-gradient-to-r from-primary to-green-500"></div>
+                  </div>
+                  <Image
+                      src="https://image2url.com/images/1756806661144-09af950d-0269-4e2d-9e35-b1592f903b12.png"
+                      alt="FINTEL Dashboard Preview"
+                      width={1200}
+                      height={750}
+                      data-ai-hint="app screenshot"
+                      className="relative w-full h-auto max-w-6xl mx-auto rounded-lg shadow-2xl border border-border"
+                  />
+              </div>
+          </div>
+        </section>
+
+
         <section id="features" className="py-16 sm:py-24">
           <div className="container">
             <h2 className="mb-12 text-center text-3xl font-bold tracking-tight sm:text-4xl font-headline">
