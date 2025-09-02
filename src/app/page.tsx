@@ -94,11 +94,11 @@ export default function LandingPage() {
       <main className="flex-1">
         <section className="relative flex h-[calc(80vh)] w-full items-center justify-center text-center">
           <Image 
-            src="https://image2url.com/images/1756806661144-09af950d-0269-4e2d-9e35-b1592f903b12.png"
-            alt="Financial dashboard background"
+            src="https://image2url.com/images/1757344933923-01041ca3-d2d4-4a41-b844-3d96570d8a5c.jpeg"
+            alt="Hero background"
             fill
-            className="object-cover -z-10 brightness-[0.8] dark:brightness-[0.3]"
-            data-ai-hint="background image"
+            className="object-cover -z-10 brightness-[0.8] dark:brightness-[0.4]"
+            data-ai-hint="dark abstract"
             priority
           />
           <div className="container bg-background/30 dark:bg-background/50 backdrop-blur-sm p-8 rounded-lg">
@@ -200,3 +200,5 @@ export default function LandingPage() {
     </div>
   );
 }
+
+    
