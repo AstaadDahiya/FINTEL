@@ -69,15 +69,27 @@ npm install
 ```
 
 ### 4. Set Up Environment Variables
-This is a crucial step to get the live US stock data.
+This is a crucial step to connect to Firebase and get the live US stock data.
 
-1.  Create a file named `.env` in the root of the project.
-2.  Get a free API key from [Alpha Vantage](https://www.alphavantage.co/support/#api-key).
-3.  Add the key to your `.env` file. You can add multiple keys (separated by a comma) to increase your API request limit.
+1.  Open the `.env` file in the root of the project.
+2.  **Firebase Keys**: Find your Firebase project configuration keys. Go to your Firebase Console, click the gear icon for **Project settings**, and under the **General** tab, scroll down to **Your apps**. Select your web app, and under **Firebase SDK snippet**, choose **Config**. Copy the values into your `.env` file.
+3.  **Alpha Vantage Keys**: Get a free API key from [Alpha Vantage](https://www.alphavantage.co/support/#api-key). Add the key to your `.env` file. You can add multiple keys (separated by a comma) to increase your API request limit.
 
+    Your `.env` file should look like this, with your actual keys filled in:
     ```env
     # .env
-    ALPHA_VANTAGE_API_KEYS=YOUR_ALPHA_VANTAGE_KEY_HERE,ANOTHER_KEY_IF_YOU_HAVE_ONE
+
+    # Alpha Vantage API Keys
+    ALPHA_VANTAGE_API_KEYS=YOUR_ALPHA_VANTAGE_KEY_HERE
+
+    # Firebase Configuration
+    NEXT_PUBLIC_FIREBASE_API_KEY=AIza...
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
+    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=123...
+    NEXT_PUBLIC_FIREBASE_APP_ID=1:123...:web:...
+    NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-...
     ```
     > **Note:** The `.gitignore` file is already configured to prevent your `.env` file from being committed to Git.
 
@@ -116,9 +128,7 @@ Before deploying, your project needs to be hosted on a Git provider like GitHub,
 This is the most important step for keeping your keys secure. **Never** write your API keys directly in your code.
 
 1.  In the Vercel project configuration screen, expand the "**Environment Variables**" section.
-2.  Add your API keys here. For this project, you need `ALPHA_VANTAGE_API_KEYS`.
-    *   **Name**: `ALPHA_VANTAGE_API_KEYS`
-    *   **Value**: Paste your actual Alpha Vantage API key(s) here.
+2.  Copy all the key-value pairs from your local `.env` file and add them one by one to Vercel's environment variables. This includes all `NEXT_PUBLIC_FIREBASE_*` keys and your `ALPHA_VANTAGE_API_KEYS`.
 3.  Click "**Add**" for each variable.
 4.  Click the "**Deploy**" button.
 
