@@ -217,14 +217,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </SidebarContent>
           <SidebarFooter className="group-data-[collapsible=icon]:hidden">
             <SidebarMenu>
-                 <SidebarMenuItem>
-                  <Link href="/" passHref>
-                    <SidebarMenuButton tooltip="Main Site" isActive={isActive('/')}>
-                      <Globe />
-                      <span>Main Site</span>
-                    </SidebarMenuButton>
-                  </Link>
-                </SidebarMenuItem>
                 <SidebarMenuItem>
                   <Link href="/dashboard/support" passHref>
                     <SidebarMenuButton tooltip="Support" isActive={isActive('/dashboard/support')}>
@@ -288,5 +280,3 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </AuthGuard>
   );
 }
-
-    
