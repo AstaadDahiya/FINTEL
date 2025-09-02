@@ -81,13 +81,13 @@ export default function LandingPage() {
             <span className="text-lg">FINTEL</span>
           </Link>
           <nav className="ml-auto flex items-center gap-4">
+            <ThemeToggle />
              <Button variant="ghost" asChild>
                 <Link href="/login">Login</Link>
             </Button>
             <Button asChild>
               <Link href="/login">Sign Up</Link>
             </Button>
-            <ThemeToggle />
           </nav>
         </div>
       </header>
@@ -97,7 +97,7 @@ export default function LandingPage() {
             src="https://image2url.com/images/1756806661144-09af950d-0269-4e2d-9e35-b1592f903b12.png"
             alt="Financial dashboard background"
             fill
-            className="object-cover -z-10 brightness-[0.6] dark:brightness-[0.3]"
+            className="object-cover -z-10 brightness-[0.8] dark:brightness-[0.3]"
             data-ai-hint="background image"
             priority
           />
