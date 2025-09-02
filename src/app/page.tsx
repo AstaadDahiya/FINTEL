@@ -90,47 +90,29 @@ export default function LandingPage() {
         </div>
       </header>
       <main className="flex-1">
-        <section className="relative flex h-[calc(80vh-3.5rem)] w-full items-center justify-center">
-            <Image 
-                src="https://image2url.com/images/1756806661144-09af950d-0269-4e2d-9e35-b1592f903b12.png"
-                alt="Financial dashboard background"
-                fill
-                className="object-cover -z-10 brightness-50"
-                data-ai-hint="background image"
-            />
-          <div className="container text-center text-primary-foreground">
+        <section className="relative flex h-[calc(80vh)] w-full items-center justify-center text-center text-white">
+          <Image 
+            src="https://image2url.com/images/1756806661144-09af950d-0269-4e2d-9e35-b1592f903b12.png"
+            alt="Financial dashboard background"
+            fill
+            className="object-cover -z-10 brightness-[0.4]"
+            data-ai-hint="background image"
+            priority
+          />
+          <div className="container">
             <h1 className="text-4xl font-extrabold tracking-tight lg:text-6xl font-headline">
               FINTEL
             </h1>
-            <p className="mt-4 text-lg text-foreground/80 md:text-xl">
+            <p className="mt-4 text-lg text-white/80 md:text-xl">
               Invest with confidence. Learn with purpose.
             </p>
             <div className="mt-8">
-              <Button size="lg" onClick={scrollToFeatures} variant="secondary">
+              <Button size="lg" onClick={scrollToFeatures}>
                 Explore Features <ArrowDown className="ml-2 h-5 w-5" />
               </Button>
             </div>
           </div>
         </section>
-
-         <section className="py-16 sm:py-24 bg-background">
-          <div className="container">
-              <div className="relative">
-                  <div className="absolute -inset-2">
-                      <div className="w-full h-full max-w-6xl mx-auto opacity-30 blur-lg bg-gradient-to-r from-primary to-green-500"></div>
-                  </div>
-                  <Image
-                      src="https://image2url.com/images/1756806661144-09af950d-0269-4e2d-9e35-b1592f903b12.png"
-                      alt="FINTEL Dashboard Preview"
-                      width={1200}
-                      height={750}
-                      data-ai-hint="app screenshot"
-                      className="relative w-full h-auto max-w-6xl mx-auto rounded-lg shadow-2xl border border-border"
-                  />
-              </div>
-          </div>
-        </section>
-
 
         <section id="features" className="py-16 sm:py-24">
           <div className="container">
@@ -156,7 +138,7 @@ export default function LandingPage() {
               </Card>
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2"><Newspaper /> News Analysis</CardTitle>
+                  <CardTitle className="flex items-center gap-2"><Sparkles /> AI Analysis</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <CardDescription>Get AI-powered sentiment analysis and simplify complex financial news.</CardDescription>
