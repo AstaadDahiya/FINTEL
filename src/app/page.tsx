@@ -97,11 +97,11 @@ export default function LandingPage() {
             src="https://image2url.com/images/1756806661144-09af950d-0269-4e2d-9e35-b1592f903b12.png"
             alt="Hero background"
             fill
-            className="object-cover -z-10 brightness-[0.8] dark:brightness-[0.4]"
+            className="object-cover absolute inset-0 z-0 brightness-[0.8] dark:brightness-[0.4]"
             data-ai-hint="finance abstract"
             priority
           />
-          <div className="container bg-background/30 dark:bg-background/50 backdrop-blur-sm p-8 rounded-lg">
+          <div className="relative z-10 bg-background/30 dark:bg-background/50 backdrop-blur-sm p-8 rounded-lg">
             <h1 className="text-4xl font-extrabold tracking-tight lg:text-6xl font-headline text-foreground">
               FINTEL
             </h1>
