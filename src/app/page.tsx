@@ -12,6 +12,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Image from "next/image";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 
 export default function LandingPage() {
@@ -86,21 +87,22 @@ export default function LandingPage() {
             <Button asChild>
               <Link href="/login">Sign Up</Link>
             </Button>
+            <ThemeToggle />
           </nav>
         </div>
       </header>
       <main className="flex-1">
-        <section className="relative flex h-[calc(80vh)] w-full items-center justify-center text-center text-foreground">
+        <section className="relative flex h-[calc(80vh)] w-full items-center justify-center text-center">
           <Image 
             src="https://image2url.com/images/1756806661144-09af950d-0269-4e2d-9e35-b1592f903b12.png"
             alt="Financial dashboard background"
             fill
-            className="object-cover -z-10 brightness-[0.8] dark:brightness-[0.4]"
+            className="object-cover -z-10 brightness-[0.6] dark:brightness-[0.3]"
             data-ai-hint="background image"
             priority
           />
-          <div className="container bg-background/50 backdrop-blur-sm p-8 rounded-lg">
-            <h1 className="text-4xl font-extrabold tracking-tight lg:text-6xl font-headline">
+          <div className="container bg-background/30 dark:bg-background/50 backdrop-blur-sm p-8 rounded-lg">
+            <h1 className="text-4xl font-extrabold tracking-tight lg:text-6xl font-headline text-foreground">
               FINTEL
             </h1>
             <p className="mt-4 text-lg text-foreground/80 md:text-xl">
