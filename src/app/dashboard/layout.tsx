@@ -47,7 +47,10 @@ import AuthGuard from "@/components/auth/AuthGuard";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isActive = (path: string) => pathname === path || (path !== '/dashboard' && pathname.startsWith(path));
+  const isActive = (path: string) => {
+    if (path === '/') return pathname === '/';
+    return pathname === path || (path !== '/dashboard' && pathname.startsWith(path));
+  }
   const { user, logout } = useAuth();
   const personalizedLearningKey = user ? `showPersonalizedLearning_${user.uid}` : 'showPersonalizedLearning';
   const [showPersonalizedLearning] = useLocalStorage(personalizedLearningKey, true);
