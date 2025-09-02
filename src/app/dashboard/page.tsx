@@ -29,6 +29,7 @@ type Trade = {
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const [isClient, setIsClient] = useState(false);
   
   const completedModulesKey = user ? `completedModules_${user.uid}` : 'completedModules';
   const quizScoresKey = user ? `quizScores_${user.uid}` : 'quizScores';
@@ -37,8 +38,7 @@ export default function Dashboard() {
   const [completedModules] = useLocalStorage<CompletedModules>(completedModulesKey, []);
   const [quizScores] = useLocalStorage<QuizScores>(quizScoresKey, {});
   const [tradeHistory] = useLocalStorage<Trade[]>(tradeHistoryKey, []);
-  const [isClient, setIsClient] = useState(false);
-
+  
   useEffect(() => {
     setIsClient(true);
   }, []);
