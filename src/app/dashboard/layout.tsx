@@ -4,7 +4,6 @@ import Link from "next/link";
 import {
   BookOpen,
   Bot,
-  HelpCircle,
   Home,
   Lightbulb,
   LineChart,
@@ -24,7 +23,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
   SidebarFooter,
-  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import {
