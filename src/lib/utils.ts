@@ -19,7 +19,10 @@ export function formatCurrency(
     maximumFractionDigits: 2,
   };
   
-  const formatter = new Intl.NumberFormat(currency === 'INR' ? 'en-IN' : 'en-US', {
+  // Always use en-IN for INR to ensure correct symbol (₹) and formatting
+  const locale = currency === 'INR' ? 'en-IN' : 'en-US';
+  
+  const formatter = new Intl.NumberFormat(locale, {
     ...defaultOptions,
     ...options,
   });
