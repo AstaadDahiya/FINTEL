@@ -4,6 +4,7 @@
 import Link from "next/link";
 import {
   BookOpen,
+  Globe,
   HelpCircle,
   Home,
   Lightbulb,
@@ -212,6 +213,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </SidebarContent>
           <SidebarFooter className="group-data-[collapsible=icon]:hidden">
             <SidebarMenu>
+                 <SidebarMenuItem>
+                  <Link href="/" passHref>
+                    <SidebarMenuButton tooltip="Landing Page" isActive={isActive('/')}>
+                      <Globe />
+                      <span>Landing Page</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
                 <SidebarMenuItem>
                   <Link href="/dashboard/support" passHref>
                     <SidebarMenuButton tooltip="Support" isActive={isActive('/dashboard/support')}>
