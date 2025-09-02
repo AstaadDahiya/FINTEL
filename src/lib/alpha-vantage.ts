@@ -37,19 +37,35 @@ function generateMockHistory(basePrice: number) {
     return data;
 }
 
+const indianStockMappings: { [key: string]: { name: string; basePrice: number } } = {
+  "RELIANCE.NS": { name: "Reliance Industries", basePrice: 2800 },
+  "TCS.NS": { name: "Tata Consultancy", basePrice: 3800 },
+  "HDFCBANK.NS": { name: "HDFC Bank", basePrice: 1500 },
+  "INFY.NS": { name: "Infosys Ltd", basePrice: 1600 },
+  "ICICIBANK.NS": { name: "ICICI Bank", basePrice: 1100 },
+  "HINDUNILVR.NS": { name: "Hindustan Unilever", basePrice: 2400 },
+  "BHARTIARTL.NS": { name: "Bharti Airtel", basePrice: 1200 },
+  "ITC.NS": { name: "ITC Ltd", basePrice: 430 },
+  "SBIN.NS": { name: "State Bank of India", basePrice: 830 },
+  "LTIM.NS": { name: "LTIMindtree", basePrice: 5100 },
+};
+
+
 async function fetchIndianStockDataMock(ticker: string): Promise<StockData | null> {
-    const mockPrice = parseFloat((Math.random() * (4000 - 500) + 500).toFixed(2));
+    const stockInfo = indianStockMappings[ticker];
+    
+    // Use mapped info or generate a generic one if not found
+    const name = stockInfo ? stockInfo.name : ticker.replace('.NS', '').replace('.BSE', '');
+    const basePrice = stockInfo ? stockInfo.basePrice * (1 + (Math.random() - 0.5) * 0.1) : parseFloat((Math.random() * (4000 - 500) + 500).toFixed(2));
+
+    const mockPrice = parseFloat(basePrice.toFixed(2));
     const mockPrevClose = mockPrice * (1 + (Math.random() - 0.5) * 0.05);
     const change = mockPrice - mockPrevClose;
     const changePercent = (change / mockPrevClose) * 100;
     
-    // Use a hash of the ticker to create a somewhat consistent but random name
-    const nameHash = ticker.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    const mockNames = ['Reliance Industries', 'Tata Consultancy', 'HDFC Bank', 'Infosys Ltd', 'ICICI Bank'];
-    
     const mockData: StockData = {
         symbol: ticker,
-        name: `${mockNames[nameHash % mockNames.length]} (Mock)`,
+        name: `${name} (Mock)`,
         price: mockPrice,
         change: change,
         changePercent: changePercent,
