@@ -1,5 +1,4 @@
 
-
 "use client";
 import Link from "next/link";
 import {
@@ -48,7 +47,9 @@ import AuthGuard from "@/components/auth/AuthGuard";
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isActive = (path: string) => {
+    // Exact match for the main site link
     if (path === '/') return pathname === '/';
+    // For other dashboard links, check if the pathname starts with the path
     return pathname === path || (path !== '/dashboard' && pathname.startsWith(path));
   }
   const { user, logout } = useAuth();
@@ -217,11 +218,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <SidebarFooter className="group-data-[collapsible=icon]:hidden">
             <SidebarMenu>
                  <SidebarMenuItem>
-                  <Link href="/" passHref>
-                    <SidebarMenuButton tooltip="Main Site" isActive={isActive('/')}>
-                      <Globe />
-                      <span>Main Site</span>
-                    </SidebarMenuButton>
+                  <Link href="/" passHref legacyBehavior>
+                    <a>
+                      <SidebarMenuButton tooltip="Main Site" isActive={isActive('/')}>
+                        <Globe />
+                        <span>Main Site</span>
+                      </SidebarMenuButton>
+                    </a>
                   </Link>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
@@ -263,7 +266,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>{user?.displayName}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild><Link href="/dashboard/settings">Profile & Settings</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link href="/dashboard/settings">Profile &amp; Settings</Link></DropdownMenuItem>
                 <DropdownMenuItem asChild><Link href="/dashboard/support">Support</Link></DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
