@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/use-auth";
-import { ArrowDown, BookOpen, LineChart, Loader2, Newspaper, Sparkles } from "lucide-react";
+import { ArrowDown, BookOpen, LineChart, Loader2, Newspaper, Sparkles, TextSelect } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -20,7 +20,7 @@ export default function LandingPage() {
       if (!loading && user) {
         router.push('/dashboard');
       }
-    }, [user, loading]);
+    }, [user, loading, router]);
 
 
     const scrollToFeatures = () => {
@@ -105,7 +105,7 @@ export default function LandingPage() {
             <h2 className="mb-12 text-center text-3xl font-bold tracking-tight sm:text-4xl font-headline">
               Features Built For You
             </h2>
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2"><BookOpen /> Learn</CardTitle>
@@ -128,6 +128,14 @@ export default function LandingPage() {
                 </CardHeader>
                 <CardContent>
                   <CardDescription>Get AI-powered sentiment analysis and simplify complex financial news.</CardDescription>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><TextSelect /> Summarizer</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription>Translate and summarize complex financial documents into simple language.</CardDescription>
                 </CardContent>
               </Card>
             </div>
