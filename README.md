@@ -71,9 +71,17 @@ npm install
 ### 4. Set Up Environment Variables
 This is a crucial step to connect to Firebase and get the live US stock data.
 
-1.  Open the `.env` file in the root of the project.
-2.  **Firebase Keys**: Find your Firebase project configuration keys. Go to your Firebase Console, click the gear icon for **Project settings**, and under the **General** tab, scroll down to **Your apps**. Select your web app, and under **Firebase SDK snippet**, choose **Config**. Copy the values into your `.env` file.
-3.  **Alpha Vantage Keys**: Get a free API key from [Alpha Vantage](https://www.alphavantage.co/support/#api-key). Add the key to your `.env` file. You can add multiple keys (separated by a comma) to increase your API request limit.
+1.  Open the `.env` file located in the root of the project.
+2.  **Alpha Vantage Keys**: Get a free API key from [Alpha Vantage](https://www.alphavantage.co/support/#api-key). Add the key to your `.env` file. You can add multiple keys (separated by a comma) to increase your API request limit.
+3.  **Firebase Keys**: Find your Firebase project configuration keys.
+    *   Go to the [Firebase Console](https://console.firebase.google.com/).
+    *   Select your project.
+    *   Click the **gear icon** next to "Project Overview" and go to **Project settings**.
+    *   In the **General** tab, scroll down to **Your apps**.
+    *   Select your web app.
+    *   Under **Firebase SDK snippet**, choose **Config**.
+    *   Copy the corresponding values into your `.env` file.
+    > **Note:** If you don't see a `measurementId`, it means Google Analytics wasn't enabled when you created the project. You can enable it in **Project settings** > **Integrations** > **Google Analytics**. It is optional for this app.
 
     Your `.env` file should look like this, with your actual keys filled in:
     ```env
@@ -91,7 +99,7 @@ This is a crucial step to connect to Firebase and get the live US stock data.
     NEXT_PUBLIC_FIREBASE_APP_ID=1:123...:web:...
     NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-...
     ```
-    > **Note:** The `.gitignore` file is already configured to prevent your `.env` file from being committed to Git.
+    > **Important:** The `.gitignore` file is already configured to prevent your `.env` file from being committed to Git, keeping your secrets safe.
 
 ### 5. Run the Development Server
 ```bash
