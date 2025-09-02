@@ -1,32 +1,98 @@
-# FINTEL - Financial Intelligence Application
+# FINTEL - Invest with Confidence, Learn with Purpose
 
-This is a Next.js starter project for FINTEL, an application designed to help users learn about stock trading, built in Firebase Studio.
+<p align="center">
+  <img src="https://image2url.com/images/1756559873652-b8416d65-7c4a-4d63-b985-7363c190e2c0.png" alt="FINTEL Application Showcase" width="700"/>
+</p>
 
-To get started, take a look at `src/app/page.tsx`.
+Hey there! Welcome to the FINTEL project repository. FINTEL isn't just another finance app; it's a comprehensive platform designed to empower users on their journey into the world of stock trading. Our mission is to demystify the stock market, making it accessible and understandable for beginners while providing powerful tools for more experienced users. We believe that with the right education and risk-free practice, anyone can learn to invest with confidence.
 
-## Running the Application Locally
+---
 
-1.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
-2.  **Set up environment variables:**
-    Create a file named `.env` in the root of the project and add your API keys. This file is ignored by Git and should not be committed.
+## ✨ Core Features
+
+FINTEL is packed with features that cater to every step of your learning and trading journey.
+
+### 📚 Educational Suite
+*   **Interactive Learning Modules:** Dive into curated modules covering everything from the absolute basics of the stock market to advanced topics like portfolio diversification and technical analysis.
+*   **Knowledge Quizzes:** After each module, test your understanding with a short quiz to reinforce key concepts and track your progress.
+*   **AI-Powered "Next Step":** Not sure what to learn next? Our AI analyzes your progress and quiz scores to recommend the most relevant module to tackle, creating a personalized learning path just for you.
+
+### 📈 Trading & Analysis Tools
+*   **Risk-Free Trading Simulator:** Practice your trading strategies with a virtual portfolio and a starting balance of ₹10,000. We use live, real-time data for US stocks (via Alpha Vantage) and realistic mock data for Indian stocks (NSE/BSE).
+*   **AI-Powered Insights:** Go beyond the numbers. For any stock, get an AI-generated analysis that includes:
+    *   **Sentiment Analysis:** Understand the market mood based on news and social media.
+    *   **Quantitative Breakdown:** A simple, AI-driven look at the stock's performance.
+    *   **Forecast & Reasoning:** A transparent forecast on whether the stock might go up or down, and why.
+*   **Personalized Dashboard:** Your central hub to track your learning progress, average quiz scores, portfolio value, and recent activity at a glance.
+
+### 🤖 Generative AI Tools
+*   **Content Summarizer & Translator:** Paste complex financial articles or SEBI documents and let our AI provide a concise, easy-to-understand summary. You can also translate it into various Indian languages like Hindi, Tamil, and Bengali.
+*   **AI Support Chatbot:** Have a question about how to use the app? Our friendly AI assistant is available 24/7 to provide instant help and guidance.
+
+### 👤 User Experience
+*   **Secure Authentication:** Easy sign-up and login using email/password or Google, powered by Firebase Authentication.
+*   **Customizable Profile:** Personalize your account by updating your name, email, and profile picture.
+*   **Light & Dark Mode:** Choose your preferred theme for a comfortable viewing experience, day or night.
+
+---
+
+## 🛠️ Tech Stack
+
+FINTEL is built with a modern, robust, and scalable tech stack.
+
+*   **Framework:** [Next.js](https://nextjs.org/) (App Router)
+*   **Language:** [TypeScript](https://www.typescriptlang.org/)
+*   **Generative AI:** [Google's Genkit](https://firebase.google.com/docs/genkit)
+*   **UI Components:** [ShadCN UI](https://ui.shadcn.com/)
+*   **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+*   **Backend & Auth:** [Firebase](https://firebase.google.com/) (Authentication, Storage)
+*   **Stock Market Data:** [Alpha Vantage API](https://www.alphavantage.co/)
+
+---
+
+## 🚀 Getting Started
+
+Ready to run the project locally? Follow these simple steps.
+
+### 1. Prerequisites
+Make sure you have Node.js (v18 or higher) and npm installed on your machine.
+
+### 2. Clone the Repository
+```bash
+git clone https://github.com/your-username/fintel.git
+cd fintel
+```
+
+### 3. Install Dependencies
+```bash
+npm install
+```
+
+### 4. Set Up Environment Variables
+This is a crucial step to get the live US stock data.
+
+1.  Create a file named `.env` in the root of the project.
+2.  Get a free API key from [Alpha Vantage](https://www.alphavantage.co/support/#api-key).
+3.  Add the key to your `.env` file. You can add multiple keys (separated by a comma) to increase your API request limit.
+
     ```env
-    # Get a free key from https://www.alphavantage.co/support/#api-key
-    # You can add multiple keys separated by a comma for higher rate limits.
-    ALPHA_VANTAGE_API_KEYS=YOUR_ALPHA_VANTAGE_KEY_HERE
+    # .env
+    ALPHA_VANTAGE_API_KEYS=YOUR_ALPHA_VANTAGE_KEY_HERE,ANOTHER_KEY_IF_YOU_HAVE_ONE
     ```
-3.  **Run the development server:**
-    ```bash
-    npm run dev
-    ```
-    Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+    > **Note:** The `.gitignore` file is already configured to prevent your `.env` file from being committed to Git.
 
+### 5. Run the Development Server
+```bash
+npm run dev
+```
 
-## How to Deploy to Vercel
+Your application should now be running on [http://localhost:3000](http://localhost:3000).
 
-Deploying your Next.js application to Vercel is a great choice for performance and ease of use.
+---
+
+## ☁️ How to Deploy to Vercel
+
+Deploying your app to Vercel is the perfect way to share it with the world.
 
 ### Step 1: Push Your Project to a Git Repository
 
@@ -39,7 +105,7 @@ Before deploying, your project needs to be hosted on a Git provider like GitHub,
 
 ### Step 2: Deploy on Vercel
 
-1.  **Sign Up & Log In**: Go to [vercel.com](https://vercel.com) and create an account. Using your GitHub account to sign up is the easiest way.
+1.  **Sign Up & Log In**: Go to [vercel.com](https://vercel.com) and create an account. Using your GitHub account is the easiest way.
 2.  **Import Project**:
     *   From your Vercel dashboard, click "**Add New...**" > "**Project**".
     *   Connect to your Git account and select the repository for this project.
@@ -57,3 +123,7 @@ This is the most important step for keeping your keys secure. **Never** write yo
 4.  Click the "**Deploy**" button.
 
 Vercel will build and deploy your application. Your app will now have access to the API keys you provided, but they won't be visible in your public source code.
+
+---
+
+Thanks for checking out FINTEL! If you have any questions or feedback, feel free to open an issue.
