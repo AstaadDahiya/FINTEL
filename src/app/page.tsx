@@ -17,9 +17,9 @@ import { ThemeToggle } from "@/components/layout/ThemeToggle";
 const heroImages = [
   "https://image2url.com/images/1756806661144-09af950d-0269-4e2d-9e35-b1592f903b12.png",
   "https://image2url.com/images/1756829087282-f9c29d9a-d233-4aa4-a4c6-a9f42418517c.png",
-  "https://picsum.photos/1200/800?random=1",
-  "https://picsum.photos/1200/800?random=2",
-  "https://picsum.photos/1200/800?random=3",
+  "https://image2url.com/images/1756830404548-6e4a7635-2a56-44fd-8919-9cf6b4c861cd.png",
+  "https://image2url.com/images/1756830449257-7fdaae2d-92ec-40f0-95f6-8b7c36940aef.png",
+  "https://image2url.com/images/1756830480908-de394a05-247f-42c2-ba04-d90442d15260.png",
 ];
 
 
