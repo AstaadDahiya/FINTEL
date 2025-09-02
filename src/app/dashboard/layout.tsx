@@ -59,7 +59,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <Sidebar side="left" collapsible="icon">
           <SidebarHeader>
-            <Link href="/dashboard" className="block">
+            <Link href="/" className="block">
               <div className="flex items-center gap-2 p-2 group-data-[collapsible=icon]:justify-center">
               <svg viewBox="0 0 220 55" xmlns="http://www.w3.org/2000/svg" className="h-12 w-auto group-data-[collapsible=icon]:hidden text-foreground">
                   <defs>
