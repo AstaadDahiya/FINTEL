@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -16,7 +17,7 @@ type Message = {
   content: string;
 };
 
-export default function SupportPage() {
+export default function AiAssistantPage() {
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -47,7 +48,7 @@ export default function SupportPage() {
   return (
     <div className="flex h-[calc(100vh-8rem)] flex-col">
        <div className="mb-8">
-        <h1 className="text-3xl font-bold font-headline">Help & Support</h1>
+        <h1 className="text-3xl font-bold font-headline">AI Assistant</h1>
         <p className="text-muted-foreground">Have a question about FINTEL? Ask our AI assistant.</p>
       </div>
       <Card className="flex flex-1 flex-col">

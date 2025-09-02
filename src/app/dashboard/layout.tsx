@@ -3,7 +3,7 @@
 import Link from "next/link";
 import {
   BookOpen,
-  Globe,
+  Bot,
   HelpCircle,
   Home,
   Lightbulb,
@@ -46,7 +46,7 @@ import AuthGuard from "@/components/auth/AuthGuard";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isActive = (path: string) => {
+    const isActive = (path: string) => {
     // Exact match for the main site link
     if (path === '/') return pathname === '/';
     // For other dashboard links, check if the pathname starts with the path
@@ -218,10 +218,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <SidebarFooter className="group-data-[collapsible=icon]:hidden">
             <SidebarMenu>
                 <SidebarMenuItem>
-                  <Link href="/dashboard/support" passHref>
-                    <SidebarMenuButton tooltip="Support" isActive={isActive('/dashboard/support')}>
-                      <HelpCircle />
-                      <span>Support</span>
+                  <Link href="/dashboard/ai-assistant" passHref>
+                    <SidebarMenuButton tooltip="AI Assistant" isActive={isActive('/dashboard/ai-assistant')}>
+                      <Bot />
+                      <span>AI Assistant</span>
                     </SidebarMenuButton>
                   </Link>
                 </SidebarMenuItem>
@@ -257,7 +257,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <DropdownMenuLabel>{user?.displayName}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild><Link href="/dashboard/settings">Profile &amp; Settings</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link href="/dashboard/support">Support</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link href="/dashboard/ai-assistant">AI Assistant</Link></DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
               </DropdownMenuContent>
