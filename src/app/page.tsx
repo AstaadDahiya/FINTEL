@@ -10,20 +10,34 @@ import { useAuth } from "@/hooks/use-auth";
 import { ArrowDown, BookOpen, Bot, LineChart, Loader2, Sparkles, TextSelect } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
+
+const heroImages = [
+  "https://image2url.com/images/1756806661144-09af950d-0269-4e2d-9e35-b1592f903b12.png",
+  "https://picsum.photos/1200/800?random=1",
+  "https://picsum.photos/1200/800?random=2",
+  "https://picsum.photos/1200/800?random=3",
+];
 
 
 export default function LandingPage() {
     const { user, loading } = useAuth();
     const router = useRouter();
+    const [heroImage, setHeroImage] = useState(heroImages[0]);
 
     useEffect(() => {
       if (!loading && user) {
         router.push('/dashboard');
       }
     }, [user, loading, router]);
+    
+    useEffect(() => {
+        // This runs only on the client, after the initial render.
+        const randomIndex = Math.floor(Math.random() * heroImages.length);
+        setHeroImage(heroImages[randomIndex]);
+    }, []);
 
 
     const scrollToFeatures = () => {
@@ -94,7 +108,7 @@ export default function LandingPage() {
       <main className="flex-1">
         <section className="relative flex h-[calc(80vh)] w-full items-center justify-center text-center">
           <Image 
-            src="https://image2url.com/images/1756806661144-09af950d-0269-4e2d-9e35-b1592f903b12.png"
+            src={heroImage}
             alt="Hero background"
             fill
             className="object-cover absolute inset-0 z-0 brightness-[0.8] dark:brightness-[0.4]"
