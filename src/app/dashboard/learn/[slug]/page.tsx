@@ -1,10 +1,17 @@
-import { getModuleBySlug } from '@/lib/data';
+
+import { getModuleBySlug, learningModules } from '@/lib/data';
 import { notFound } from 'next/navigation';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from "next/image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+export async function generateStaticParams() {
+  return learningModules.map((module) => ({
+    slug: module.slug,
+  }));
+}
 
 export default function ModulePage({ params }: { params: { slug: string } }) {
   const module = getModuleBySlug(params.slug);
